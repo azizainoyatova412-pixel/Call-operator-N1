@@ -20,6 +20,8 @@ Node.js, Express va MongoDB asosidagi boshlang‘ich backend. U mahsulotlarni sa
    Invoke-RestMethod http://localhost:3000/health
    ```
 
+Brauzerda `http://localhost:3000/admin` sahifasini ochib mahsulotlarni ko‘rish va qo‘shish, admin kaliti bilan buyurtmalarni ko‘rish hamda holatini o‘zgartirish mumkin. Admin kaliti localStorage yoki cookie’da saqlanmaydi; sahifani qayta ochganda qayta kiriting. Admin kalitini serverni internetga joylaganda faqat HTTPS orqali yuboring.
+
 `SEED_DEMO_PRODUCT=true` bo‘lsa, faqat mahsulotlar kolleksiyasi bo‘sh paytda X-200 demo mahsuloti qo‘shiladi. Demo narx/zaxirani haqiqiy mijozlarga ko‘rsatishdan oldin o‘zgartiring yoki `.env` ichida `SEED_DEMO_PRODUCT=false` qiling.
 
 ## Mahsulot va buyurtmalar

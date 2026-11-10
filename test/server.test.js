@@ -33,6 +33,15 @@ test('health endpoint reports database readiness', async () => {
   assert.deepEqual(await response.json(), { status: 'not_ready' });
 });
 
+test('admin page is served by the application', async () => {
+  const response = await fetch(`${baseUrl}/admin`);
+  const html = await response.text();
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /text\/html/);
+  assert.match(html, /Ovozli operator boshqaruv paneli/);
+  assert.match(html, /ADMIN_API_KEY/);
+});
+
 test('Vapi webhook requires its configured secret', async () => {
   const response = await fetch(`${baseUrl}/webhook/vapi`, {
     method: 'POST',
@@ -73,6 +82,7 @@ test('Vapi responds with its expected error result when database is unavailable'
 });
 
 test('Vapi product lookup and confirmed order call return working results', async (context) => {
+  const originalReadyState = mongoose.connection.readyState;
   const originalProductFindOne = Product.findOne;
   const originalProductFindOneAndUpdate = Product.findOneAndUpdate;
   const originalOrderFindOne = Order.findOne;
@@ -87,6 +97,7 @@ test('Vapi product lookup and confirmed order call return working results', asyn
   let savedOrder;
   let reservedQuantity;
 
+  mongoose.connection.readyState = 1;
   Product.findOne = async () => product;
   Product.findOneAndUpdate = async (_filter, update) => {
     reservedQuantity = -update.$inc.stock;
@@ -98,6 +109,7 @@ test('Vapi product lookup and confirmed order call return working results', asyn
     return savedOrder;
   };
   context.after(() => {
+    mongoose.connection.readyState = originalReadyState;
     Product.findOne = originalProductFindOne;
     Product.findOneAndUpdate = originalProductFindOneAndUpdate;
     Order.findOne = originalOrderFindOne;

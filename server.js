@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -173,6 +174,10 @@ app.get('/health', (_req, res) => {
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'not_ready' });
 });
 
+app.get('/admin', (_req, res) => {
+  res.sendFile(fileURLToPath(new URL('./public/admin.html', import.meta.url)));
+});
+
 app.get('/api/products', requireDatabase, async (_req, res) => {
   try {
     const products = await Product.find().sort({ name: 1 }).lean();
@@ -263,6 +268,21 @@ app.post('/webhook/vapi', async (req, res) => {
   const calls = message.toolCallList ?? message.toolCalls;
   if (!Array.isArray(calls) || calls.length === 0) {
     return res.status(400).json({ error: 'Tool chaqiruvlari topilmadi.' });
+  }
+
+  if (mongoose.connection.readyState !== 1) {
+    const results = [];
+    for (const call of calls) {
+      const toolCallId = call.id ?? call.toolCallId;
+      if (typeof toolCallId !== 'string' || !toolCallId) {
+        return res.status(400).json({ error: 'Tool chaqiruvida ID ko‘rsatilmagan.' });
+      }
+      results.push({
+        toolCallId,
+        error: 'Ma’lumotlar bazasi hozircha mavjud emas. Iltimos, birozdan keyin qayta urinib ko‘ring.'
+      });
+    }
+    return res.json({ results });
   }
 
   try {

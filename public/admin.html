@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>Ovozli operator — boshqaruv</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: #172033;
+      background: #f5f7fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --blue: #2457d6;
+      --green: #15803d;
+      --red: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+
+    body { margin: 0; min-width: 320px; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px max(24px, calc((100% - 1120px) / 2));
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1, h2, p { margin: 0; }
+    h1 { font-size: 19px; }
+    h2 { margin-bottom: 18px; font-size: 17px; }
+    .subtitle, .muted { color: var(--muted); font-size: 13px; }
+    .subtitle { margin-top: 5px; }
+    main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 60px; }
+    .topbar { display: flex; align-items: end; gap: 12px; margin-bottom: 20px; }
+    .key-field { flex: 1; max-width: 540px; }
+    label { display: block; margin-bottom: 7px; color: #344054; font-size: 13px; font-weight: 600; }
+    input, textarea, select {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      color: inherit;
+      font: inherit;
+      font-size: 14px;
+    }
+    textarea { min-height: 84px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { outline: 3px solid #2457d622; border-color: var(--blue); }
+    button {
+      min-height: 40px;
+      padding: 9px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { cursor: wait; opacity: .65; }
+    button.secondary { border: 1px solid var(--line); background: #fff; color: #344054; }
+    .notice { min-height: 22px; margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+    .notice.error { color: var(--red); }
+    .notice.success { color: var(--green); }
+    .grid { display: grid; grid-template-columns: minmax(270px, .75fr) minmax(0, 1.5fr); gap: 18px; }
+    .card { padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 2px 6px #10182808; }
+    .form-grid { display: grid; gap: 14px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #eef2f6; vertical-align: middle; font-size: 13px; }
+    th { color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
+    td strong { display: block; margin-bottom: 3px; font-size: 13px; }
+    td .muted { display: block; max-width: 260px; overflow-wrap: anywhere; }
+    td select { min-width: 150px; min-height: 36px; padding: 7px; font-size: 12px; }
+    .empty { padding: 28px 12px; color: var(--muted); text-align: center; font-size: 14px; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+    .actions button { min-height: 36px; }
+    @media (max-width: 780px) {
+      header { padding: 18px 16px; }
+      main { margin-top: 20px; }
+      .grid { grid-template-columns: 1fr; }
+      .topbar { align-items: stretch; flex-direction: column; }
+      .key-field { max-width: none; }
+      .topbar > button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Ovozli operator boshqaruv paneli</h1>
+      <p class="subtitle">Mahsulotlar va kelib tushgan buyurtmalar</p>
+    </div>
+    <span id="health" class="muted" role="status">Tizim holati tekshirilmoqda…</span>
+  </header>
+
+  <main>
+    <section class="topbar" aria-label="Boshqaruvchi kirishi">
+      <div class="key-field">
+        <label for="admin-key">Boshqaruvchi kaliti</label>
+        <input id="admin-key" type="password" autocomplete="off" placeholder="ADMIN_API_KEY qiymatini kiriting">
+      </div>
+      <button id="load-orders" type="button">Buyurtmalarni ko‘rsatish</button>
+    </section>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Mahsulot qo‘shish</h2>
+        <form id="product-form" class="form-grid">
+          <div>
+            <label for="product-name">Mahsulot nomi</label>
+            <input id="product-name" name="name" required maxlength="160">
+          </div>
+          <div>
+            <label for="product-price">Narxi (so‘m)</label>
+            <input id="product-price" name="price" type="number" min="0" step="1" required>
+          </div>
+          <div>
+            <label for="product-stock">Ombordagi qoldiq</label>
+            <input id="product-stock" name="stock" type="number" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label for="product-description">Tavsif</label>
+            <textarea id="product-description" name="description" required maxlength="2000"></textarea>
+          </div>
+          <button type="submit">Mahsulotni saqlash</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="actions" style="justify-content:space-between;margin-bottom:18px">
+          <h2 style="margin:0">Buyurtmalar</h2>
+          <button id="refresh-orders" class="secondary" type="button">Yangilash</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Mijoz</th><th>Mahsulot</th><th>Holati</th><th>Buyurtma sanasi</th></tr>
+            </thead>
+            <tbody id="orders-body">
+              <tr><td class="empty" colspan="4">Ko‘rish uchun admin kalitini kiriting va buyurtmalarni yuklang.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:18px">
+      <div class="actions" style="justify-content:space-between;margin-bottom:18px">
+        <h2 style="margin:0">Mahsulotlar</h2>
+        <button id="refresh-products" class="secondary" type="button">Yangilash</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mahsulot</th><th>Narxi</th><th>Qoldiq</th></tr></thead>
+          <tbody id="products-body">
+            <tr><td class="empty" colspan="3">Yuklanmoqda…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const adminKey = document.querySelector('#admin-key');
+    const notice = document.querySelector('#notice');
+    const orderBody = document.querySelector('#orders-body');
+    const productBody = document.querySelector('#products-body');
+    const statuses = ['Yangi', 'Yetkazilmoqda', 'Yakunlandi', 'Bekor qilindi'];
+    const money = new Intl.NumberFormat('uz-UZ');
+
+    function showNotice(message, type = '') {
+      notice.textContent = message;
+      notice.className = `notice ${type}`;
+    }
+
+    async function request(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...(options.headers || {}),
+          ...(adminKey.value ? { 'x-admin-key': adminKey.value } : {})
+        }
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || `So‘rov bajarilmadi (${response.status}).`);
+      return body;
+    }
+
+    function setEmptyRow(target, columns, message) {
+      target.replaceChildren();
+      const row = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = columns;
+      cell.className = 'empty';
+      cell.textContent = message;
+      row.append(cell);
+      target.append(row);
+    }
+
+    async function loadHealth() {
+      const indicator = document.querySelector('#health');
+      try {
+        const response = await fetch('/health');
+        const body = await response.json();
+        indicator.textContent = response.ok ? 'Tizim ishlayapti' : 'Ma’lumotlar bazasi ulanmagan';
+        indicator.style.color = response.ok ? '#15803d' : '#b42318';
+        if (!response.ok) showNotice(`Server ishga tushgan, lekin ma’lumotlar bazasi tayyor emas (${body.status}). .env dagi MONGO_URI va MongoDB xizmati ishlayotganini tekshiring.`, 'error');
+      } catch {
+        indicator.textContent = 'Tizimga ulanib bo‘lmadi';
+        indicator.style.color = '#b42318';
+        showNotice('Tizimga ulanib bo‘lmadi. Terminalda npm start buyrug‘i ishlayotganini tekshiring.', 'error');
+      }
+    }
+
+    async function loadProducts() {
+      setEmptyRow(productBody, 3, 'Mahsulotlar yuklanmoqda…');
+      try {
+        const { products } = await request('/api/products');
+        if (!products.length) return setEmptyRow(productBody, 3, 'Hozircha mahsulot yo‘q.');
+        productBody.replaceChildren();
+        for (const product of products) {
+          const row = document.createElement('tr');
+          const name = document.createElement('td');
+          const title = document.createElement('strong');
+          const description = document.createElement('span');
+          title.textContent = product.name;
+          description.className = 'muted';
+          description.textContent = product.description;
+          name.append(title, description);
+          const price = document.createElement('td');
+          price.textContent = `${money.format(product.price)} so‘m`;
+          const stock = document.createElement('td');
+          stock.textContent = `${product.stock} dona`;
+          row.append(name, price, stock);
+          productBody.append(row);
+        }
+      } catch (error) {
+        setEmptyRow(productBody, 3, error.message);
+      }
+    }
+
+    async function loadOrders() {
+      if (!adminKey.value.trim()) {
+        showNotice('Buyurtmalarni ko‘rish uchun boshqaruvchi kalitini kiriting.', 'error');
+        adminKey.focus();
+        return;
+      }
+      setEmptyRow(orderBody, 4, 'Buyurtmalar yuklanmoqda…');
+      try {
+        const { orders } = await request('/api/orders');
+        if (!orders.length) return setEmptyRow(orderBody, 4, 'Hozircha buyurtmalar yo‘q.');
+        orderBody.replaceChildren();
+        for (const order of orders) {
+          const row = document.createElement('tr');
+          const customer = document.createElement('td');
+          const customerName = document.createElement('strong');
+          const phone = document.createElement('span');
+          const address = document.createElement('span');
+          customerName.textContent = order.customer_name;
+          phone.className = 'muted';
+          phone.textContent = order.customer_phone;
+          address.className = 'muted';
+          address.textContent = order.delivery_address;
+          customer.append(customerName, phone, address);
+
+          const item = document.createElement('td');
+          const itemName = document.createElement('strong');
+          const itemDetails = document.createElement('span');
+          itemName.textContent = order.product_name;
+          itemDetails.className = 'muted';
+          itemDetails.textContent = `${order.quantity} dona · ${money.format(order.unit_price * order.quantity)} so‘m`;
+          item.append(itemName, itemDetails);
+
+          const statusCell = document.createElement('td');
+          const select = document.createElement('select');
+          select.setAttribute('aria-label', `${order.customer_name} buyurtmasi holati`);
+          for (const status of statuses) {
+            const option = document.createElement('option');
+            option.value = status;
+            option.textContent = status;
+            option.selected = status === order.status;
+            select.append(option);
+          }
+          select.addEventListener('change', async () => {
+            select.disabled = true;
+            try {
+              await request(`/api/orders/${encodeURIComponent(order._id)}/status`, {
+                method: 'PATCH',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ status: select.value })
+              });
+              showNotice('Buyurtma holati yangilandi.', 'success');
+            } catch (error) {
+              showNotice(error.message, 'error');
+              await loadOrders();
+            } finally {
+              select.disabled = false;
+            }
+          });
+          statusCell.append(select);
+
+          const date = document.createElement('td');
+          const parsedDate = new Date(order.created_at);
+          date.textContent = Number.isNaN(parsedDate.getTime()) ? '—' : parsedDate.toLocaleString('uz-UZ');
+          row.append(customer, item, statusCell, date);
+          orderBody.append(row);
+        }
+      } catch (error) {
+        setEmptyRow(orderBody, 4, error.message);
+        showNotice(error.message, 'error');
+      }
+    }
+
+    document.querySelector('#product-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!adminKey.value.trim()) {
+        showNotice('Mahsulot qo‘shish uchun boshqaruvchi kalitini kiriting.', 'error');
+        adminKey.focus();
+        return;
+      }
+      const form = event.currentTarget;
+      const submit = form.querySelector('button[type="submit"]');
+      const data = new FormData(form);
+      submit.disabled = true;
+      try {
+        await request('/api/products', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            name: data.get('name'),
+            price: Number(data.get('price')),
+            stock: Number(data.get('stock')),
+            description: data.get('description')
+          })
+        });
+        form.reset();
+        showNotice('Mahsulot saqlandi.', 'success');
+        await loadProducts();
+      } catch (error) {
+        showNotice(error.message, 'error');
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    document.querySelector('#load-orders').addEventListener('click', loadOrders);
+    document.querySelector('#refresh-orders').addEventListener('click', loadOrders);
+    document.querySelector('#refresh-products').addEventListener('click', loadProducts);
+    loadHealth();
+    loadProducts();
+  </script>
+</body>
+</html>
