@@ -87,7 +87,7 @@ Mijoz boshqa tilda murojaat qilsa, imkon qadar o‘sha tilda odob bilan javob be
 ## Ulanish va sinov
 
 1. Serverni internetdan ochiladigan HTTPS manzilga deploy qiling. Vapi `localhost` yoki `127.0.0.1` ga ulana olmaydi.
-2. Deploy muhitida `MONGO_URI`, `WEBHOOK_SECRET` va kerak bo‘lsa `PORT` ni sozlang. `.env` ni serverga xavfsiz yo‘l bilan kiriting, ommaviy repozitoriyga yuklamang.
+2. Deploy muhitida `MONGODB_URI`, `WEBHOOK_SECRET`, `ADMIN_API_KEY` va kerak bo‘lsa `PORT` ni sozlang. `.env` ni serverga xavfsiz yo‘l bilan kiriting, ommaviy repozitoriyga yuklamang.
 3. Ikkala tool'ni yarating va server URL hamda `x-vapi-secret` headerini sozlang. So‘ng ularni assistant'ga ulang.
 4. Vapi Web Call orqali o‘zbekcha ovoz, talaffuz, uzilishlar va javob tezligini tekshiring. Vapi Tools test oynasi oddiy parametrlar yuboradi, to‘liq `tool-calls` xabarini emas; to‘liq oqimni Web Call orqali sinang.
 5. Test buyurtmasidan keyin MongoDB'da `orders` yozuvi va `products.stock` o‘zgarishini tekshiring. Xato holatlarida buyurtma muvaffaqiyatli deyilganini ham alohida sinang.

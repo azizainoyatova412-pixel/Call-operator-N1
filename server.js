@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { setServers } from 'node:dns';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
@@ -332,12 +333,18 @@ app.post('/webhook/vapi', async (req, res) => {
 });
 
 export async function startServer() {
-  const { MONGO_URI, WEBHOOK_SECRET, ADMIN_API_KEY } = process.env;
-  if (!MONGO_URI) throw new Error('MONGO_URI muhit o‘zgaruvchisi sozlanmagan.');
+  const { MONGODB_URI, WEBHOOK_SECRET, ADMIN_API_KEY } = process.env;
+  if (!MONGODB_URI) throw new Error('MONGODB_URI muhit o‘zgaruvchisi sozlanmagan.');
   if (!WEBHOOK_SECRET) throw new Error('WEBHOOK_SECRET muhit o‘zgaruvchisi sozlanmagan.');
   if (!ADMIN_API_KEY) throw new Error('ADMIN_API_KEY muhit o‘zgaruvchisi sozlanmagan.');
 
-  await mongoose.connect(MONGO_URI);
+  const dnsServers = process.env.MONGODB_DNS_SERVERS
+    ?.split(',')
+    .map((server) => server.trim())
+    .filter(Boolean);
+  if (dnsServers?.length) setServers(dnsServers);
+
+  await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 10000 });
   console.log('MongoDB ulandi.');
 
   const productCount = await Product.countDocuments();

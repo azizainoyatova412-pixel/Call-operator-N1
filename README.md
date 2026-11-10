@@ -6,7 +6,7 @@ Node.js, Express va MongoDB asosidagi boshlang‘ich backend. U mahsulotlarni sa
 
 1. Node.js 20 yoki undan yangisini o‘rnating.
 2. MongoDB'ni lokalda ishga tushiring yoki MongoDB Atlas'da baza yarating.
-3. Loyihaning asosiy papkasida `.env.example` nusxasini `.env` nomi bilan yarating. `MONGO_URI` ni o‘zingizning bazangizga moslang. `WEBHOOK_SECRET` va `ADMIN_API_KEY` uchun ikki xil tasodifiy, uzun qiymat kiriting. Bu kalitlarni hech kimga yubormang va repozitoriyga qo‘shmang.
+3. Loyihaning asosiy papkasida `.env.example` nusxasini `.env` nomi bilan yarating. `MONGODB_URI` ni o‘zingizning bazangizga moslang. `WEBHOOK_SECRET` va `ADMIN_API_KEY` uchun ikki xil tasodifiy, uzun qiymat kiriting. Bu kalitlarni hech kimga yubormang va repozitoriyga qo‘shmang. DNS orqali ulanishda `querySrv ECONNREFUSED` chiqsa, `.env` fayliga `MONGODB_DNS_SERVERS=1.1.1.1` qatorini qo‘shib qayta ishga tushiring.
 4. PowerShell'da:
 
    ```powershell
@@ -49,7 +49,7 @@ Buyurtmalarni ko‘rish uchun xuddi shu `x-admin-key` bilan `GET /api/orders` so
 
 ## Vapi'ni ulash
 
-Vapi tool sxemalari va system prompt [Vapi sozlamalari](./vapi/assistant-setup.md) hujjatida. Mahalliy `localhost`'ni Vapi ko‘ra olmaydi: serverni HTTPS manzilli hostingga joylashtiring va hosting maxfiy sozlamalarida `MONGO_URI`, `WEBHOOK_SECRET` hamda `ADMIN_API_KEY` qiymatlarini kiriting. Vapi'dagi ikkala Function tool uchun `https://<server-domeningiz>/webhook/vapi` URL va `x-vapi-secret: <WEBHOOK_SECRET>` headerini sozlang.
+Vapi tool sxemalari va system prompt [Vapi sozlamalari](./vapi/assistant-setup.md) hujjatida. Mahalliy `localhost`'ni Vapi ko‘ra olmaydi: serverni HTTPS manzilli hostingga joylashtiring va hosting maxfiy sozlamalarida `MONGODB_URI`, `WEBHOOK_SECRET` hamda `ADMIN_API_KEY` qiymatlarini kiriting. Vapi'dagi ikkala Function tool uchun `https://<server-domeningiz>/webhook/vapi` URL va `x-vapi-secret: <WEBHOOK_SECRET>` headerini sozlang.
 
 ## Test
 
