@@ -27,6 +27,8 @@ Serverga keladigan so‘rovlarda `x-vapi-secret` headerini o‘rnating. Uning qi
 
 ## 2. create_order
 
+Vapi’dagi eski tool `creat_order` deb nomlangan bo‘lsa, backend hozircha shu nomni ham qabul qiladi. Vapi paneliga kira olganingizda tool nomini `create_order` qilib tuzating; yangi sozlashlarda faqat `create_order` nomidan foydalaning.
+
 **Description:** Mijoz barcha buyurtma ma’lumotlarini tasdiqlagandan keyingina buyurtmani bazaga yozadi. Mahsulot nomi, ism, telefon, manzil va miqdorni yuboring.
 
 **Parameters:**
@@ -83,6 +85,27 @@ create_order muvaffaqiyatli javob bergandagina buyurtma qabul qilinganini ayting
 
 Mijoz boshqa tilda murojaat qilsa, imkon qadar o‘sha tilda odob bilan javob bering; tushunmasangiz, o‘zbek tilida aniqlik kiriting. Hech qachon to‘qima ma'lumot bermang. Suhbat oxirida keyingi qadamni tushunarli ayting va xayrlashing.
 ```
+
+## Tavsiya etilgan Vapi parametrlari (O‘zbek tili uchun)
+
+Vapi Dashboard'da yangi Assistant yaratganda quyidagi sozlamalardan foydalanish tavsiya etiladi:
+
+1. **Model:**
+   - **Provider:** OpenAI
+   - **Model:** `gpt-4o` (o‘zbek tilida so‘zlashish, vaziyatni tushunish va tool chaqiruvlarini xatosiz bajarish uchun eng maqbul model)
+   - **Temperature:** `0.3` – `0.5` (aniq ma’lumotlar va qat’iy ssenariy uchun)
+
+2. **Transcriber (STT - Mijoz gapini matnga aylantirish):**
+   - **Provider:** Deepgram
+   - **Model:** `nova-2`
+   - **Language:** `multi` yoki `uz`
+
+3. **Voice (TTS - Ovozli javob qaytarish):**
+   - **Provider:** ElevenLabs yoki Cartesia
+   - **Model:** `eleven_multilingual_v2` yoki `sonic-multilingual`
+   - **Voice:** O‘zbek tiliga mos tabiiy, ravon va professional yangraydigan ovozni tanlang.
+
+---
 
 ## Ulanish va sinov
 

@@ -24,6 +24,17 @@ Brauzerda `http://localhost:3000/admin` sahifasini ochib mahsulotlarni ko‘rish
 
 `SEED_DEMO_PRODUCT=true` bo‘lsa, faqat mahsulotlar kolleksiyasi bo‘sh paytda X-200 demo mahsuloti qo‘shiladi. Demo narx/zaxirani haqiqiy mijozlarga ko‘rsatishdan oldin o‘zgartiring yoki `.env` ichida `SEED_DEMO_PRODUCT=false` qiling.
 
+## Telegram bildirishnomalar (Operatorlar uchun)
+
+Har bir yangi buyurtma AI operator tomonidan qabul qilinganda real-vaqt rejimida Telegram guruh yoki adminga xabar yuborish uchun:
+- Telegram’da `@BotFather` orqali yangi bot yarating va tokenini oling.
+- Xabar borishi kerak bo‘lgan guruh yoki profilingizning `chat_id` sini aniqlang.
+- `.env` fayliga quyidagilarni yozing:
+  ```env
+  TELEGRAM_BOT_TOKEN=123456789:ABCDefGhIJKlmNoPQRstuVWXyz
+  TELEGRAM_CHAT_ID=-1001234567890
+  ```
+
 ## Mahsulot va buyurtmalar
 
 Mahsulotlarni ko‘rish ochiq:

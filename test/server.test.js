@@ -94,19 +94,21 @@ test('Vapi product lookup and confirmed order call return working results', asyn
     description: 'Bluetooth 5.3',
     stock: 10
   };
-  let savedOrder;
-  let reservedQuantity;
+  const savedOrders = new Map();
+  const reservedQuantities = [];
 
   mongoose.connection.readyState = 1;
   Product.findOne = async () => product;
   Product.findOneAndUpdate = async (_filter, update) => {
-    reservedQuantity = -update.$inc.stock;
-    return { ...product, stock: product.stock - reservedQuantity };
+    const quantity = -update.$inc.stock;
+    reservedQuantities.push(quantity);
+    return { ...product, stock: product.stock - reservedQuantities.reduce((sum, item) => sum + item, 0) };
   };
-  Order.findOne = async () => savedOrder ?? null;
+  Order.findOne = async ({ tool_call_id: toolCallId }) => savedOrders.get(toolCallId) ?? null;
   Order.create = async (data) => {
-    savedOrder = { ...data, _id: new mongoose.Types.ObjectId() };
-    return savedOrder;
+    const order = { ...data, _id: new mongoose.Types.ObjectId() };
+    savedOrders.set(data.tool_call_id, order);
+    return order;
   };
   context.after(() => {
     mongoose.connection.readyState = originalReadyState;
@@ -145,6 +147,19 @@ test('Vapi product lookup and confirmed order call return working results', asyn
                 quantity: 2
               }
             }
+          },
+          {
+            id: 'legacy-order-call',
+            function: {
+              name: 'creat_order',
+              arguments: {
+                customerName: 'Vali Aliyev',
+                customerPhone: '+998 90 111 22 33',
+                deliveryAddress: 'Toshkent, Yunusobod',
+                productName: 'X-200',
+                quantity: 1
+              }
+            }
           }
         ]
       }
@@ -157,9 +172,12 @@ test('Vapi product lookup and confirmed order call return working results', asyn
   assert.match(body.results[0].result, /Simsiz quloqchin X-200/);
   assert.equal(body.results[1].toolCallId, 'order-call');
   assert.match(body.results[1].result, /Buyurtma qabul qilindi/);
-  assert.equal(savedOrder.product_id, product._id);
-  assert.equal(savedOrder.quantity, 2);
-  assert.equal(reservedQuantity, 2);
+  assert.equal(body.results[2].toolCallId, 'legacy-order-call');
+  assert.match(body.results[2].result, /Buyurtma qabul qilindi/);
+  assert.equal(savedOrders.get('order-call').product_id, product._id);
+  assert.equal(savedOrders.get('order-call').quantity, 2);
+  assert.equal(savedOrders.get('legacy-order-call').quantity, 1);
+  assert.deepEqual(reservedQuantities, [2, 1]);
 });
 
 test('admin endpoints reject requests without the admin key', async () => {

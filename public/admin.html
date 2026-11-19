@@ -3,342 +3,647 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f7fb">
-  <title>Ovozli operator — boshqaruv</title>
+  <title>AI Call Operator — Sotuv va Buyurtmalar CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      color: #172033;
-      background: #f5f7fb;
-      font-synthesis: none;
-      text-rendering: optimizeLegibility;
-      --muted: #64748b;
-      --line: #e2e8f0;
-      --blue: #2457d6;
-      --green: #15803d;
-      --red: #b42318;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-    body { margin: 0; min-width: 320px; }
-
+    /* Header */
     header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      padding: 22px max(24px, calc((100% - 1120px) / 2));
-      background: #fff;
-      border-bottom: 1px solid var(--line);
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .logo-block { display: flex; align-items: center; gap: 12px; }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      color: #059669;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #a7f3d0;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    h1, h2, p { margin: 0; }
-    h1 { font-size: 19px; }
-    h2 { margin-bottom: 18px; font-size: 17px; }
-    .subtitle, .muted { color: var(--muted); font-size: 13px; }
-    .subtitle { margin-top: 5px; }
-    main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 60px; }
-    .topbar { display: flex; align-items: end; gap: 12px; margin-bottom: 20px; }
-    .key-field { flex: 1; max-width: 540px; }
-    label { display: block; margin-bottom: 7px; color: #344054; font-size: 13px; font-weight: 600; }
-    input, textarea, select {
-      width: 100%;
-      min-height: 42px;
-      padding: 10px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      background: #fff;
-      color: inherit;
-      font: inherit;
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .key-input-wrapper { display: flex; align-items: center; gap: 8px; }
+    input, select, textarea, button {
+      font-family: inherit;
       font-size: 14px;
     }
-    textarea { min-height: 84px; resize: vertical; }
-    input:focus, textarea:focus, select:focus { outline: 3px solid #2457d622; border-color: var(--blue); }
-    button {
-      min-height: 40px;
-      padding: 9px 14px;
-      border: 0;
+    .input-field {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      background: var(--blue);
-      color: #fff;
-      font: inherit;
-      font-size: 14px;
+      background: var(--surface);
+      color: var(--text-main);
+      outline: none;
+      transition: all .2s;
+    }
+    .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
       font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid transparent;
       cursor: pointer;
+      transition: all .2s;
     }
-    button:disabled { cursor: wait; opacity: .65; }
-    button.secondary { border: 1px solid var(--line); background: #fff; color: #344054; }
-    .notice { min-height: 22px; margin: 0 0 14px; color: var(--muted); font-size: 14px; }
-    .notice.error { color: var(--red); }
-    .notice.success { color: var(--green); }
-    .grid { display: grid; grid-template-columns: minmax(270px, .75fr) minmax(0, 1.5fr); gap: 18px; }
-    .card { padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 2px 6px #10182808; }
-    .form-grid { display: grid; gap: 14px; }
-    .table-wrap { overflow-x: auto; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--surface); border-color: var(--border); color: var(--text-main); }
+    .btn-secondary:hover { background: #f1f5f9; }
+    .btn-danger { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* Layout */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* KPI Stats Bar */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-title { font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--text-main); }
+    .stat-badge {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Main Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fafafa;
+    }
+    .card-header h2 { font-size: 16px; font-weight: 700; }
+    .card-body { padding: 20px; }
+
+    /* Filters Bar */
+    .orders-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .search-box { flex: 1; min-width: 200px; max-width: 380px; }
+
+    /* Tables */
+    .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 12px 10px; border-bottom: 1px solid #eef2f6; vertical-align: middle; font-size: 13px; }
-    th { color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
-    td strong { display: block; margin-bottom: 3px; font-size: 13px; }
-    td .muted { display: block; max-width: 260px; overflow-wrap: anywhere; }
-    td select { min-width: 150px; min-height: 36px; padding: 7px; font-size: 12px; }
-    .empty { padding: 28px 12px; color: var(--muted); text-align: center; font-size: 14px; }
-    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
-    .actions button { min-height: 36px; }
-    @media (max-width: 780px) {
-      header { padding: 18px 16px; }
-      main { margin-top: 20px; }
-      .grid { grid-template-columns: 1fr; }
-      .topbar { align-items: stretch; flex-direction: column; }
-      .key-field { max-width: none; }
-      .topbar > button { width: 100%; }
+    th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      font-size: 14px;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fbfcfe; }
+
+    .customer-cell strong { display: block; font-size: 14px; margin-bottom: 3px; color: var(--text-main); }
+    .customer-cell a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .customer-cell a:hover { text-decoration: underline; }
+    .address-text { display: block; font-size: 12px; color: var(--text-muted); margin-top: 3px; max-width: 250px; }
+
+    /* Status Select */
+    .status-select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      outline: none;
+    }
+    .status-Yangi { background: var(--warning-light); color: var(--warning); border-color: #fde68a; }
+    .status-Yetkazilmoqda { background: var(--primary-light); color: var(--primary); border-color: #bfdbfe; }
+    .status-Yakunlandi { background: var(--success-light); color: var(--success); border-color: #bbf7d0; }
+    .status-Bekor-qilindi { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
+
+    .notice {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+      margin-bottom: 16px;
+    }
+    .notice.show { display: block; }
+    .notice.error { background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; }
+    .notice.success { background: var(--success-light); color: var(--success); border: 1px solid #bbf7d0; }
+
+    /* Forms */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .form-group input, .form-group textarea { width: 100%; }
+
+    .sound-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+
   <header>
-    <div>
-      <h1>Ovozli operator boshqaruv paneli</h1>
-      <p class="subtitle">Mahsulotlar va kelib tushgan buyurtmalar</p>
+    <div class="logo-block">
+      <div style="width:36px;height:36px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;">AI</div>
+      <div>
+        <h1 style="font-size:16px;font-weight:700;">Ovozli operator boshqaruv paneli (CRM)</h1>
+        <p style="font-size:12px;color:var(--text-muted);">Sotuv va buyurtmalar avtomatizatsiyasi · ADMIN_API_KEY bilan himoyalangan</p>
+      </div>
+      <span class="badge-live"><span class="pulse-dot"></span> Jonli tizim</span>
     </div>
-    <span id="health" class="muted" role="status">Tizim holati tekshirilmoqda…</span>
+
+    <div class="header-actions">
+      <label class="sound-toggle">
+        <input type="checkbox" id="sound-alert" checked>
+        <span>Ovozli signal</span>
+      </label>
+      <div class="key-input-wrapper">
+        <input id="admin-key" class="input-field" type="password" placeholder="Admin kalitini kiriting" style="width:180px;">
+        <button id="save-key-btn" class="btn btn-primary" type="button">Kirish</button>
+      </div>
+    </div>
   </header>
 
   <main>
-    <section class="topbar" aria-label="Boshqaruvchi kirishi">
-      <div class="key-field">
-        <label for="admin-key">Boshqaruvchi kaliti</label>
-        <input id="admin-key" type="password" autocomplete="off" placeholder="ADMIN_API_KEY qiymatini kiriting">
+    <div id="notice-box" class="notice"></div>
+
+    <!-- KPI ko'rsatkichlar paneli -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">Bugungi jami buyurtmalar</div>
+        <div id="stat-total" class="stat-value">0 ta</div>
+        <span class="stat-badge" style="background:#eff6ff;color:#2563eb;">AI tomonidan yozildi</span>
       </div>
-      <button id="load-orders" type="button">Buyurtmalarni ko‘rsatish</button>
+      <div class="stat-card">
+        <div class="stat-title">Yangi (ishlanmagan) buyurtmalar</div>
+        <div id="stat-pending" class="stat-value" style="color:var(--warning);">0 ta</div>
+        <span class="stat-badge" style="background:#fef3c7;color:#b45309;">Zudlik bilan bog‘lanish kerak</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Muvaffaqiyatli yakunlangan</div>
+        <div id="stat-completed" class="stat-value" style="color:var(--success);">0 ta</div>
+        <span class="stat-badge" style="background:#dcfce7;color:#15803d;">Yetkazildi</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Umumiy savdo summasi</div>
+        <div id="stat-revenue" class="stat-value">0 so‘m</div>
+        <span class="stat-badge" style="background:#f1f5f9;color:#475569;">Barcha qabul qilingan</span>
+      </div>
     </section>
-    <p id="notice" class="notice" role="status" aria-live="polite"></p>
 
-    <div class="grid">
+    <!-- Asosiy ish stoli -->
+    <div class="dashboard-grid">
+      
+      <!-- Chap taraf: Mahsulotlar boshqaruvi -->
       <section class="card">
-        <h2>Mahsulot qo‘shish</h2>
-        <form id="product-form" class="form-grid">
-          <div>
-            <label for="product-name">Mahsulot nomi</label>
-            <input id="product-name" name="name" required maxlength="160">
-          </div>
-          <div>
-            <label for="product-price">Narxi (so‘m)</label>
-            <input id="product-price" name="price" type="number" min="0" step="1" required>
-          </div>
-          <div>
-            <label for="product-stock">Ombordagi qoldiq</label>
-            <input id="product-stock" name="stock" type="number" min="0" step="1" value="0" required>
-          </div>
-          <div>
-            <label for="product-description">Tavsif</label>
-            <textarea id="product-description" name="description" required maxlength="2000"></textarea>
-          </div>
-          <button type="submit">Mahsulotni saqlash</button>
-        </form>
-      </section>
-
-      <section class="card">
-        <div class="actions" style="justify-content:space-between;margin-bottom:18px">
-          <h2 style="margin:0">Buyurtmalar</h2>
-          <button id="refresh-orders" class="secondary" type="button">Yangilash</button>
+        <div class="card-header">
+          <h2>Mahsulot qo‘shish</h2>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Mijoz</th><th>Mahsulot</th><th>Holati</th><th>Buyurtma sanasi</th></tr>
-            </thead>
-            <tbody id="orders-body">
-              <tr><td class="empty" colspan="4">Ko‘rish uchun admin kalitini kiriting va buyurtmalarni yuklang.</td></tr>
-            </tbody>
-          </table>
+        <div class="card-body">
+          <form id="product-form">
+            <div class="form-group">
+              <label for="p-name">Mahsulot nomi</label>
+              <input id="p-name" class="input-field" name="name" required placeholder="Masalan: Simsiz quloqchin X-200">
+            </div>
+            <div class="form-group">
+              <label for="p-price">Narxi (so‘m)</label>
+              <input id="p-price" class="input-field" name="price" type="number" min="0" required placeholder="250000">
+            </div>
+            <div class="form-group">
+              <label for="p-stock">Ombordagi qoldiq</label>
+              <input id="p-stock" class="input-field" name="stock" type="number" min="0" value="10" required>
+            </div>
+            <div class="form-group">
+              <label for="p-desc">Tavsif (AI operator mijozga aytishi uchun)</label>
+              <textarea id="p-desc" class="input-field" name="description" rows="3" required placeholder="Xususiyatlari, afzalliklari..."></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit" style="width:100%;">+ Mahsulotni saqlash</button>
+          </form>
+
+          <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
+
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;">Ombordagi mahsulotlar</h3>
+          <div id="products-mini-list" style="display:flex;flex-direction:column;gap:10px;">
+            <p style="font-size:13px;color:var(--text-muted);">Yuklanmoqda...</p>
+          </div>
         </div>
       </section>
+
+      <!-- O'ng taraf: Buyurtmalar jadvali (CRM) -->
+      <section class="card">
+        <div class="card-header">
+          <h2>Kelib tushgan buyurtmalar (CRM)</h2>
+          <div style="display:flex;gap:8px;">
+            <button id="export-csv-btn" class="btn btn-secondary" type="button">📥 CSV / Excel yuklab olish</button>
+            <button id="refresh-btn" class="btn btn-secondary" type="button">🔄 Yangilash</button>
+          </div>
+        </div>
+        <div class="card-body">
+          
+          <div class="orders-toolbar">
+            <input id="search-orders" class="input-field search-box" type="search" placeholder="Ism yoki telefon bo‘yicha qidirish...">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:13px;color:var(--text-muted);">Holat:</span>
+              <select id="filter-status" class="input-field">
+                <option value="ALL">Barchasi</option>
+                <option value="Yangi">Faqat Yangi</option>
+                <option value="Yetkazilmoqda">Yetkazilmoqda</option>
+                <option value="Yakunlandi">Yakunlandi</option>
+                <option value="Bekor qilindi">Bekor qilingan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mijoz</th>
+                  <th>Mahsulot va Miqdor</th>
+                  <th>Jami summa</th>
+                  <th>Holati (O‘zgartirish)</th>
+                  <th>Vaqti</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar yuklanmoqda...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
     </div>
-
-    <section class="card" style="margin-top:18px">
-      <div class="actions" style="justify-content:space-between;margin-bottom:18px">
-        <h2 style="margin:0">Mahsulotlar</h2>
-        <button id="refresh-products" class="secondary" type="button">Yangilash</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Mahsulot</th><th>Narxi</th><th>Qoldiq</th></tr></thead>
-          <tbody id="products-body">
-            <tr><td class="empty" colspan="3">Yuklanmoqda…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
   </main>
 
   <script>
-    const adminKey = document.querySelector('#admin-key');
-    const notice = document.querySelector('#notice');
-    const orderBody = document.querySelector('#orders-body');
-    const productBody = document.querySelector('#products-body');
+    const adminKeyInput = document.querySelector('#admin-key');
+    const saveKeyBtn = document.querySelector('#save-key-btn');
+    const ordersTbody = document.querySelector('#orders-tbody');
+    const productsMiniList = document.querySelector('#products-mini-list');
+    const noticeBox = document.querySelector('#notice-box');
+    const searchInput = document.querySelector('#search-orders');
+    const filterStatus = document.querySelector('#filter-status');
+    const soundToggle = document.querySelector('#sound-alert');
+
     const statuses = ['Yangi', 'Yetkazilmoqda', 'Yakunlandi', 'Bekor qilindi'];
     const money = new Intl.NumberFormat('uz-UZ');
 
-    function showNotice(message, type = '') {
-      notice.textContent = message;
-      notice.className = `notice ${type}`;
+    let allOrders = [];
+    let previousOrdersCount = 0;
+
+    // Admin kalitini saqlab turish (ish oson bo'lishi uchun)
+    adminKeyInput.value = sessionStorage.getItem('admin_key') || '';
+
+    function showNotice(msg, type = 'info') {
+      noticeBox.textContent = msg;
+      noticeBox.className = `notice show ${type}`;
+      setTimeout(() => noticeBox.className = 'notice', 4000);
     }
 
-    async function request(url, options = {}) {
-      const response = await fetch(url, {
+    function playBeep() {
+      if (!soundToggle.checked) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    async function apiRequest(url, options = {}) {
+      const key = adminKeyInput.value.trim();
+      const res = await fetch(url, {
         ...options,
         headers: {
           ...(options.headers || {}),
-          ...(adminKey.value ? { 'x-admin-key': adminKey.value } : {})
+          ...(key ? { 'x-admin-key': key } : {})
         }
       });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(body.error || `So‘rov bajarilmadi (${response.status}).`);
-      return body;
-    }
-
-    function setEmptyRow(target, columns, message) {
-      target.replaceChildren();
-      const row = document.createElement('tr');
-      const cell = document.createElement('td');
-      cell.colSpan = columns;
-      cell.className = 'empty';
-      cell.textContent = message;
-      row.append(cell);
-      target.append(row);
-    }
-
-    async function loadHealth() {
-      const indicator = document.querySelector('#health');
-      try {
-        const response = await fetch('/health');
-        const body = await response.json();
-        indicator.textContent = response.ok ? 'Tizim ishlayapti' : 'Ma’lumotlar bazasi ulanmagan';
-        indicator.style.color = response.ok ? '#15803d' : '#b42318';
-        if (!response.ok) showNotice(`Server ishga tushgan, lekin ma’lumotlar bazasi tayyor emas (${body.status}). .env dagi MONGO_URI va MongoDB xizmati ishlayotganini tekshiring.`, 'error');
-      } catch {
-        indicator.textContent = 'Tizimga ulanib bo‘lmadi';
-        indicator.style.color = '#b42318';
-        showNotice('Tizimga ulanib bo‘lmadi. Terminalda npm start buyrug‘i ishlayotganini tekshiring.', 'error');
-      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Xatolik yuz berdi');
+      return data;
     }
 
     async function loadProducts() {
-      setEmptyRow(productBody, 3, 'Mahsulotlar yuklanmoqda…');
       try {
-        const { products } = await request('/api/products');
-        if (!products.length) return setEmptyRow(productBody, 3, 'Hozircha mahsulot yo‘q.');
-        productBody.replaceChildren();
-        for (const product of products) {
-          const row = document.createElement('tr');
-          const name = document.createElement('td');
-          const title = document.createElement('strong');
-          const description = document.createElement('span');
-          title.textContent = product.name;
-          description.className = 'muted';
-          description.textContent = product.description;
-          name.append(title, description);
-          const price = document.createElement('td');
-          price.textContent = `${money.format(product.price)} so‘m`;
-          const stock = document.createElement('td');
-          stock.textContent = `${product.stock} dona`;
-          row.append(name, price, stock);
-          productBody.append(row);
+        const { products } = await apiRequest('/api/products');
+        if (!products || !products.length) {
+          productsMiniList.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">Mahsulotlar yo‘q.</p>';
+          return;
         }
-      } catch (error) {
-        setEmptyRow(productBody, 3, error.message);
+
+        productsMiniList.innerHTML = products.map(p => `
+          <div style="padding:10px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <strong style="font-size:13px;display:block;">${p.name}</strong>
+              <span style="font-size:12px;color:var(--text-muted);">${money.format(p.price)} so‘m · Qoldiq: ${p.stock} dona</span>
+            </div>
+            <button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteProduct('${p._id}', '${p.name}')">O‘chirish</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        productsMiniList.innerHTML = `<p style="font-size:13px;color:var(--danger);">${err.message}</p>`;
       }
+    }
+
+    window.deleteProduct = async (id, name) => {
+      if (!confirm(`"${name}" mahsulotini o‘chirmoqchimisiz?`)) return;
+      try {
+        await apiRequest(`/api/products/${id}`, { method: 'DELETE' });
+        showNotice('Mahsulot o‘chirildi', 'success');
+        loadProducts();
+      } catch (e) {
+        showNotice(e.message, 'error');
+      }
+    };
+
+    function renderOrders() {
+      const query = searchInput.value.toLowerCase().trim();
+      const status = filterStatus.value;
+
+      const filtered = allOrders.filter(o => {
+        const matchQuery = !query || 
+          o.customer_name.toLowerCase().includes(query) || 
+          o.customer_phone.toLowerCase().includes(query) ||
+          o.product_name.toLowerCase().includes(query);
+        const matchStatus = status === 'ALL' || o.status === status;
+        return matchQuery && matchStatus;
+      });
+
+      // Statistika hisoblash
+      document.querySelector('#stat-total').textContent = `${allOrders.length} ta`;
+      document.querySelector('#stat-pending').textContent = `${allOrders.filter(o => o.status === 'Yangi').length} ta`;
+      document.querySelector('#stat-completed').textContent = `${allOrders.filter(o => o.status === 'Yakunlandi').length} ta`;
+      const totalRev = allOrders.reduce((sum, o) => sum + ((o.unit_price || 0) * (o.quantity || 1)), 0);
+      document.querySelector('#stat-revenue').textContent = `${money.format(totalRev)} so‘m`;
+
+      if (!filtered.length) {
+        ordersTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar topilmadi.</td></tr>`;
+        return;
+      }
+
+      ordersTbody.innerHTML = filtered.map(o => {
+        const total = (o.unit_price || 0) * (o.quantity || 1);
+        const cleanPhone = o.customer_phone.replace(/\D/g, '');
+        const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+
+        return `
+          <tr>
+            <td class="customer-cell">
+              <strong>${o.customer_name}</strong>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:2px;">
+                <a href="tel:${cleanPhone}">📞 ${o.customer_phone}</a>
+                <a href="https://t.me/+${cleanPhone.startsWith('998') ? cleanPhone : '998' + cleanPhone}" target="_blank" rel="noopener" style="color:#0284c7;font-size:12px;">💬 Telegram</a>
+              </div>
+              <span class="address-text">📍 ${o.delivery_address}</span>
+            </td>
+            <td>
+              <strong>${o.product_name}</strong>
+              <div style="font-size:12px;color:var(--text-muted);">${o.quantity} dona × ${money.format(o.unit_price)} so‘m</div>
+            </td>
+            <td>
+              <strong style="color:var(--primary);font-size:15px;">${money.format(total)} so‘m</strong>
+            </td>
+            <td>
+              <select class="status-select status-${o.status.replace(/\s+/g, '-')}" onchange="updateOrderStatus('${o._id}', this.value)">
+                ${statuses.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>
+            </td>
+            <td style="font-size:12px;color:var(--text-muted);white-space:nowrap;">
+              ${dateStr}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function loadOrders() {
-      if (!adminKey.value.trim()) {
-        showNotice('Buyurtmalarni ko‘rish uchun boshqaruvchi kalitini kiriting.', 'error');
-        adminKey.focus();
+      if (!adminKeyInput.value.trim()) {
+        ordersTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Admin kalitini kiriting va "Kirish" tugmasini bosing.</td></tr>`;
         return;
       }
-      setEmptyRow(orderBody, 4, 'Buyurtmalar yuklanmoqda…');
+
       try {
-        const { orders } = await request('/api/orders');
-        if (!orders.length) return setEmptyRow(orderBody, 4, 'Hozircha buyurtmalar yo‘q.');
-        orderBody.replaceChildren();
-        for (const order of orders) {
-          const row = document.createElement('tr');
-          const customer = document.createElement('td');
-          const customerName = document.createElement('strong');
-          const phone = document.createElement('span');
-          const address = document.createElement('span');
-          customerName.textContent = order.customer_name;
-          phone.className = 'muted';
-          phone.textContent = order.customer_phone;
-          address.className = 'muted';
-          address.textContent = order.delivery_address;
-          customer.append(customerName, phone, address);
-
-          const item = document.createElement('td');
-          const itemName = document.createElement('strong');
-          const itemDetails = document.createElement('span');
-          itemName.textContent = order.product_name;
-          itemDetails.className = 'muted';
-          itemDetails.textContent = `${order.quantity} dona · ${money.format(order.unit_price * order.quantity)} so‘m`;
-          item.append(itemName, itemDetails);
-
-          const statusCell = document.createElement('td');
-          const select = document.createElement('select');
-          select.setAttribute('aria-label', `${order.customer_name} buyurtmasi holati`);
-          for (const status of statuses) {
-            const option = document.createElement('option');
-            option.value = status;
-            option.textContent = status;
-            option.selected = status === order.status;
-            select.append(option);
+        const { orders } = await apiRequest('/api/orders?limit=100');
+        if (orders) {
+          if (previousOrdersCount > 0 && orders.length > previousOrdersCount) {
+            playBeep();
+            showNotice('Yangi buyurtma qabul qilindi!', 'success');
           }
-          select.addEventListener('change', async () => {
-            select.disabled = true;
-            try {
-              await request(`/api/orders/${encodeURIComponent(order._id)}/status`, {
-                method: 'PATCH',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ status: select.value })
-              });
-              showNotice('Buyurtma holati yangilandi.', 'success');
-            } catch (error) {
-              showNotice(error.message, 'error');
-              await loadOrders();
-            } finally {
-              select.disabled = false;
-            }
-          });
-          statusCell.append(select);
-
-          const date = document.createElement('td');
-          const parsedDate = new Date(order.created_at);
-          date.textContent = Number.isNaN(parsedDate.getTime()) ? '—' : parsedDate.toLocaleString('uz-UZ');
-          row.append(customer, item, statusCell, date);
-          orderBody.append(row);
+          previousOrdersCount = orders.length;
+          allOrders = orders;
+          renderOrders();
         }
-      } catch (error) {
-        setEmptyRow(orderBody, 4, error.message);
-        showNotice(error.message, 'error');
+      } catch (err) {
+        showNotice(err.message, 'error');
       }
     }
 
-    document.querySelector('#product-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!adminKey.value.trim()) {
-        showNotice('Mahsulot qo‘shish uchun boshqaruvchi kalitini kiriting.', 'error');
-        adminKey.focus();
+    window.updateOrderStatus = async (id, newStatus) => {
+      try {
+        await apiRequest(`/api/orders/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        showNotice('Holat yangilandi', 'success');
+        const item = allOrders.find(o => o._id === id);
+        if (item) item.status = newStatus;
+        renderOrders();
+      } catch (err) {
+        showNotice(err.message, 'error');
+        loadOrders();
+      }
+    };
+
+    document.querySelector('#export-csv-btn').onclick = () => {
+      if (!allOrders.length) {
+        showNotice('Eksport qilish uchun buyurtmalar mavjud emas.', 'error');
         return;
       }
-      const form = event.currentTarget;
-      const submit = form.querySelector('button[type="submit"]');
+
+      const headers = ['Mijoz ismi', 'Telefon raqami', 'Yetkazish manzili', 'Mahsulot', 'Miqdori', 'Dona narxi (som)', 'Jami summa (som)', 'Holati', 'Vaqti'];
+      const rows = allOrders.map(o => {
+        const total = (o.unit_price || 0) * (o.quantity || 1);
+        const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+        return [
+          `"${(o.customer_name || '').replace(/"/g, '""')}"`,
+          `"${(o.customer_phone || '').replace(/"/g, '""')}"`,
+          `"${(o.delivery_address || '').replace(/"/g, '""')}"`,
+          `"${(o.product_name || '').replace(/"/g, '""')}"`,
+          o.quantity || 1,
+          o.unit_price || 0,
+          total,
+          `"${o.status}"`,
+          `"${dateStr}"`
+        ].join(',');
+      });
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `buyurtmalar_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showNotice('Buyurtmalar CSV fayli yuklab olindi.', 'success');
+    };
+
+    saveKeyBtn.onclick = () => {
+      sessionStorage.setItem('admin_key', adminKeyInput.value.trim());
+      showNotice('Admin kaliti saqlandi', 'success');
+      loadOrders();
+    };
+
+    document.querySelector('#refresh-btn').onclick = loadOrders;
+    searchInput.oninput = renderOrders;
+    filterStatus.onchange = renderOrders;
+
+    document.querySelector('#product-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
       const data = new FormData(form);
-      submit.disabled = true;
       try {
-        await request('/api/products', {
+        await apiRequest('/api/products', {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: data.get('name'),
             price: Number(data.get('price')),
@@ -347,20 +652,23 @@
           })
         });
         form.reset();
-        showNotice('Mahsulot saqlandi.', 'success');
-        await loadProducts();
-      } catch (error) {
-        showNotice(error.message, 'error');
-      } finally {
-        submit.disabled = false;
+        showNotice('Mahsulot muvaffaqiyatli qo‘shildi', 'success');
+        loadProducts();
+      } catch (err) {
+        showNotice(err.message, 'error');
       }
-    });
+    };
 
-    document.querySelector('#load-orders').addEventListener('click', loadOrders);
-    document.querySelector('#refresh-orders').addEventListener('click', loadOrders);
-    document.querySelector('#refresh-products').addEventListener('click', loadProducts);
-    loadHealth();
+    // Boshlang'ich yuklash
     loadProducts();
+    if (adminKeyInput.value.trim()) loadOrders();
+
+    // Jonli yangilanish: Har 10 soniyada buyurtmalarni avtomatik yangilash (Auto-poll)
+    setInterval(() => {
+      if (adminKeyInput.value.trim()) {
+        loadOrders();
+      }
+    }, 10000);
   </script>
 </body>
 </html>

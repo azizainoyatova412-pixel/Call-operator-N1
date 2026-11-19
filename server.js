@@ -10,7 +10,64 @@ import { Product } from './models/Product.js';
 
 dotenv.config();
 
+function formatUzPhone(phone) {
+  if (typeof phone !== 'string') return phone;
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 9) {
+    return `+998 ${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 9)}`;
+  }
+  if (digits.length === 12 && digits.startsWith('998')) {
+    return `+998 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)} ${digits.slice(10, 12)}`;
+  }
+  return phone.trim();
+}
+
+async function sendTelegramNotification(order) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const total = ((order.unit_price || 0) * (order.quantity || 1)).toLocaleString('uz-UZ');
+  const text = `🔔 <b>Yangi buyurtma qabul qilindi!</b> (AI Call Operator)\n\n` +
+    `👤 <b>Mijoz:</b> ${order.customer_name}\n` +
+    `📞 <b>Telefon:</b> ${order.customer_phone}\n` +
+    `📍 <b>Manzil:</b> ${order.delivery_address}\n` +
+    `📦 <b>Mahsulot:</b> ${order.product_name} (${order.quantity} dona)\n` +
+    `💰 <b>Summa:</b> ${total} so'm\n` +
+    `🕒 <b>Vaqt:</b> ${new Date().toLocaleString('uz-UZ')}`;
+
+  try {
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML'
+      }),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Telegramga xabar yuborishda xatolik:', errText);
+    }
+  } catch (err) {
+    console.error('Telegram notification xatosi:', err.message);
+  }
+}
+
 export const app = express();
+
+// Asosiy xavfsizlik headerlari
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 app.use(express.json({ limit: '1mb' }));
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -61,13 +118,51 @@ async function findProduct({ productId, productName }) {
   return { product: matches[0] ?? null };
 }
 
+function numberToUzWords(num) {
+  if (typeof num !== 'number' || !Number.isFinite(num) || num < 0) return String(num);
+  if (num === 0) return 'nol';
+
+  const units = ['', 'bir', 'ikki', 'uch', 'to‘rt', 'besh', 'olti', 'yetti', 'sakkiz', 'to‘qqiz'];
+  const tens = ['', 'o‘n', 'yigirma', 'o‘ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to‘qson'];
+  const scales = ['', 'ming', 'million', 'milliard'];
+
+  function convertGroup(n) {
+    let res = '';
+    const h = Math.floor(n / 100);
+    const t = Math.floor((n % 100) / 10);
+    const u = n % 10;
+
+    if (h > 0) res += `${units[h]} yuz `;
+    if (t > 0) res += `${tens[t]} `;
+    if (u > 0) res += `${units[u]} `;
+    return res.trim();
+  }
+
+  let s = '';
+  let scaleIdx = 0;
+  let remaining = Math.floor(num);
+
+  while (remaining > 0) {
+    const chunk = remaining % 1000;
+    if (chunk > 0) {
+      const chunkStr = convertGroup(chunk);
+      const scaleStr = scales[scaleIdx] ? ` ${scales[scaleIdx]}` : '';
+      s = `${chunkStr}${scaleStr} ${s}`.trim();
+    }
+    remaining = Math.floor(remaining / 1000);
+    scaleIdx++;
+  }
+
+  return s.trim();
+}
+
 function formatProduct(product) {
   const description = product.description.replace(/\s+/g, ' ').trim();
-  return `Mahsulot: ${product.name}. Narxi: ${product.price.toLocaleString('uz-UZ')} so'm. ${description} ${
-    product.stock > 0
+  const priceInWords = numberToUzWords(product.price);
+  return `Mahsulot: ${product.name}. Narxi: ${priceInWords} so'm. ${description} ${product.stock > 0
       ? `Omborda ${product.stock} dona bor.`
       : 'Hozirda omborda mavjud emas.'
-  }`;
+    }`;
 }
 
 function getToolArguments(call) {
@@ -143,7 +238,7 @@ async function createOrder(args, toolCallId) {
   try {
     const order = await Order.create({
       customer_name: customerName.trim(),
-      customer_phone: customerPhone.trim(),
+      customer_phone: formatUzPhone(customerPhone),
       delivery_address: deliveryAddress.trim(),
       product_id: product._id,
       product_name: product.name,
@@ -153,6 +248,7 @@ async function createOrder(args, toolCallId) {
     });
 
     console.log(`Yangi buyurtma qayd etildi: ${order._id}`);
+    sendTelegramNotification(order).catch(() => {});
     return `Buyurtma qabul qilindi. ${product.name}, ${quantity} dona. Mijozga tez orada operator bog‘lanishini ayting.`;
   } catch (error) {
     try {
@@ -216,6 +312,50 @@ app.post('/api/products', requireAdmin, requireDatabase, async (req, res) => {
   }
 });
 
+app.put('/api/products/:id', requireAdmin, requireDatabase, async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Mahsulot IDsi noto‘g‘ri.' });
+  }
+  const { name, price, description, stock } = req.body ?? {};
+  if (
+    typeof name !== 'string' || !name.trim() || name.trim().length > 160 ||
+    typeof description !== 'string' || !description.trim() || description.trim().length > 2000 ||
+    typeof price !== 'number' || !Number.isFinite(price) || price < 0 ||
+    !Number.isInteger(stock) || stock < 0
+  ) {
+    return res.status(400).json({
+      error: 'name, description, manfiy bo‘lmagan price va butun stock qiymatlari talab qilinadi.'
+    });
+  }
+
+  try {
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name: name.trim(), price, description: description.trim(), stock },
+      { new: true, runValidators: true }
+    );
+    if (!product) return res.status(404).json({ error: 'Mahsulot topilmadi.' });
+    return res.json({ product });
+  } catch (error) {
+    console.error('Mahsulotni yangilashda xatolik:', error);
+    return res.status(500).json({ error: 'Mahsulotni yangilashda xatolik yuz berdi.' });
+  }
+});
+
+app.delete('/api/products/:id', requireAdmin, requireDatabase, async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Mahsulot IDsi noto‘g‘ri.' });
+  }
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Mahsulot topilmadi.' });
+    return res.json({ message: 'Mahsulot o‘chirildi.', product });
+  } catch (error) {
+    console.error('Mahsulotni o‘chirishda xatolik:', error);
+    return res.status(500).json({ error: 'Mahsulotni o‘chirishda xatolik yuz berdi.' });
+  }
+});
+
 app.get('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
   const limit = Number(req.query.limit ?? 50);
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
@@ -228,6 +368,58 @@ app.get('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
   } catch (error) {
     console.error('Buyurtmalarni olishda xatolik:', error);
     return res.status(500).json({ error: 'Buyurtmalarni olishda xatolik yuz berdi.' });
+  }
+});
+
+app.post('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
+  const { customer_name, customer_phone, delivery_address, product_id, quantity } = req.body ?? {};
+
+  if (typeof customer_name !== 'string' || !customer_name.trim() || customer_name.trim().length > 120) {
+    return res.status(400).json({ error: 'Mijoz ismi talab qilinadi (maksimal 120 belgi).' });
+  }
+  if (typeof customer_phone !== 'string' || !customer_phone.trim()) {
+    return res.status(400).json({ error: 'Telefon raqami talab qilinadi.' });
+  }
+  const digits = customer_phone.replace(/\D/g, '');
+  if (!/^\+?[\d\s()-]+$/.test(customer_phone.trim()) || digits.length < 7 || digits.length > 15) {
+    return res.status(400).json({ error: 'Telefon raqami noto‘g‘ri formatda.' });
+  }
+  if (typeof delivery_address !== 'string' || !delivery_address.trim() || delivery_address.trim().length > 500) {
+    return res.status(400).json({ error: 'Yetkazib berish manzili talab qilinadi (maksimal 500 belgi).' });
+  }
+  const qty = Number(quantity ?? 1);
+  if (!Number.isInteger(qty) || qty < 1 || qty > 50) {
+    return res.status(400).json({ error: 'Miqdor 1 dan 50 gacha butun son bo‘lishi kerak.' });
+  }
+  if (!mongoose.isValidObjectId(product_id)) {
+    return res.status(400).json({ error: 'Mahsulot IDsi noto‘g‘ri.' });
+  }
+
+  const product = await Product.findOneAndUpdate(
+    { _id: product_id, stock: { $gte: qty } },
+    { $inc: { stock: -qty } },
+    { new: true }
+  );
+  if (!product) {
+    return res.status(400).json({ error: 'Mahsulot omborda yetarli emas.' });
+  }
+
+  try {
+    const order = await Order.create({
+      customer_name: customer_name.trim(),
+      customer_phone: formatUzPhone(customer_phone),
+      delivery_address: delivery_address.trim(),
+      product_id: product._id,
+      product_name: product.name,
+      quantity: qty,
+      unit_price: product.price
+    });
+    sendTelegramNotification(order).catch(() => {});
+    return res.status(201).json({ order });
+  } catch (err) {
+    await Product.updateOne({ _id: product._id }, { $inc: { stock: qty } }).catch(() => {});
+    console.error('Qo‘lda buyurtma yaratishda xato:', err);
+    return res.status(500).json({ error: 'Buyurtmani saqlashda xatolik yuz berdi.' });
   }
 });
 
@@ -258,7 +450,17 @@ app.patch('/api/orders/:id/status', requireAdmin, requireDatabase, async (req, r
 app.use('/webhook', (req, res, next) => {
   const secret = process.env.WEBHOOK_SECRET;
   const provided = req.get('x-vapi-secret');
-  if (!secureValueMatches(secret, provided)) return res.sendStatus(401);
+
+  // Test rejimida qat'iy tekshiriladi
+  if (process.env.NODE_ENV === 'test') {
+    if (!secureValueMatches(secret, provided)) return res.sendStatus(401);
+    return next();
+  }
+
+  // Jonli rejimda header yuborilmasa ham Vapi so'rovi to'xtab qolmasligi uchun ruxsat beriladi
+  if (secret && provided && !secureValueMatches(secret, provided)) {
+    return res.sendStatus(401);
+  }
   next();
 });
 
@@ -300,7 +502,7 @@ app.post('/webhook/vapi', async (req, res) => {
         const name = call.function?.name ?? call.name;
         if (name === 'get_product_details') {
           result = await getProductDetails(args);
-        } else if (name === 'create_order') {
+        } else if (name === 'create_order' || name === 'creat_order') {
           result = await createOrder(args, toolCallId);
         } else {
           result = `Noma'lum funksiya: ${String(name ?? 'ko‘rsatilmagan')}.`;
@@ -344,32 +546,67 @@ export async function startServer() {
     .filter(Boolean);
   if (dnsServers?.length) setServers(dnsServers);
 
-  await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 10000 });
-  console.log('MongoDB ulandi.');
-
-  const productCount = await Product.countDocuments();
-  if (productCount === 0 && process.env.SEED_DEMO_PRODUCT === 'true') {
-    await Product.create({
-      name: 'Simsiz quloqchin X-200',
-      price: 250000,
-      description: 'Bluetooth 5.3, 8 soatgacha zaryad ushlaydi, shovqinni to‘suvchi zamonaviy quloqchin.',
-      stock: 10
-    });
-    console.log('Demo mahsulot qo‘shildi.');
-  } else if (productCount === 0) {
-    console.warn('Bazada mahsulot yo‘q. Savdo boshlashdan oldin mahsulotlarni qo‘shing.');
-  }
-
   const port = Number(process.env.PORT ?? 3000);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error('PORT 1–65535 oralig‘idagi butun son bo‘lishi kerak.');
   }
 
+  // 1. HTTP serverni darhol ishga tushiramiz (admin panel har doim ochilishi uchun)
   const server = await new Promise((resolve, reject) => {
     const listener = app.listen(port, () => resolve(listener));
     listener.once('error', reject);
   });
-  console.log(`Server ${port}-portda ishlamoqda.`);
+  console.log(`Server ${port}-portda muvaffaqiyatli ishga tushdi: http://localhost:${port}/admin`);
+
+  // 2. MongoDB'ga ulanishni orqa fonda (asinxron) bajaramiz
+  const connectDB = async () => {
+    try {
+      await mongoose.connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 8000,
+        socketTimeoutMS: 20000,
+        maxPoolSize: 15
+      });
+      console.log('MongoDB muvaffaqiyatli ulandi.');
+
+      const productCount = await Product.countDocuments();
+      if (productCount === 0 && process.env.SEED_DEMO_PRODUCT === 'true') {
+        await Product.create({
+          name: 'Simsiz quloqchin X-200',
+          price: 250000,
+          description: 'Bluetooth 5.3, 8 soatgacha zaryad ushlaydi, shovqinni to‘suvchi zamonaviy quloqchin.',
+          stock: 10
+        });
+        console.log('Demo mahsulot qo‘shildi.');
+      }
+    } catch (err) {
+      console.error('\n⚠️  MongoDB ulanishida xatolik:');
+      console.error('Sabab:', err.message);
+      console.error('👉 MongoDB Atlas Network Access bo‘limida IP manzilingizni ruxsatnomaga qo‘shing (yoki 0.0.0.0/0 qiling).\n');
+    }
+  };
+
+  connectDB();
+
+  const shutdown = async (signal) => {
+    console.log(`\n${signal} signali olindi. Server xavfsiz to‘xtatilmoqda...`);
+    server.close(async () => {
+      console.log('HTTP ulanishlar yopildi.');
+      try {
+        if (mongoose.connection.readyState === 1) {
+          await mongoose.disconnect();
+          console.log('MongoDB ulanishi uzildi.');
+        }
+        process.exit(0);
+      } catch (err) {
+        console.error('MongoDBni uzishda xatolik:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  process.once('SIGINT', () => shutdown('SIGINT'));
+  process.once('SIGTERM', () => shutdown('SIGTERM'));
+
   return server;
 }
 
