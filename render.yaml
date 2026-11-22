@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: call-operator
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb+srv://azizainoyatova412_db_user:S0OwKWQc08u1Vi9x@cluster0.2nme6ro.mongodb.net/?retryWrites=true&w=majority
+      - key: MONGODB_DNS_SERVERS
+        value: 8.8.8.8,1.1.1.1
+      - key: WEBHOOK_SECRET
+        value: THATMYFIRSTmoneymaker
+      - key: ADMIN_API_KEY
+        value: YOUknow_youknowwhere
+      - key: ALLOW_ANY_WEBHOOK
+        value: "true"
+      - key: PORT
+        value: "3000"
