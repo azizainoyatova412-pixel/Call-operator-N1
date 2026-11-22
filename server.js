@@ -654,12 +654,11 @@ app.post('/webhook/vapi', async (req, res) => {
 });
 
 export async function startServer() {
-  const { MONGODB_URI, WEBHOOK_SECRET, ADMIN_API_KEY } = process.env;
-  if (!MONGODB_URI) throw new Error('MONGODB_URI muhit o‘zgaruvchisi sozlanmagan.');
-  if (!WEBHOOK_SECRET) throw new Error('WEBHOOK_SECRET muhit o‘zgaruvchisi sozlanmagan.');
-  if (!ADMIN_API_KEY) throw new Error('ADMIN_API_KEY muhit o‘zgaruvchisi sozlanmagan.');
+  const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://azizainoyatova412_db_user:S0OwKWQc08u1Vi9x@cluster0.2nme6ro.mongodb.net/?retryWrites=true&w=majority';
+  const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'THATMYFIRSTmoneymaker';
+  const ADMIN_API_KEY = process.env.ADMIN_API_KEY || 'YOUknow_youknowwhere';
 
-  const dnsServers = process.env.MONGODB_DNS_SERVERS
+  const dnsServers = (process.env.MONGODB_DNS_SERVERS || '8.8.8.8,1.1.1.1')
     ?.split(',')
     .map((server) => server.trim())
     .filter(Boolean);
