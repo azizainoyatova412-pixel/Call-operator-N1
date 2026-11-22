@@ -57,6 +57,50 @@ async function sendTelegramNotification(order) {
   }
 }
 
+async function sendTelegramCallReport(report) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const durationSec = Math.round(report.durationSeconds || report.duration || 0);
+  const minutes = Math.floor(durationSec / 60);
+  const seconds = durationSec % 60;
+  const durationText = minutes > 0 ? `${minutes} daqiqa ${seconds} soniya` : `${seconds} soniya`;
+
+  const summary = report.summary || report.analysis?.summary || 'Xulosa shakllanmadi';
+  const recordingUrl = report.recordingUrl || report.stereoRecordingUrl;
+  const customerNumber = report.customer?.number || report.call?.customer?.number || 'Noma\'lum';
+  const endedReason = report.endedReason || 'Yakunlandi';
+
+  let text = `📞 <b>Qo‘ng‘iroq yakunlandi</b> (AI Call Operator)\n\n` +
+    `👤 <b>Mijoz raqami:</b> ${customerNumber}\n` +
+    `⏱ <b>Davomiyligi:</b> ${durationText}\n` +
+    `📌 <b>Tugash sababi:</b> ${endedReason}\n\n` +
+    `📝 <b>Suhbat xulosasi:</b>\n${summary}\n\n`;
+
+  if (recordingUrl) {
+    text += `🎙 <a href="${recordingUrl}">Qo‘ng‘iroq audio yozuvini tinglash</a>\n\n`;
+  }
+  text += `🕒 <b>Vaqt:</b> ${new Date().toLocaleString('uz-UZ')}`;
+
+  try {
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: false
+      }),
+      signal: AbortSignal.timeout(5000)
+    });
+  } catch (err) {
+    console.error('Telegram call report xatosi:', err.message);
+  }
+}
+
 export const app = express();
 
 // Asosiy xavfsizlik headerlari
@@ -266,6 +310,37 @@ async function createOrder(args, toolCallId) {
   }
 }
 
+async function listProducts() {
+  const products = await Product.find({ stock: { $gt: 0 } }).sort({ name: 1 }).limit(10).lean();
+  if (!products || products.length === 0) {
+    return 'Hozirda omborda tayyor mahsulotlar qolmagan. Tez orada yangi partiya kelishi kutilmoqda.';
+  }
+  const items = products.map((p) => `${p.name} - narxi ${numberToUzWords(p.price)} so'm`).join('; ');
+  return `Hozirda sotuvda quyidagi mahsulotlarimiz mavjud: ${items}. Qaysi biri sizni qiziqtiryapti?`;
+}
+
+async function checkOrderStatus(args) {
+  const customerPhone = args.customerPhone ?? args.customer_phone;
+  if (typeof customerPhone !== 'string' || !customerPhone.trim()) {
+    return 'Buyurtma holatini bilish uchun telefon raqamingizni ayting.';
+  }
+  const digits = customerPhone.replace(/\D/g, '');
+  if (digits.length < 7) {
+    return 'Iltimos, telefon raqamingizni to‘liqroq ayting.';
+  }
+
+  const lastSeven = digits.slice(-7);
+  const regex = new RegExp(escapeRegex(lastSeven) + '$');
+
+  const order = await Order.findOne({ customer_phone: { $regex: regex } }).sort({ created_at: -1 });
+  if (!order) {
+    return 'Ushbu telefon raqami bo‘yicha buyurtma topilmadi. Raqam to‘g‘ri aytilganini tekshiring yoki yangi buyurtma berishingiz mumkin.';
+  }
+
+  const date = new Date(order.created_at).toLocaleDateString('uz-UZ');
+  return `Buyurtmangiz topildi: ${order.product_name}, ${order.quantity} dona. Holati: ${order.status}. Qayd etilgan sana: ${date}. Savollaringiz bo‘lsa, bemalol so‘rashingiz mumkin.`;
+}
+
 app.get('/health', (_req, res) => {
   const ready = mongoose.connection.readyState === 1;
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'not_ready' });
@@ -466,6 +541,15 @@ app.use('/webhook', (req, res, next) => {
 
 app.post('/webhook/vapi', async (req, res) => {
   const { message } = req.body ?? {};
+
+  // Vapi qo'ng'iroq yakunlanganda hisobot (summary, audio recording, duration) yuboradi
+  if (message?.type === 'end-of-call-report') {
+    sendTelegramCallReport(message).catch((err) => {
+      console.error('Call report yuborishda xatolik:', err);
+    });
+    return res.sendStatus(200);
+  }
+
   if (message?.type !== 'tool-calls') return res.sendStatus(200);
 
   const calls = message.toolCallList ?? message.toolCalls;
@@ -504,6 +588,10 @@ app.post('/webhook/vapi', async (req, res) => {
           result = await getProductDetails(args);
         } else if (name === 'create_order' || name === 'creat_order') {
           result = await createOrder(args, toolCallId);
+        } else if (name === 'list_products' || name === 'get_products' || name === 'get_all_products') {
+          result = await listProducts();
+        } else if (name === 'check_order_status' || name === 'get_order_status') {
+          result = await checkOrderStatus(args);
         } else {
           result = `Noma'lum funksiya: ${String(name ?? 'ko‘rsatilmagan')}.`;
         }
