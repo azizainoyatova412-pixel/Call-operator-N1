@@ -390,10 +390,11 @@
                   <th>Jami summa</th>
                   <th>Holati (O‘zgartirish)</th>
                   <th>Vaqti</th>
+                  <th>🎙 Audio isbot</th>
                 </tr>
               </thead>
               <tbody id="orders-tbody">
-                <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar yuklanmoqda...</td></tr>
+                <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar yuklanmoqda...</td></tr>
               </tbody>
             </table>
           </div>
@@ -513,7 +514,7 @@
       document.querySelector('#stat-revenue').textContent = `${money.format(totalRev)} so‘m`;
 
       if (!filtered.length) {
-        ordersTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar topilmadi.</td></tr>`;
+        ordersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar topilmadi.</td></tr>`;
         return;
       }
 
@@ -521,6 +522,18 @@
         const total = (o.unit_price || 0) * (o.quantity || 1);
         const cleanPhone = o.customer_phone.replace(/\D/g, '');
         const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+
+        const audioCell = o.recording_url 
+          ? `
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <audio controls src="${o.recording_url}" preload="none" style="height:32px;width:180px;"></audio>
+              <div style="display:flex;gap:8px;font-size:11px;">
+                <a href="${o.recording_url}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600;">▶️ To‘liq ochish</a>
+                <a href="${o.recording_url}" download="isbot_${cleanPhone}.wav" style="color:#059669;text-decoration:none;font-weight:600;">⬇️ Yuklab olish</a>
+              </div>
+            </div>
+          ` 
+          : `<span style="font-size:12px;color:var(--text-muted);font-style:italic;">Yozuv yuklanmoqda...</span>`;
 
         return `
           <tr>
@@ -546,6 +559,9 @@
             </td>
             <td style="font-size:12px;color:var(--text-muted);white-space:nowrap;">
               ${dateStr}
+            </td>
+            <td>
+              ${audioCell}
             </td>
           </tr>
         `;

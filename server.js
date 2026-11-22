@@ -204,8 +204,8 @@ function formatProduct(product) {
   const description = product.description.replace(/\s+/g, ' ').trim();
   const priceInWords = numberToUzWords(product.price);
   return `Mahsulot: ${product.name}. Narxi: ${priceInWords} so'm. ${description} ${product.stock > 0
-      ? `Omborda ${product.stock} dona bor.`
-      : 'Hozirda omborda mavjud emas.'
+    ? `Omborda ${product.stock} dona bor.`
+    : 'Hozirda omborda mavjud emas.'
     }`;
 }
 
@@ -233,7 +233,7 @@ async function getProductDetails(args) {
   return formatProduct(lookup.product);
 }
 
-async function createOrder(args, toolCallId) {
+async function createOrder(args, toolCallId, callId) {
   const existingOrder = await Order.findOne({ tool_call_id: toolCallId });
   if (existingOrder) {
     return `Bu buyurtma avval qayd etilgan. ${existingOrder.product_name}, ${existingOrder.quantity} dona. Mijozga tez orada operator bog‘lanishini ayting.`;
@@ -288,11 +288,12 @@ async function createOrder(args, toolCallId) {
       product_name: product.name,
       quantity,
       unit_price: product.price,
-      tool_call_id: toolCallId
+      tool_call_id: toolCallId,
+      call_id: callId
     });
 
     console.log(`Yangi buyurtma qayd etildi: ${order._id}`);
-    sendTelegramNotification(order).catch(() => {});
+    sendTelegramNotification(order).catch(() => { });
     return `Buyurtma qabul qilindi. ${product.name}, ${quantity} dona. Mijozga tez orada operator bog‘lanishini ayting.`;
   } catch (error) {
     try {
@@ -446,6 +447,7 @@ app.get('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
   }
 });
 
+
 app.post('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
   const { customer_name, customer_phone, delivery_address, product_id, quantity } = req.body ?? {};
 
@@ -489,10 +491,10 @@ app.post('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
       quantity: qty,
       unit_price: product.price
     });
-    sendTelegramNotification(order).catch(() => {});
+    sendTelegramNotification(order).catch(() => { });
     return res.status(201).json({ order });
   } catch (err) {
-    await Product.updateOne({ _id: product._id }, { $inc: { stock: qty } }).catch(() => {});
+    await Product.updateOne({ _id: product._id }, { $inc: { stock: qty } }).catch(() => { });
     console.error('Qo‘lda buyurtma yaratishda xato:', err);
     return res.status(500).json({ error: 'Buyurtmani saqlashda xatolik yuz berdi.' });
   }
@@ -547,11 +549,40 @@ app.post('/webhook/vapi', async (req, res) => {
     sendTelegramCallReport(message).catch((err) => {
       console.error('Call report yuborishda xatolik:', err);
     });
+
+    try {
+      const callId = message.call?.id || message.callId || message.id;
+      const recordingUrl = message.recordingUrl || message.stereoRecordingUrl || message.artifact?.recordingUrl;
+      const summary = message.summary || message.analysis?.summary;
+      const duration = message.durationSeconds || message.duration;
+
+      if (recordingUrl) {
+        // Avval call_id bo'yicha qidiramiz, topilmasa oxirgi 1 soat ichidagi eng so'nggi yangi buyurtmaga bog'laymiz
+        const query = callId ? { call_id: callId } : {};
+        let updated = await Order.findOneAndUpdate(
+          query,
+          { $set: { recording_url: recordingUrl, summary, duration_seconds: duration } },
+          { sort: { created_at: -1 }, new: true }
+        );
+        if (!updated) {
+          await Order.findOneAndUpdate(
+            { recording_url: { $exists: false } },
+            { $set: { recording_url: recordingUrl, summary, duration_seconds: duration } },
+            { sort: { created_at: -1 } }
+          );
+        }
+        console.log(`Qo‘ng‘iroq audiosi buyurtmaga biriktirildi (${callId}): ${recordingUrl}`);
+      }
+    } catch (saveAudioErr) {
+      console.error('Audio havolasini saqlashda xatolik:', saveAudioErr);
+    }
+
     return res.sendStatus(200);
   }
 
   if (message?.type !== 'tool-calls') return res.sendStatus(200);
 
+  const callId = message.call?.id || message.callId;
   const calls = message.toolCallList ?? message.toolCalls;
   if (!Array.isArray(calls) || calls.length === 0) {
     return res.status(400).json({ error: 'Tool chaqiruvlari topilmadi.' });
@@ -587,7 +618,7 @@ app.post('/webhook/vapi', async (req, res) => {
         if (name === 'get_product_details') {
           result = await getProductDetails(args);
         } else if (name === 'create_order' || name === 'creat_order') {
-          result = await createOrder(args, toolCallId);
+          result = await createOrder(args, toolCallId, callId);
         } else if (name === 'list_products' || name === 'get_products' || name === 'get_all_products') {
           result = await listProducts();
         } else if (name === 'check_order_status' || name === 'get_order_status') {
