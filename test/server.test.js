@@ -192,6 +192,71 @@ test('admin endpoints report unavailable database after authentication', async (
   assert.equal(response.status, 503);
 });
 
+test('orders API filters, paginates and returns period statistics', async (context) => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalFind = Order.find;
+  const originalCountDocuments = Order.countDocuments;
+  const originalAggregate = Order.aggregate;
+  const requested = {};
+
+  mongoose.connection.readyState = 1;
+  Order.find = (query) => {
+    requested.query = query;
+    return {
+      sort() { return this; },
+      skip(value) { requested.skip = value; return this; },
+      limit(value) { requested.limit = value; return this; },
+      lean: async () => [{ _id: 'latest-order' }]
+    };
+  };
+  Order.countDocuments = async () => 45;
+  Order.aggregate = async (pipeline) => {
+    requested.statsQuery = pipeline[0].$match;
+    return [{ total: 45, pending: 4, completed: 30, revenue: 1250000 }];
+  };
+  context.after(() => {
+    mongoose.connection.readyState = originalReadyState;
+    Order.find = originalFind;
+    Order.countDocuments = originalCountDocuments;
+    Order.aggregate = originalAggregate;
+  });
+
+  const response = await fetch(
+    `${baseUrl}/api/orders?page=3&limit=10&search=Ali.*&status=Yangi&from=2026-11-22T00%3A00%3A00.000Z&to=2026-11-22T23%3A59%3A59.999Z`,
+    { headers: { 'x-admin-key': process.env.ADMIN_API_KEY } }
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(requested.skip, 20);
+  assert.equal(requested.limit, 10);
+  assert.equal(requested.query.status, 'Yangi');
+  assert.equal(requested.query.$or.length, 4);
+  assert.equal(requested.query.$or[0].customer_name.source, 'Ali\\.\\*');
+  assert.equal(requested.query.created_at.$gte.toISOString(), '2026-11-22T00:00:00.000Z');
+  assert.deepEqual(requested.statsQuery.created_at, requested.query.created_at);
+  assert.equal(body.total, 45);
+  assert.equal(body.pages, 5);
+  assert.deepEqual(body.stats, { total: 45, pending: 4, completed: 30, revenue: 1250000 });
+});
+
+test('orders API rejects invalid dates and reversed date ranges', async () => {
+  const originalReadyState = mongoose.connection.readyState;
+  mongoose.connection.readyState = 1;
+  try {
+    const headers = { 'x-admin-key': process.env.ADMIN_API_KEY };
+    for (const url of [
+      '/api/orders?from=not-a-date',
+      '/api/orders?from=2026-11-23T00%3A00%3A00.000Z&to=2026-11-22T00%3A00%3A00.000Z'
+    ]) {
+      const response = await fetch(`${baseUrl}${url}`, { headers });
+      assert.equal(response.status, 400);
+    }
+  } finally {
+    mongoose.connection.readyState = originalReadyState;
+  }
+});
+
 test('product and order schemas reject invalid values', async () => {
   const product = new Product({ name: '', price: -1, description: '', stock: 1.5 });
   await assert.rejects(product.validate());

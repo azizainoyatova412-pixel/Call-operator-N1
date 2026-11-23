@@ -434,13 +434,90 @@ app.delete('/api/products/:id', requireAdmin, requireDatabase, async (req, res) 
 
 app.get('/api/orders', requireAdmin, requireDatabase, async (req, res) => {
   const limit = Number(req.query.limit ?? 50);
+  const page = Number(req.query.page ?? 1);
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
     return res.status(400).json({ error: 'limit 1 dan 100 gacha butun son bo‘lishi kerak.' });
   }
+  if (!Number.isInteger(page) || page < 1) {
+    return res.status(400).json({ error: 'page 1 dan katta butun son bo‘lishi kerak.' });
+  }
+
+  const dateFilter = {};
+  if (req.query.from) {
+    const from = new Date(req.query.from);
+    if (!Number.isFinite(from.getTime())) {
+      return res.status(400).json({ error: 'from sanasi noto‘g‘ri.' });
+    }
+    dateFilter.$gte = from;
+  }
+  if (req.query.to) {
+    const to = new Date(req.query.to);
+    if (!Number.isFinite(to.getTime())) {
+      return res.status(400).json({ error: 'to sanasi noto‘g‘ri.' });
+    }
+    dateFilter.$lte = to;
+  }
+
+  if (dateFilter.$gte && dateFilter.$lte && dateFilter.$gte > dateFilter.$lte) {
+    return res.status(400).json({ error: 'Boshlanish sanasi tugash sanasidan keyin bo‘lishi mumkin emas.' });
+  }
+
+  const baseQuery = {};
+  if (Object.keys(dateFilter).length) {
+    baseQuery.created_at = dateFilter;
+  }
+  const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+  if (search.length > 120) {
+    return res.status(400).json({ error: 'Qidiruv matni 120 belgidan oshmasligi kerak.' });
+  }
+  if (search) {
+    const pattern = new RegExp(escapeRegex(search), 'i');
+    baseQuery.$or = [
+      { customer_name: pattern },
+      { customer_phone: pattern },
+      { delivery_address: pattern },
+      { product_name: pattern }
+    ];
+  }
+
+  const query = { ...baseQuery };
+  const statuses = ['Yangi', 'Yetkazilmoqda', 'Yakunlandi', 'Bekor qilindi'];
+  if (req.query.status && req.query.status !== 'ALL') {
+    if (!statuses.includes(req.query.status)) {
+      return res.status(400).json({ error: 'Buyurtma holati noto‘g‘ri.' });
+    }
+    query.status = req.query.status;
+  }
+
+  const skip = (page - 1) * limit;
 
   try {
-    const orders = await Order.find().sort({ created_at: -1 }).limit(limit).lean();
-    return res.json({ orders });
+    const [orders, total, statsResult] = await Promise.all([
+      Order.find(query).sort({ created_at: -1, _id: -1 }).skip(skip).limit(limit).lean(),
+      Order.countDocuments(query),
+      Order.aggregate([
+        { $match: baseQuery },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            pending: { $sum: { $cond: [{ $eq: ['$status', 'Yangi'] }, 1, 0] } },
+            completed: { $sum: { $cond: [{ $eq: ['$status', 'Yakunlandi'] }, 1, 0] } },
+            revenue: {
+              $sum: {
+                $cond: [
+                  { $ne: ['$status', 'Bekor qilindi'] },
+                  { $multiply: [{ $ifNull: ['$unit_price', 0] }, { $ifNull: ['$quantity', 1] }] },
+                  0
+                ]
+              }
+            }
+          }
+        }
+      ])
+    ]);
+    const stats = statsResult[0] ?? { total: 0, pending: 0, completed: 0, revenue: 0 };
+    return res.json({ orders, total, page, limit, pages: Math.ceil(total / limit), stats });
   } catch (error) {
     console.error('Buyurtmalarni olishda xatolik:', error);
     return res.status(500).json({ error: 'Buyurtmalarni olishda xatolik yuz berdi.' });

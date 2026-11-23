@@ -189,6 +189,29 @@
       margin-bottom: 16px;
     }
     .search-box { flex: 1; min-width: 200px; max-width: 380px; }
+    .date-filters, .pagination {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .date-filters .input-field { min-height: 38px; }
+    .pagination { justify-content: space-between; padding-top: 16px; }
+    .pagination-info { color: var(--text-muted); font-size: 13px; }
+    .modal {
+      width: min(520px, calc(100% - 32px));
+      max-height: calc(100% - 32px);
+      margin: auto;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+    .modal::backdrop { background: rgb(15 23 42 / 0.45); }
+    .modal-header, .modal-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; }
+    .modal-header { border-bottom: 1px solid var(--border); }
+    .modal-body { padding: 20px; }
+    .modal-footer { justify-content: flex-end; border-top: 1px solid var(--border); }
 
     /* Tables */
     .table-container { overflow-x: auto; }
@@ -317,7 +340,15 @@
       .orders-toolbar { align-items: stretch; }
       .search-box { max-width: none; min-width: 0; width: 100%; min-height: 42px; }
       .orders-toolbar > div { justify-content: space-between; min-width: 0; }
+      .date-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .date-filters select { grid-column: 1 / -1; }
+      .date-filters input { width: 100%; min-width: 0; }
       #filter-status { max-width: 70%; min-height: 40px; }
+      .pagination { align-items: stretch; flex-direction: column; }
+      .pagination > div { display: flex; justify-content: space-between; gap: 8px; }
+      .pagination .btn { flex: 1; }
+      .modal-header, .modal-footer { padding: 14px 16px; }
+      .modal-body { padding: 16px; }
 
       .table-container { max-width: 100%; overflow: visible; }
       table, tbody { display: block; width: 100%; }
@@ -411,9 +442,9 @@
     <!-- KPI ko'rsatkichlar paneli -->
     <section class="stats-grid">
       <div class="stat-card">
-        <div class="stat-title">Bugungi jami buyurtmalar</div>
+        <div class="stat-title">Tanlangan davrdagi buyurtmalar</div>
         <div id="stat-total" class="stat-value">0 ta</div>
-        <span class="stat-badge" style="background:#eff6ff;color:#2563eb;">AI tomonidan yozildi</span>
+        <span class="stat-badge" style="background:#eff6ff;color:#2563eb;">Tanlangan filtrga mos</span>
       </div>
       <div class="stat-card">
         <div class="stat-title">Yangi (ishlanmagan) buyurtmalar</div>
@@ -426,9 +457,9 @@
         <span class="stat-badge" style="background:#dcfce7;color:#15803d;">Yetkazildi</span>
       </div>
       <div class="stat-card">
-        <div class="stat-title">Umumiy savdo summasi</div>
+        <div class="stat-title">Bekor qilinmagan savdo</div>
         <div id="stat-revenue" class="stat-value">0 so‘m</div>
-        <span class="stat-badge" style="background:#f1f5f9;color:#475569;">Barcha qabul qilingan</span>
+        <span class="stat-badge" style="background:#f1f5f9;color:#475569;">Bekor qilingan chiqarildi</span>
       </div>
     </section>
 
@@ -482,7 +513,19 @@
         <div class="card-body">
           
           <div class="orders-toolbar">
-            <input id="search-orders" class="input-field search-box" type="search" placeholder="Ism yoki telefon bo‘yicha qidirish...">
+            <input id="search-orders" class="input-field search-box" type="search" placeholder="Ism, telefon, mahsulot yoki manzil...">
+            <div class="date-filters">
+              <select id="date-preset" class="input-field" aria-label="Sana oralig‘i">
+                <option value="all">Barcha vaqt</option>
+                <option value="today">Bugun</option>
+                <option value="yesterday">Kecha</option>
+                <option value="7days">Oxirgi 7 kun</option>
+                <option value="month">Shu oy</option>
+                <option value="custom">Sana oralig‘i</option>
+              </select>
+              <input id="date-from" class="input-field" type="date" aria-label="Boshlanish sanasi">
+              <input id="date-to" class="input-field" type="date" aria-label="Tugash sanasi">
+            </div>
             <div style="display:flex;align-items:center;gap:8px;">
               <span style="font-size:13px;color:var(--text-muted);">Holat:</span>
               <select id="filter-status" class="input-field">
@@ -512,12 +555,45 @@
               </tbody>
             </table>
           </div>
+          <div id="pagination" class="pagination"></div>
 
         </div>
       </section>
 
     </div>
   </main>
+
+  <dialog id="product-dialog" class="modal">
+    <form id="edit-product-form">
+      <div class="modal-header">
+        <h2>Mahsulotni tahrirlash</h2>
+        <button id="close-product-dialog" class="btn btn-secondary" type="button" aria-label="Yopish">✕</button>
+      </div>
+      <div class="modal-body">
+        <input id="edit-product-id" type="hidden">
+        <div class="form-group">
+          <label for="edit-product-name">Mahsulot nomi</label>
+          <input id="edit-product-name" class="input-field" required maxlength="160">
+        </div>
+        <div class="form-group">
+          <label for="edit-product-price">Narxi (so‘m)</label>
+          <input id="edit-product-price" class="input-field" type="number" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-product-stock">Ombordagi qoldiq</label>
+          <input id="edit-product-stock" class="input-field" type="number" min="0" step="1" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-product-description">Tavsif</label>
+          <textarea id="edit-product-description" class="input-field" rows="3" required maxlength="2000"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-product-edit" class="btn btn-secondary" type="button">Bekor qilish</button>
+        <button class="btn btn-primary" type="submit">Saqlash</button>
+      </div>
+    </form>
+  </dialog>
 
   <script>
     const adminKeyInput = document.querySelector('#admin-key');
@@ -528,12 +604,27 @@
     const searchInput = document.querySelector('#search-orders');
     const filterStatus = document.querySelector('#filter-status');
     const soundToggle = document.querySelector('#sound-alert');
+    const datePreset = document.querySelector('#date-preset');
+    const dateFromInput = document.querySelector('#date-from');
+    const dateToInput = document.querySelector('#date-to');
+    const pagination = document.querySelector('#pagination');
+    const productDialog = document.querySelector('#product-dialog');
+    const editProductForm = document.querySelector('#edit-product-form');
 
     const statuses = ['Yangi', 'Yetkazilmoqda', 'Yakunlandi', 'Bekor qilindi'];
     const money = new Intl.NumberFormat('uz-UZ');
+    const pageSize = 20;
 
     let allOrders = [];
-    let previousOrdersCount = 0;
+    let currentPage = 1;
+    let totalPages = 0;
+    let totalOrders = 0;
+    let currentStats = { total: 0, pending: 0, completed: 0, revenue: 0 };
+    let latestOrderId = null;
+    let latestOrderInitialized = false;
+    let productsById = new Map();
+    let orderRequestId = 0;
+    let searchTimer;
 
     // Admin kalitini saqlab turish (ish oson bo'lishi uchun)
     adminKeyInput.value = sessionStorage.getItem('admin_key') || '';
@@ -542,6 +633,76 @@
       noticeBox.textContent = msg;
       noticeBox.className = `notice show ${type}`;
       setTimeout(() => noticeBox.className = 'notice', 4000);
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
+    function safeHttpsUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === 'https:' ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
+
+    function getDateRange() {
+      const from = dateFromInput.value
+        ? new Date(`${dateFromInput.value}T00:00:00`).toISOString()
+        : '';
+      const to = dateToInput.value
+        ? new Date(`${dateToInput.value}T23:59:59.999`).toISOString()
+        : '';
+      return { from, to };
+    }
+
+    function buildOrderParams(page = currentPage, limit = pageSize) {
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      const search = searchInput.value.trim();
+      const status = filterStatus.value;
+      const { from, to } = getDateRange();
+      if (search) params.set('search', search);
+      if (status !== 'ALL') params.set('status', status);
+      if (from) params.set('from', from);
+      if (to) params.set('to', to);
+      return params;
+    }
+
+    function localDateInput(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function applyDatePreset(preset) {
+      const today = new Date();
+      let from = null;
+      let to = null;
+      if (preset === 'today') {
+        from = to = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      } else if (preset === 'yesterday') {
+        from = to = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+      } else if (preset === '7days') {
+        from = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+        to = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      } else if (preset === 'month') {
+        from = new Date(today.getFullYear(), today.getMonth(), 1);
+        to = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      }
+
+      dateFromInput.value = from ? localDateInput(from) : '';
+      dateToInput.value = to ? localDateInput(to) : '';
+      currentPage = 1;
+      loadOrders();
     }
 
     function playBeep() {
@@ -557,7 +718,10 @@
         gain.gain.setValueAtTime(0.2, ctx.currentTime);
         osc.start();
         osc.stop(ctx.currentTime + 0.3);
-      } catch (e) {}
+        if (ctx.state === 'suspended') ctx.resume();
+      } catch (error) {
+        console.error('Ovozli signalni ijro etib bo‘lmadi:', error);
+      }
     }
 
     async function apiRequest(url, options = {}) {
@@ -578,101 +742,114 @@
       try {
         const { products } = await apiRequest('/api/products');
         if (!products || !products.length) {
+          productsById = new Map();
+          productsMiniList.style.removeProperty('color');
           productsMiniList.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">Mahsulotlar yo‘q.</p>';
           return;
         }
 
+        productsById = new Map(products.map((product) => [product._id, product]));
+        productsMiniList.style.removeProperty('color');
         productsMiniList.innerHTML = products.map(p => `
           <div style="padding:10px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <strong style="font-size:13px;display:block;">${p.name}</strong>
+              <strong style="font-size:13px;display:block;">${escapeHTML(p.name)}</strong>
               <span style="font-size:12px;color:var(--text-muted);">${money.format(p.price)} so‘m · Qoldiq: ${p.stock} dona</span>
             </div>
-            <button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteProduct('${p._id}', '${p.name}')">O‘chirish</button>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn btn-secondary" style="padding:4px 8px;font-size:11px;" data-action="edit-product" data-id="${escapeHTML(p._id)}">Tahrirlash</button>
+              <button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" data-action="delete-product" data-id="${escapeHTML(p._id)}">O‘chirish</button>
+            </div>
           </div>
         `).join('');
       } catch (err) {
-        productsMiniList.innerHTML = `<p style="font-size:13px;color:var(--danger);">${err.message}</p>`;
+        productsMiniList.textContent = err.message;
+        productsMiniList.style.color = 'var(--danger)';
       }
     }
 
-    window.deleteProduct = async (id, name) => {
-      if (!confirm(`"${name}" mahsulotini o‘chirmoqchimisiz?`)) return;
+    async function deleteProduct(id) {
+      const product = productsById.get(id);
+      if (!product || !confirm(`"${product.name}" mahsulotini o‘chirmoqchimisiz?`)) return;
       try {
         await apiRequest(`/api/products/${id}`, { method: 'DELETE' });
         showNotice('Mahsulot o‘chirildi', 'success');
-        loadProducts();
+        await loadProducts();
       } catch (e) {
         showNotice(e.message, 'error');
       }
-    };
+    }
+
+    function renderPagination() {
+      if (!totalOrders) {
+        pagination.innerHTML = '<span class="pagination-info">Buyurtmalar topilmadi.</span>';
+        return;
+      }
+      const start = (currentPage - 1) * pageSize + 1;
+      const end = Math.min(currentPage * pageSize, totalOrders);
+      pagination.innerHTML = `
+        <span class="pagination-info">${start}–${end} / ${totalOrders} ta buyurtma · ${currentPage}-sahifa / ${totalPages}</span>
+        <div>
+          <button class="btn btn-secondary" type="button" data-page="${currentPage - 1}" ${currentPage <= 1 ? 'disabled' : ''}>← Oldingi</button>
+          <button class="btn btn-secondary" type="button" data-page="${currentPage + 1}" ${currentPage >= totalPages ? 'disabled' : ''}>Keyingi →</button>
+        </div>`;
+    }
 
     function renderOrders() {
-      const query = searchInput.value.toLowerCase().trim();
-      const status = filterStatus.value;
+      document.querySelector('#stat-total').textContent = `${currentStats.total} ta`;
+      document.querySelector('#stat-pending').textContent = `${currentStats.pending} ta`;
+      document.querySelector('#stat-completed').textContent = `${currentStats.completed} ta`;
+      document.querySelector('#stat-revenue').textContent = `${money.format(currentStats.revenue)} so‘m`;
 
-      const filtered = allOrders.filter(o => {
-        const matchQuery = !query || 
-          o.customer_name.toLowerCase().includes(query) || 
-          o.customer_phone.toLowerCase().includes(query) ||
-          o.product_name.toLowerCase().includes(query);
-        const matchStatus = status === 'ALL' || o.status === status;
-        return matchQuery && matchStatus;
-      });
-
-      // Statistika hisoblash
-      document.querySelector('#stat-total').textContent = `${allOrders.length} ta`;
-      document.querySelector('#stat-pending').textContent = `${allOrders.filter(o => o.status === 'Yangi').length} ta`;
-      document.querySelector('#stat-completed').textContent = `${allOrders.filter(o => o.status === 'Yakunlandi').length} ta`;
-      const totalRev = allOrders.reduce((sum, o) => sum + ((o.unit_price || 0) * (o.quantity || 1)), 0);
-      document.querySelector('#stat-revenue').textContent = `${money.format(totalRev)} so‘m`;
-
-      if (!filtered.length) {
+      if (!allOrders.length) {
         ordersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar topilmadi.</td></tr>`;
+        renderPagination();
         return;
       }
 
-      ordersTbody.innerHTML = filtered.map(o => {
+      ordersTbody.innerHTML = allOrders.map(o => {
         const total = (o.unit_price || 0) * (o.quantity || 1);
         const cleanPhone = o.customer_phone.replace(/\D/g, '');
         const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+        const audioUrl = safeHttpsUrl(o.recording_url);
 
-        const audioCell = o.recording_url 
+        const audioCell = audioUrl
           ? `
             <div style="display:flex;flex-direction:column;gap:4px;">
-              <audio controls src="${o.recording_url}" preload="none" style="height:32px;width:180px;"></audio>
+              <audio controls src="${escapeHTML(audioUrl)}" preload="none" style="height:32px;width:180px;"></audio>
               <div style="display:flex;gap:8px;font-size:11px;">
-                <a href="${o.recording_url}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600;">▶️ To‘liq ochish</a>
-                <a href="${o.recording_url}" download="isbot_${cleanPhone}.wav" style="color:#059669;text-decoration:none;font-weight:600;">⬇️ Yuklab olish</a>
+                <a href="${escapeHTML(audioUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--primary);text-decoration:none;font-weight:600;">▶️ To‘liq ochish</a>
+                <a href="${escapeHTML(audioUrl)}" download="isbot_${cleanPhone}.wav" style="color:#059669;text-decoration:none;font-weight:600;">⬇️ Yuklab olish</a>
               </div>
             </div>
           ` 
           : `<span style="font-size:12px;color:var(--text-muted);font-style:italic;">Yozuv yuklanmoqda...</span>`;
 
+        const safeStatus = statuses.includes(o.status) ? o.status : 'Yangi';
         return `
           <tr>
             <td class="customer-cell">
-              <strong>${o.customer_name}</strong>
+              <strong>${escapeHTML(o.customer_name)}</strong>
               <div style="display:flex;align-items:center;gap:10px;margin-top:2px;">
-                <a href="tel:${cleanPhone}">📞 ${o.customer_phone}</a>
+                <a href="tel:${cleanPhone}">📞 ${escapeHTML(o.customer_phone)}</a>
                 <a href="https://t.me/+${cleanPhone.startsWith('998') ? cleanPhone : '998' + cleanPhone}" target="_blank" rel="noopener" style="color:#0284c7;font-size:12px;">💬 Telegram</a>
               </div>
-              <span class="address-text">📍 ${o.delivery_address}</span>
+              <span class="address-text">📍 ${escapeHTML(o.delivery_address)}</span>
             </td>
             <td>
-              <strong>${o.product_name}</strong>
+              <strong>${escapeHTML(o.product_name)}</strong>
               <div style="font-size:12px;color:var(--text-muted);">${o.quantity} dona × ${money.format(o.unit_price)} so‘m</div>
             </td>
             <td>
               <strong style="color:var(--primary);font-size:15px;">${money.format(total)} so‘m</strong>
             </td>
             <td>
-              <select class="status-select status-${o.status.replace(/\s+/g, '-')}" onchange="updateOrderStatus('${o._id}', this.value)">
-                ${statuses.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+              <select class="status-select status-${safeStatus.replace(/\s+/g, '-')}" data-order-id="${escapeHTML(o._id)}">
+                ${statuses.map(s => `<option value="${escapeHTML(s)}" ${s === safeStatus ? 'selected' : ''}>${escapeHTML(s)}</option>`).join('')}
               </select>
             </td>
             <td style="font-size:12px;color:var(--text-muted);white-space:nowrap;">
-              ${dateStr}
+              ${escapeHTML(dateStr)}
             </td>
             <td>
               ${audioCell}
@@ -680,31 +857,50 @@
           </tr>
         `;
       }).join('');
+      renderPagination();
     }
 
     async function loadOrders() {
       if (!adminKeyInput.value.trim()) {
-        ordersTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Admin kalitini kiriting va "Kirish" tugmasini bosing.</td></tr>`;
+        ordersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Admin kalitini kiriting va "Kirish" tugmasini bosing.</td></tr>`;
+        pagination.replaceChildren();
         return;
       }
 
+      const requestId = ++orderRequestId;
       try {
-        const { orders } = await apiRequest('/api/orders?limit=100');
-        if (orders) {
-          if (previousOrdersCount > 0 && orders.length > previousOrdersCount) {
-            playBeep();
-            showNotice('Yangi buyurtma qabul qilindi!', 'success');
-          }
-          previousOrdersCount = orders.length;
-          allOrders = orders;
-          renderOrders();
-        }
+        const params = buildOrderParams();
+        const data = await apiRequest(`/api/orders?${params}`);
+        if (requestId !== orderRequestId) return;
+        allOrders = data.orders;
+        totalOrders = data.total;
+        totalPages = data.pages;
+        currentStats = data.stats;
+        renderOrders();
       } catch (err) {
+        if (requestId !== orderRequestId) return;
         showNotice(err.message, 'error');
       }
     }
 
-    window.updateOrderStatus = async (id, newStatus) => {
+    async function checkForNewOrders() {
+      if (!adminKeyInput.value.trim()) return;
+      try {
+        const data = await apiRequest('/api/orders?page=1&limit=1');
+        const newLatestId = data.orders[0]?._id ?? null;
+        if (latestOrderInitialized && newLatestId && latestOrderId !== newLatestId) {
+          playBeep();
+          showNotice('Yangi buyurtma qabul qilindi!', 'success');
+          loadOrders();
+        }
+        latestOrderId = newLatestId;
+        latestOrderInitialized = true;
+      } catch (error) {
+        console.error('Yangi buyurtmalarni tekshirishda xatolik:', error);
+      }
+    }
+
+    async function updateOrderStatus(id, newStatus) {
       try {
         await apiRequest(`/api/orders/${id}/status`, {
           method: 'PATCH',
@@ -712,59 +908,153 @@
           body: JSON.stringify({ status: newStatus })
         });
         showNotice('Holat yangilandi', 'success');
-        const item = allOrders.find(o => o._id === id);
-        if (item) item.status = newStatus;
-        renderOrders();
+        await loadOrders();
       } catch (err) {
         showNotice(err.message, 'error');
         loadOrders();
       }
-    };
+    }
 
-    document.querySelector('#export-csv-btn').onclick = () => {
-      if (!allOrders.length) {
-        showNotice('Eksport qilish uchun buyurtmalar mavjud emas.', 'error');
-        return;
+    async function exportOrdersCsv() {
+      try {
+        const exportParams = buildOrderParams(1, 100);
+        const firstPage = await apiRequest(`/api/orders?${exportParams}`);
+        if (!firstPage.total) {
+          showNotice('Eksport qilish uchun buyurtmalar mavjud emas.', 'error');
+          return;
+        }
+
+        const orders = [...firstPage.orders];
+        for (let page = 2; page <= firstPage.pages; page++) {
+          const params = new URLSearchParams(exportParams);
+          params.set('page', String(page));
+          const data = await apiRequest(`/api/orders?${params}`);
+          orders.push(...data.orders);
+        }
+
+        const csvField = (value) => {
+          const text = String(value ?? '');
+          const safeText = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+          return `"${safeText.replace(/"/g, '""')}"`;
+        };
+        const headers = ['Mijoz ismi', 'Telefon raqami', 'Yetkazish manzili', 'Mahsulot', 'Miqdori', 'Dona narxi (som)', 'Jami summa (som)', 'Holati', 'Vaqti'];
+        const rows = orders.map(o => {
+          const total = (o.unit_price || 0) * (o.quantity || 1);
+          const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+          return [
+            csvField(o.customer_name),
+            csvField(o.customer_phone),
+            csvField(o.delivery_address),
+            csvField(o.product_name),
+            o.quantity || 1,
+            o.unit_price || 0,
+            total,
+            csvField(o.status),
+            csvField(dateStr)
+          ].join(',');
+        });
+
+        const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `buyurtmalar_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showNotice('Buyurtmalar CSV fayli yuklab olindi.', 'success');
+      } catch (error) {
+        showNotice(error.message, 'error');
       }
+    }
 
-      const headers = ['Mijoz ismi', 'Telefon raqami', 'Yetkazish manzili', 'Mahsulot', 'Miqdori', 'Dona narxi (som)', 'Jami summa (som)', 'Holati', 'Vaqti'];
-      const rows = allOrders.map(o => {
-        const total = (o.unit_price || 0) * (o.quantity || 1);
-        const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
-        return [
-          `"${(o.customer_name || '').replace(/"/g, '""')}"`,
-          `"${(o.customer_phone || '').replace(/"/g, '""')}"`,
-          `"${(o.delivery_address || '').replace(/"/g, '""')}"`,
-          `"${(o.product_name || '').replace(/"/g, '""')}"`,
-          o.quantity || 1,
-          o.unit_price || 0,
-          total,
-          `"${o.status}"`,
-          `"${dateStr}"`
-        ].join(',');
-      });
-
-      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `buyurtmalar_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showNotice('Buyurtmalar CSV fayli yuklab olindi.', 'success');
-    };
+    document.querySelector('#export-csv-btn').onclick = exportOrdersCsv;
 
     saveKeyBtn.onclick = () => {
       sessionStorage.setItem('admin_key', adminKeyInput.value.trim());
       showNotice('Admin kaliti saqlandi', 'success');
       loadOrders();
+      checkForNewOrders();
     };
 
     document.querySelector('#refresh-btn').onclick = loadOrders;
-    searchInput.oninput = renderOrders;
-    filterStatus.onchange = renderOrders;
+    searchInput.oninput = () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        currentPage = 1;
+        loadOrders();
+      }, 300);
+    };
+    filterStatus.onchange = () => {
+      currentPage = 1;
+      loadOrders();
+    };
+    datePreset.onchange = () => {
+      if (datePreset.value !== 'custom') applyDatePreset(datePreset.value);
+    };
+    for (const dateInput of [dateFromInput, dateToInput]) {
+      dateInput.onchange = () => {
+        datePreset.value = 'custom';
+        currentPage = 1;
+        loadOrders();
+      };
+    }
+    pagination.onclick = (event) => {
+      const button = event.target.closest('button[data-page]');
+      if (!button || button.disabled) return;
+      currentPage = Number(button.dataset.page);
+      loadOrders();
+    };
+    ordersTbody.onchange = (event) => {
+      const select = event.target.closest('select[data-order-id]');
+      if (select) updateOrderStatus(select.dataset.orderId, select.value);
+    };
+    productsMiniList.onclick = (event) => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+      const { action, id } = button.dataset;
+      const product = productsById.get(id);
+      if (!product) return;
+      if (action === 'delete-product') {
+        deleteProduct(id);
+      } else if (action === 'edit-product') {
+        document.querySelector('#edit-product-id').value = product._id;
+        document.querySelector('#edit-product-name').value = product.name;
+        document.querySelector('#edit-product-price').value = product.price;
+        document.querySelector('#edit-product-stock').value = product.stock;
+        document.querySelector('#edit-product-description').value = product.description;
+        productDialog.showModal();
+      }
+    };
+    document.querySelector('#close-product-dialog').onclick = () => productDialog.close();
+    document.querySelector('#cancel-product-edit').onclick = () => productDialog.close();
+    productDialog.onclick = (event) => {
+      if (event.target === productDialog) productDialog.close();
+    };
+
+    editProductForm.onsubmit = async (event) => {
+      event.preventDefault();
+      const id = document.querySelector('#edit-product-id').value;
+      try {
+        await apiRequest(`/api/products/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.querySelector('#edit-product-name').value,
+            price: Number(document.querySelector('#edit-product-price').value),
+            stock: Number(document.querySelector('#edit-product-stock').value),
+            description: document.querySelector('#edit-product-description').value
+          })
+        });
+        productDialog.close();
+        showNotice('Mahsulot yangilandi', 'success');
+        await loadProducts();
+      } catch (error) {
+        showNotice(error.message, 'error');
+      }
+    };
 
     document.querySelector('#product-form').onsubmit = async (e) => {
       e.preventDefault();
@@ -789,14 +1079,15 @@
       }
     };
 
-    // Boshlang'ich yuklash
     loadProducts();
-    if (adminKeyInput.value.trim()) loadOrders();
+    if (adminKeyInput.value.trim()) {
+      loadOrders();
+      checkForNewOrders();
+    }
 
-    // Jonli yangilanish: Har 10 soniyada buyurtmalarni avtomatik yangilash (Auto-poll)
     setInterval(() => {
       if (adminKeyInput.value.trim()) {
-        loadOrders();
+        checkForNewOrders();
       }
     }, 10000);
   </script>

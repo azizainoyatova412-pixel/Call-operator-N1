@@ -71,5 +71,7 @@ To‘liq bosqichma-bosqich qo‘llanma: [vapi/assistant-setup.md](./vapi/assista
 
 Brauzerda `http://localhost:3000/admin` manzilini oching:
 - **Admin kalitini kiriting:** `.env` faylidagi `ADMIN_API_KEY` ni kiriting.
-- **Mahsulotlar:** Yangi mahsulot qo‘shish, narx va zaxirasini yangilash, o‘chirish.
-- **Buyurtmalar:** Barcha tushgan buyurtmalarni ko‘rish va ularning holatini (`Yangi` -> `Yetkazilmoqda` -> `Yakunlandi` / `Bekor qilindi`) o‘zgartirish.
+- **Mahsulotlar:** Yangi mahsulot qo‘shish, ma’lumotlarini tahrirlash va o‘chirish.
+- **Buyurtmalar:** Qidirish, holat va sana oralig‘i bilan filtrlash, sahifalab ko‘rish, CSV eksport qilish hamda holatini (`Yangi` -> `Yetkazilmoqda` -> `Yakunlandi` / `Bekor qilindi`) o‘zgartirish.
+- **Statistika:** Tanlangan sana oralig‘idagi buyurtmalar va bekor qilinmagan savdo summasi.
+- **Yangi buyurtma xabari:** Panel ochiq turganda yangilari avtomatik tekshiriladi; ovozli signalni yoqib/o‘chirish mumkin.
