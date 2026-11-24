@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="uz">
+<html lang="uz" translate="no" class="notranslate">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" content="notranslate">
   <title>AI Call Operator — Sotuv va Buyurtmalar CRM</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -412,7 +413,7 @@
     }
   </style>
 </head>
-<body>
+<body class="notranslate">
 
   <header>
     <div class="logo-block">
@@ -654,6 +655,18 @@
       }
     }
 
+    function formatUzDateTime(dateVal) {
+      if (!dateVal) return '';
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return String(dateVal);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${day}.${month}.${year}, ${hours}:${minutes}`;
+    }
+
     function getDateRange() {
       const from = dateFromInput.value
         ? new Date(`${dateFromInput.value}T00:00:00`).toISOString()
@@ -810,7 +823,7 @@
       ordersTbody.innerHTML = allOrders.map(o => {
         const total = (o.unit_price || 0) * (o.quantity || 1);
         const cleanPhone = o.customer_phone.replace(/\D/g, '');
-        const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+        const dateStr = formatUzDateTime(o.created_at);
         const audioUrl = safeHttpsUrl(o.recording_url);
 
         const audioCell = audioUrl
@@ -940,7 +953,7 @@
         const headers = ['Mijoz ismi', 'Telefon raqami', 'Yetkazish manzili', 'Mahsulot', 'Miqdori', 'Dona narxi (som)', 'Jami summa (som)', 'Holati', 'Vaqti'];
         const rows = orders.map(o => {
           const total = (o.unit_price || 0) * (o.quantity || 1);
-          const dateStr = new Date(o.created_at).toLocaleString('uz-UZ');
+          const dateStr = formatUzDateTime(o.created_at);
           return [
             csvField(o.customer_name),
             csvField(o.customer_phone),
