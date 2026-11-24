@@ -352,6 +352,10 @@ app.get('/admin', (_req, res) => {
   res.sendFile(fileURLToPath(new URL('./public/admin.html', import.meta.url)));
 });
 
+app.get('/api/auth/verify', requireAdmin, (_req, res) => {
+  return res.json({ authenticated: true });
+});
+
 app.get('/api/products', requireDatabase, async (_req, res) => {
   try {
     const products = await Product.find().sort({ name: 1 }).lean();

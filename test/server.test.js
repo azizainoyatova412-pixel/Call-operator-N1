@@ -185,6 +185,17 @@ test('admin endpoints reject requests without the admin key', async () => {
   assert.equal(response.status, 401);
 });
 
+test('auth verify endpoint validates admin key', async () => {
+  const unauthorized = await fetch(`${baseUrl}/api/auth/verify`);
+  assert.equal(unauthorized.status, 401);
+
+  const authorized = await fetch(`${baseUrl}/api/auth/verify`, {
+    headers: { 'x-admin-key': process.env.ADMIN_API_KEY }
+  });
+  assert.equal(authorized.status, 200);
+  assert.deepEqual(await authorized.json(), { authenticated: true });
+});
+
 test('admin endpoints report unavailable database after authentication', async () => {
   const response = await fetch(`${baseUrl}/api/orders`, {
     headers: { 'x-admin-key': process.env.ADMIN_API_KEY }

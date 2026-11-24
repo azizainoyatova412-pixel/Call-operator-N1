@@ -114,6 +114,69 @@
     .btn-danger { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
     .btn-danger:hover { background: #fee2e2; }
 
+    /* Login Screen */
+    #login-view {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at 50% 20%, #f1f5f9 0%, #e2e8f0 100%);
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 30px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      text-align: center;
+    }
+    .login-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 24px;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+    .login-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .login-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+    }
+    .login-error {
+      display: none;
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
     /* Layout */
     main {
       flex: 1;
@@ -415,6 +478,33 @@
 </head>
 <body class="notranslate">
 
+  <!-- Maxfiy Tizimga Kirish (Login) oynasi -->
+  <div id="login-view">
+    <div class="login-card">
+      <div class="login-icon">AI</div>
+      <h1 class="login-title">Boshqaruv Tizimi (CRM)</h1>
+      <p class="login-desc">Tizim himoyalangan. Ishni boshlash uchun maxfiy admin kalitini kiriting.</p>
+      
+      <div id="login-error" class="login-error"></div>
+
+      <form id="login-form" class="login-form">
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="login-key">Admin maxfiy kaliti</label>
+          <div style="position:relative;margin-top:6px;">
+            <input id="login-key" class="input-field" type="password" placeholder="••••••••••••" required autocomplete="current-password" style="width:100%;padding-right:40px;height:44px;font-size:15px;">
+            <button id="toggle-key-visibility" type="button" aria-label="Kalitni ko‘rsatish" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:4px;">👁️</button>
+          </div>
+        </div>
+        <button id="login-submit-btn" class="btn btn-primary" type="submit" style="width:100%;height:44px;font-size:15px;margin-top:8px;">
+          Tizimga kirish ➔
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Asosiy CRM Ilovasi (Faqat kalit to‘g‘ri kiritilganda ochiladi) -->
+  <div id="crm-app" style="display:none;">
+
   <header>
     <div class="logo-block">
       <div style="width:36px;height:36px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;">AI</div>
@@ -430,9 +520,13 @@
         <input type="checkbox" id="sound-alert" checked>
         <span>Ovozli signal</span>
       </label>
-      <div class="key-input-wrapper">
-        <input id="admin-key" class="input-field" type="password" placeholder="Admin kalitini kiriting" style="width:180px;">
-        <button id="save-key-btn" class="btn btn-primary" type="button">Kirish</button>
+      <div class="header-user-actions" style="display:flex;align-items:center;gap:8px;">
+        <span style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;color:#334155;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1px solid var(--border);">
+          🛡️ Administrator
+        </span>
+        <button id="logout-btn" class="btn btn-secondary" type="button" style="padding:6px 12px;font-size:12px;" title="Tizimdan chiqish">
+          🚪 Chiqish
+        </button>
       </div>
     </div>
   </header>
@@ -596,9 +690,18 @@
     </form>
   </dialog>
 
+  </div> <!-- /#crm-app -->
+
   <script>
-    const adminKeyInput = document.querySelector('#admin-key');
-    const saveKeyBtn = document.querySelector('#save-key-btn');
+    const loginView = document.querySelector('#login-view');
+    const loginForm = document.querySelector('#login-form');
+    const loginKeyInput = document.querySelector('#login-key');
+    const loginError = document.querySelector('#login-error');
+    const loginSubmitBtn = document.querySelector('#login-submit-btn');
+    const toggleKeyBtn = document.querySelector('#toggle-key-visibility');
+    const crmApp = document.querySelector('#crm-app');
+    const logoutBtn = document.querySelector('#logout-btn');
+
     const ordersTbody = document.querySelector('#orders-tbody');
     const productsMiniList = document.querySelector('#products-mini-list');
     const noticeBox = document.querySelector('#notice-box');
@@ -626,9 +729,11 @@
     let productsById = new Map();
     let orderRequestId = 0;
     let searchTimer;
+    let pollInterval = null;
 
-    // Admin kalitini saqlab turish (ish oson bo'lishi uchun)
-    adminKeyInput.value = sessionStorage.getItem('admin_key') || '';
+    function getAdminKey() {
+      return sessionStorage.getItem('admin_key') || '';
+    }
 
     function showNotice(msg, type = 'info') {
       noticeBox.textContent = msg;
@@ -737,8 +842,67 @@
       }
     }
 
+    function showLoginView(errorMsg = '') {
+      loginView.style.display = 'flex';
+      crmApp.style.display = 'none';
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+      if (errorMsg) {
+        loginError.textContent = errorMsg;
+        loginError.style.display = 'block';
+      } else {
+        loginError.style.display = 'none';
+      }
+      loginKeyInput.value = '';
+      setTimeout(() => loginKeyInput.focus(), 100);
+    }
+
+    function showCrmView() {
+      loginView.style.display = 'none';
+      crmApp.style.display = 'block';
+      loadProducts();
+      loadOrders();
+      checkForNewOrders();
+      if (!pollInterval) {
+        pollInterval = setInterval(checkForNewOrders, 10000);
+      }
+    }
+
+    async function verifyAndLogin(key) {
+      loginSubmitBtn.disabled = true;
+      loginSubmitBtn.textContent = 'Tekshirilmoqda...';
+      loginError.style.display = 'none';
+      try {
+        const res = await fetch('/api/auth/verify', {
+          headers: { 'x-admin-key': key }
+        });
+        if (!res.ok) {
+          throw new Error('Admin kaliti noto‘g‘ri.');
+        }
+        sessionStorage.setItem('admin_key', key);
+        showCrmView();
+        showNotice('Boshqaruv paneliga muvaffaqiyatli kirildi.', 'success');
+      } catch (err) {
+        loginError.textContent = err.message;
+        loginError.style.display = 'block';
+        loginKeyInput.focus();
+        loginKeyInput.select();
+      } finally {
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.textContent = 'Tizimga kirish ➔';
+      }
+    }
+
+    function handleLogout(notice = '') {
+      sessionStorage.removeItem('admin_key');
+      allOrders = [];
+      showLoginView(notice);
+    }
+
     async function apiRequest(url, options = {}) {
-      const key = adminKeyInput.value.trim();
+      const key = getAdminKey();
       const res = await fetch(url, {
         ...options,
         headers: {
@@ -747,6 +911,10 @@
         }
       });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        handleLogout('Sessiya tugadi yoki admin kaliti o‘zgargan.');
+        throw new Error(data.error || 'Admin kaliti yaroqsiz.');
+      }
       if (!res.ok) throw new Error(data.error || 'Xatolik yuz berdi');
       return data;
     }
@@ -874,9 +1042,8 @@
     }
 
     async function loadOrders() {
-      if (!adminKeyInput.value.trim()) {
-        ordersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Admin kalitini kiriting va "Kirish" tugmasini bosing.</td></tr>`;
-        pagination.replaceChildren();
+      if (!getAdminKey()) {
+        showLoginView();
         return;
       }
 
@@ -897,7 +1064,7 @@
     }
 
     async function checkForNewOrders() {
-      if (!adminKeyInput.value.trim()) return;
+      if (!getAdminKey()) return;
       try {
         const data = await apiRequest('/api/orders?page=1&limit=1');
         const newLatestId = data.orders[0]?._id ?? null;
@@ -985,11 +1152,23 @@
 
     document.querySelector('#export-csv-btn').onclick = exportOrdersCsv;
 
-    saveKeyBtn.onclick = () => {
-      sessionStorage.setItem('admin_key', adminKeyInput.value.trim());
-      showNotice('Admin kaliti saqlandi', 'success');
-      loadOrders();
-      checkForNewOrders();
+    toggleKeyBtn.onclick = () => {
+      const isPass = loginKeyInput.type === 'password';
+      loginKeyInput.type = isPass ? 'text' : 'password';
+      toggleKeyBtn.textContent = isPass ? '🙈' : '👁️';
+    };
+
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const key = loginKeyInput.value.trim();
+      if (!key) return;
+      await verifyAndLogin(key);
+    };
+
+    logoutBtn.onclick = () => {
+      if (confirm('Tizimdan chiqishni tasdiqlaysizmi?')) {
+        handleLogout('Tizimdan muvaffaqiyatli chiqildi.');
+      }
     };
 
     document.querySelector('#refresh-btn').onclick = loadOrders;
@@ -1092,17 +1271,23 @@
       }
     };
 
-    loadProducts();
-    if (adminKeyInput.value.trim()) {
-      loadOrders();
-      checkForNewOrders();
+    // Boshlang'ich tekshiruv: agar avval kirilgan bo'lsa, sessiyani tekshirib CRM ni ochamiz
+    const storedKey = getAdminKey();
+    if (storedKey) {
+      fetch('/api/auth/verify', { headers: { 'x-admin-key': storedKey } })
+        .then(res => {
+          if (res.ok) {
+            showCrmView();
+          } else {
+            handleLogout('Avvalgi sessiya muddati tugagan. Qaytadan kiring.');
+          }
+        })
+        .catch(() => {
+          showLoginView();
+        });
+    } else {
+      showLoginView();
     }
-
-    setInterval(() => {
-      if (adminKeyInput.value.trim()) {
-        checkForNewOrders();
-      }
-    }, 10000);
   </script>
 </body>
 </html>
