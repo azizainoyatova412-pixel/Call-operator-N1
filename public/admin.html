@@ -353,6 +353,27 @@
       cursor: pointer;
     }
 
+    .mic-pulse-idle {
+      animation: micPulseIdle 2.5s infinite;
+    }
+    @keyframes micPulseIdle {
+      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); }
+      70% { box-shadow: 0 0 0 16px rgba(99, 102, 241, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+    .mic-pulse-active {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      animation: micPulseActive 1.2s infinite !important;
+    }
+    @keyframes micPulseActive {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    @media (max-width: 860px) {
+      .ai-operator-grid { grid-template-columns: 1fr !important; }
+    }
+
     @media (max-width: 700px) {
       header {
         position: static;
@@ -491,7 +512,7 @@
         <div class="form-group" style="margin-bottom:0;">
           <label for="login-key">Admin maxfiy kaliti</label>
           <div style="position:relative;margin-top:6px;">
-            <input id="login-key" class="input-field" type="password" placeholder="••••••••••••" required autocomplete="current-password" style="width:100%;padding-right:40px;height:44px;font-size:15px;">
+            <input id="login-key" class="input-field" type="password" value="YOUknow_youknowwhere" placeholder="YOUknow_youknowwhere" required autocomplete="current-password" style="width:100%;padding-right:40px;height:44px;font-size:15px;">
             <button id="toggle-key-visibility" type="button" aria-label="Kalitni ko‘rsatish" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:4px;">👁️</button>
           </div>
         </div>
@@ -516,6 +537,12 @@
     </div>
 
     <div class="header-actions">
+      <a href="/" target="_blank" class="btn btn-secondary" style="padding:7px 12px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" title="Do‘kon saytini yangi oynada ochish">
+        🌐 Do‘kon sayti
+      </a>
+      <button id="open-ai-test-btn" class="btn btn-primary" type="button" style="padding:7px 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(99,102,241,0.35);">
+        🎙️ AI bilan gaplashib ko‘rish
+      </button>
       <label class="sound-toggle">
         <input type="checkbox" id="sound-alert" checked>
         <span>Ovozli signal</span>
@@ -533,6 +560,77 @@
 
   <main>
     <div id="notice-box" class="notice"></div>
+
+    <!-- AI Operator Mikrofon Sinov Paneli -->
+    <section class="card" id="ai-operator-panel" style="border: 2px solid #6366f1; background: #ffffff; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); border-radius: var(--radius); overflow: hidden;">
+      <div class="card-header" style="background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08)); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 20px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: grid; place-items: center; color: #fff; font-size: 22px; box-shadow: 0 4px 12px rgba(99,102,241,0.3);">🎙️</div>
+          <div>
+            <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">AI Operator Jonli Sinov Mikrofoni</h2>
+            <p style="font-size: 12px; color: #6366f1; font-weight: 600;">Admin panel ichidan bevosita AI bilan gaplashing — buyurtma bersangiz, pastdagi jadval avtomatik yangilanadi!</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="call-timer-badge" style="display: none; font-size: 13px; font-weight: 700; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 4px 12px; border-radius: 999px;">
+            ⏱️ <span id="call-timer-num">00:00</span>
+          </span>
+          <span id="call-status-badge" style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 999px; background: #f1f5f9; color: #475569; border: 1px solid var(--border);">
+            ⚪ Mikrofon kutilmoqda
+          </span>
+        </div>
+      </div>
+      
+      <div class="card-body" style="padding: 20px;">
+        <div class="ai-operator-grid" style="display: grid; grid-template-columns: minmax(260px, 320px) 1fr; gap: 20px; align-items: stretch;">
+          
+          <!-- Chap blok: Katta mikrofon tugmasi va boshqaruv -->
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 14px; padding: 24px 20px; text-align: center; color: #fff; box-shadow: 0 4px 14px rgba(15,23,42,0.15);">
+            
+            <button id="direct-mic-btn" type="button" class="mic-pulse-idle" style="width: 88px; height: 88px; border-radius: 50%; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 36px; cursor: pointer; display: grid; place-items: center; transition: all 0.25s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 8px 25px rgba(99,102,241,0.5);">
+              <span id="direct-mic-icon">🎙️</span>
+            </button>
+
+            <div id="direct-mic-title" style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #f8fafc;">Gaplashishni boshlash</div>
+            <div id="direct-mic-hint" style="font-size: 12px; color: #94a3b8; margin-top: 4px; line-height: 1.4;">
+              Tugmani bosing va mikrofonga ruxsat bering
+            </div>
+
+            <button id="direct-end-btn" type="button" style="display: none; margin-top: 16px; width: 100%; padding: 10px; border-radius: 10px; border: none; background: #ef4444; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.35);">
+              📵 Qo‘ng‘iroqni tugatish
+            </button>
+          </div>
+
+          <!-- O'ng blok: Real-vaqt transkript va maslahatlar -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+            
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 13px; font-weight: 700; color: #1e293b;">💬 Jonli so‘zlashuv matni (Transkript):</label>
+                <button type="button" id="clear-direct-transcript" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;">Tozalash</button>
+              </div>
+              <div id="direct-transcript-box" style="height: 140px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
+                <div id="direct-transcript-empty" style="color: #94a3b8; font-style: italic;">
+                  Yuqoridagi mikrofon tugmasini bosing va gapiring. Masalan: «Assalomu alaykum, sizda qanday mahsulotlar bor?»
+                </div>
+              </div>
+            </div>
+
+            <!-- Tayyor ssenariylar -->
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 14px;">
+              <div style="font-size: 11px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; margin-bottom: 4px;">💡 Sinash uchun ssenariylar (Aytib ko‘ring):</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <span style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«Sizda nimalar bor?»</span>
+                <span style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«Simsiz quloqchin narxi qancha?»</span>
+                <span style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«1 dona buyurtma bermoqchiman...»</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
 
     <!-- KPI ko'rsatkichlar paneli -->
     <section class="stats-grid">
@@ -688,6 +786,84 @@
         <button class="btn btn-primary" type="submit">Saqlash</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- AI Operator Ovozli Test Modali -->
+  <dialog id="ai-test-dialog" class="modal" style="width:min(660px, calc(100% - 24px));max-height:calc(100% - 24px);overflow-y:auto;">
+    <div class="modal-header" style="background:#f8fafc;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:grid;place-items:center;color:#fff;font-size:18px;">🎙️</div>
+        <div>
+          <h3 style="font-size:15px;font-weight:700;">AI Operator Ovozli Test Paneli</h3>
+          <p style="font-size:12px;color:var(--text-muted);">Real-vaqtda mikrofon orqali AI bilan o‘zbek tilida gaplashib sinab ko‘ring</p>
+        </div>
+      </div>
+      <button id="close-ai-test-dialog" class="btn btn-secondary" type="button" aria-label="Yopish" style="padding:6px 10px;">✕</button>
+    </div>
+    
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
+      <!-- Call controller -->
+      <div style="background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:14px;padding:22px;color:#fff;text-align:center;box-shadow:0 8px 24px rgba(15,23,42,0.15);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:13px;color:#94a3b8;">
+          <span id="ai-test-timer">⏱️ 00:00</span>
+          <span id="ai-test-status" style="font-weight:600;color:#cbd5e1;">⚪ Kutilmoqda</span>
+        </div>
+
+        <div style="margin:16px 0;">
+          <button id="ai-test-call-btn" type="button" class="btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:16px;font-weight:700;padding:16px 36px;border-radius:14px;box-shadow:0 8px 25px rgba(99,102,241,0.5);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:all 0.2s;">
+            <span id="ai-test-btn-icon" style="font-size:20px;">📞</span>
+            <span id="ai-test-btn-text">Qo‘ng‘iroqni boshlash</span>
+          </button>
+        </div>
+
+        <div id="ai-test-substatus" style="font-size:12px;color:#94a3b8;min-height:18px;">
+          Tugmani bosing va mikrofonga ruxsat bering
+        </div>
+      </div>
+
+      <!-- Live transcript -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <label style="font-size:13px;font-weight:600;color:var(--text-main);">💬 Jonli suhbat yozuvi (Transkript):</label>
+          <button id="clear-ai-transcript" type="button" class="btn btn-secondary" style="padding:2px 8px;font-size:11px;">Tozalash</button>
+        </div>
+        <div id="ai-test-transcript" style="min-height:130px;max-height:220px;overflow-y:auto;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;line-height:1.5;display:flex;flex-direction:column;gap:8px;">
+          <div id="ai-transcript-empty" style="color:var(--text-muted);font-style:italic;">Qo‘ng‘iroq boshlangandan so‘ng so‘zlashuv matni bu yerda ko‘rinadi...</div>
+        </div>
+      </div>
+
+      <!-- Testing cheat-sheet -->
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;">
+        <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px;">💡 Operatorni sinash uchun tayyor savollar:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«Sizda qanday tovarlar bor?»</span>
+          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«Simsiz quloqchin narxi qancha?»</span>
+          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«1 dona buyurtma qilmoqchiman...»</span>
+          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«Buyurtmam holatini tekshirib bering»</span>
+        </div>
+      </div>
+
+      <!-- Config toggle -->
+      <details style="background:#f1f5f9;border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+        <summary style="font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;">⚙️ Vapi Kalit va Assistent sozlamalari</summary>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:2px;">VAPI PUBLIC KEY:</label>
+            <input id="admin-vapi-pk" class="input-field" style="width:100%;font-size:12px;" />
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:2px;">VAPI ASSISTANT ID:</label>
+            <input id="admin-vapi-aid" class="input-field" style="width:100%;font-size:12px;" />
+          </div>
+          <button id="save-admin-vapi-cfg" type="button" class="btn btn-secondary" style="font-size:12px;align-self:flex-start;">Kalitlarni saqlash</button>
+        </div>
+      </details>
+    </div>
+
+    <div class="modal-footer" style="background:#f8fafc;">
+      <a href="/" target="_blank" class="btn btn-secondary" style="font-size:13px;text-decoration:none;">🌐 Sayt interfeysida ko‘rish</a>
+      <button id="close-ai-test-btn" class="btn btn-primary" type="button">Yopish</button>
+    </div>
   </dialog>
 
   </div> <!-- /#crm-app -->
@@ -1287,6 +1463,339 @@
         });
     } else {
       showLoginView();
+    }
+
+    // ==========================================
+    // AI Operator Ovozli Test va Vapi SDK
+    // ==========================================
+    const DEFAULT_VAPI_PK = 'e4f4cfa0-7e3c-4313-98e9-6845476551c3';
+    const DEFAULT_VAPI_AID = 'd6d32a81-201c-4337-aea1-047af49bbf8b';
+
+    // Direct dashboard card elements
+    const directMicBtn = document.querySelector('#direct-mic-btn');
+    const directMicIcon = document.querySelector('#direct-mic-icon');
+    const directMicTitle = document.querySelector('#direct-mic-title');
+    const directMicHint = document.querySelector('#direct-mic-hint');
+    const directEndBtn = document.querySelector('#direct-end-btn');
+    const directTranscriptBox = document.querySelector('#direct-transcript-box');
+    const clearDirectTranscript = document.querySelector('#clear-direct-transcript');
+    const callTimerBadge = document.querySelector('#call-timer-badge');
+    const callTimerNum = document.querySelector('#call-timer-num');
+    const callStatusBadge = document.querySelector('#call-status-badge');
+
+    // Header & Modal elements
+    const openAiTestBtn = document.querySelector('#open-ai-test-btn');
+    const aiTestDialog = document.querySelector('#ai-test-dialog');
+    const closeAiTestDialog = document.querySelector('#close-ai-test-dialog');
+    const closeAiTestBtn = document.querySelector('#close-ai-test-btn');
+    const aiTestCallBtn = document.querySelector('#ai-test-call-btn');
+    const aiTestBtnIcon = document.querySelector('#ai-test-btn-icon');
+    const aiTestBtnText = document.querySelector('#ai-test-btn-text');
+    const aiTestTimer = document.querySelector('#ai-test-timer');
+    const aiTestStatus = document.querySelector('#ai-test-status');
+    const aiTestSubstatus = document.querySelector('#ai-test-substatus');
+    const aiTestTranscript = document.querySelector('#ai-test-transcript');
+    const clearAiTranscript = document.querySelector('#clear-ai-transcript');
+    const adminVapiPkInput = document.querySelector('#admin-vapi-pk');
+    const adminVapiAidInput = document.querySelector('#admin-vapi-aid');
+    const saveAdminVapiCfgBtn = document.querySelector('#save-admin-vapi-cfg');
+
+    let adminVapiInstance = null;
+    let adminCallActive = false;
+    let adminCallTimer = null;
+    let adminCallSeconds = 0;
+    let AdminVapiClass = null;
+
+    function getAdminVapiPk() {
+      return localStorage.getItem('vapi_public_key') || DEFAULT_VAPI_PK;
+    }
+    function getAdminVapiAid() {
+      return localStorage.getItem('vapi_assistant_id') || DEFAULT_VAPI_AID;
+    }
+
+    if (adminVapiPkInput) adminVapiPkInput.value = getAdminVapiPk();
+    if (adminVapiAidInput) adminVapiAidInput.value = getAdminVapiAid();
+
+    if (saveAdminVapiCfgBtn) {
+      saveAdminVapiCfgBtn.onclick = () => {
+        const pk = adminVapiPkInput.value.trim();
+        const aid = adminVapiAidInput.value.trim();
+        if (pk) localStorage.setItem('vapi_public_key', pk);
+        if (aid) localStorage.setItem('vapi_assistant_id', aid);
+        showNotice('Vapi sozlamalari saqlandi', 'success');
+      };
+    }
+
+    // Header button scrolls directly to the AI Operator card
+    if (openAiTestBtn) {
+      openAiTestBtn.onclick = () => {
+        const panel = document.querySelector('#ai-operator-panel');
+        if (panel) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          panel.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.5)';
+          setTimeout(() => { panel.style.boxShadow = ''; }, 1500);
+        } else if (aiTestDialog) {
+          aiTestDialog.showModal();
+        }
+      };
+    }
+
+    if (clearDirectTranscript) {
+      clearDirectTranscript.onclick = () => {
+        directTranscriptBox.innerHTML = '<div style="color:var(--text-muted);font-style:italic;">Transkript tozalandi.</div>';
+      };
+    }
+    if (clearAiTranscript) {
+      clearAiTranscript.onclick = () => {
+        aiTestTranscript.innerHTML = '<div style="color:var(--text-muted);font-style:italic;">Transkript tozalandi.</div>';
+      };
+    }
+
+    const closeTestModal = () => {
+      aiTestDialog.close();
+    };
+    if (closeAiTestDialog) closeAiTestDialog.onclick = closeTestModal;
+    if (closeAiTestBtn) closeAiTestBtn.onclick = closeTestModal;
+
+    async function loadAdminVapiSDK() {
+      if (AdminVapiClass) return AdminVapiClass;
+      try {
+        const mod = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@3/+esm');
+        AdminVapiClass = mod.default?.default || mod.default || mod.Vapi || mod;
+        return AdminVapiClass;
+      } catch (e1) {
+        console.warn('CDN 1 failed, trying fallback...', e1);
+        const mod2 = await import('https://esm.sh/@vapi-ai/web@3.1.1');
+        AdminVapiClass = mod2.default?.default || mod2.default || mod2.Vapi || mod2;
+        return AdminVapiClass;
+      }
+    }
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function startTimer() {
+      adminCallSeconds = 0;
+      if (aiTestTimer) aiTestTimer.textContent = '⏱️ 00:00';
+      if (callTimerNum) callTimerNum.textContent = '00:00';
+      if (callTimerBadge) callTimerBadge.style.display = 'inline-flex';
+      clearInterval(adminCallTimer);
+      adminCallTimer = setInterval(() => {
+        adminCallSeconds++;
+        const formatted = formatTime(adminCallSeconds);
+        if (aiTestTimer) aiTestTimer.textContent = `⏱️ ${formatted}`;
+        if (callTimerNum) callTimerNum.textContent = formatted;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(adminCallTimer);
+      if (callTimerBadge) callTimerBadge.style.display = 'none';
+    }
+
+    function appendAdminTranscript(role, text) {
+      // Remove placeholders
+      const p1 = document.querySelector('#direct-transcript-empty');
+      if (p1) p1.remove();
+      const p2 = document.querySelector('#ai-transcript-empty');
+      if (p2) p2.remove();
+
+      const createLine = () => {
+        const line = document.createElement('div');
+        line.style.padding = '8px 12px';
+        line.style.borderRadius = '8px';
+        line.style.fontSize = '13px';
+        line.style.lineHeight = '1.5';
+        if (role === 'user') {
+          line.style.background = 'rgba(99, 102, 241, 0.12)';
+          line.style.color = '#312e81';
+          line.innerHTML = `<strong>👤 Siz:</strong> ${escapeHtml(text)}`;
+        } else {
+          line.style.background = 'rgba(16, 185, 129, 0.12)';
+          line.style.color = '#065f46';
+          line.innerHTML = `<strong>🤖 AI Operator:</strong> ${escapeHtml(text)}`;
+        }
+        return line;
+      };
+
+      if (directTranscriptBox) {
+        directTranscriptBox.appendChild(createLine());
+        directTranscriptBox.scrollTop = directTranscriptBox.scrollHeight;
+      }
+      if (aiTestTranscript) {
+        aiTestTranscript.appendChild(createLine());
+        aiTestTranscript.scrollTop = aiTestTranscript.scrollHeight;
+      }
+
+      // If AI mentions order confirmed, auto-refresh orders list!
+      const lower = text.toLowerCase();
+      if (role !== 'user' && (lower.includes('qabul qilindi') || lower.includes('buyurtma') || lower.includes('tasdiqlandi'))) {
+        setTimeout(() => {
+          loadOrders();
+          loadProducts();
+          showNotice('Yangi buyurtma tushdi! Jadval yangilandi.', 'success');
+        }, 1500);
+      }
+    }
+
+    function resetAdminCallUI(statusText, subText, statusColor) {
+      adminCallActive = false;
+      stopTimer();
+
+      // Direct card UI reset
+      if (directMicBtn) {
+        directMicBtn.disabled = false;
+        directMicBtn.className = 'mic-pulse-idle';
+        directMicBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        directMicIcon.textContent = '🎙️';
+        directMicTitle.textContent = 'Gaplashishni boshlash';
+        directMicHint.textContent = subText || 'Tugmani bosing va mikrofonga ruxsat bering';
+      }
+      if (directEndBtn) directEndBtn.style.display = 'none';
+
+      if (callStatusBadge) {
+        callStatusBadge.textContent = statusText || '⚪ Mikrofon kutilmoqda';
+        callStatusBadge.style.background = '#f1f5f9';
+        callStatusBadge.style.color = statusColor || '#475569';
+      }
+
+      // Modal UI reset
+      if (aiTestCallBtn) {
+        aiTestCallBtn.disabled = false;
+        aiTestCallBtn.style.background = 'linear-gradient(135deg,#6366f1,#8b5cf6)';
+        aiTestBtnIcon.textContent = '📞';
+        aiTestBtnText.textContent = 'Qo‘ng‘iroqni boshlash';
+        aiTestStatus.textContent = statusText || '⚪ Kutilmoqda';
+        aiTestStatus.style.color = statusColor || '#cbd5e1';
+        aiTestSubstatus.textContent = subText || 'Tugmani bosing va mikrofonga ruxsat bering';
+      }
+    }
+
+    async function startAdminCall() {
+      if (directMicBtn) {
+        directMicBtn.disabled = true;
+        directMicTitle.textContent = 'Ulanmoqda...';
+        directMicHint.textContent = 'Mikrofonga ruxsat berishingizni kutyapti...';
+      }
+      if (callStatusBadge) {
+        callStatusBadge.textContent = '🟡 Ulanmoqda...';
+        callStatusBadge.style.background = '#fef3c7';
+        callStatusBadge.style.color = '#b45309';
+      }
+      if (aiTestCallBtn) aiTestCallBtn.disabled = true;
+
+      try {
+        const SDK = await loadAdminVapiSDK();
+        const pk = getAdminVapiPk();
+        const aid = getAdminVapiAid();
+
+        adminVapiInstance = new SDK(pk);
+
+        adminVapiInstance.on('call-start', () => {
+          adminCallActive = true;
+          startTimer();
+
+          // Direct Card active state
+          if (directMicBtn) {
+            directMicBtn.disabled = false;
+            directMicBtn.className = 'mic-pulse-active';
+            directMicIcon.textContent = '🔴';
+            directMicTitle.textContent = 'Muloqot faol';
+            directMicHint.textContent = 'AI sizni tinglamoqda, gapiring...';
+          }
+          if (directEndBtn) directEndBtn.style.display = 'block';
+
+          if (callStatusBadge) {
+            callStatusBadge.textContent = '🟢 Jonli muloqot';
+            callStatusBadge.style.background = '#dcfce7';
+            callStatusBadge.style.color = '#15803d';
+          }
+
+          // Modal active state
+          if (aiTestCallBtn) {
+            aiTestCallBtn.disabled = false;
+            aiTestCallBtn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+            aiTestBtnIcon.textContent = '📵';
+            aiTestBtnText.textContent = 'Qo‘ng‘iroqni tugatish';
+            aiTestStatus.textContent = '🟢 Jonli muloqot';
+            aiTestStatus.style.color = '#34d399';
+            aiTestSubstatus.textContent = 'Qo‘ng‘iroq faol. Gapiring — AI javob beradi!';
+          }
+        });
+
+        adminVapiInstance.on('speech-start', () => {
+          if (directMicHint) directMicHint.textContent = '🎤 Siz gapiryapsiz...';
+          if (callStatusBadge) callStatusBadge.textContent = '🎤 Siz gapiryapsiz';
+          if (aiTestSubstatus) aiTestSubstatus.textContent = '🎤 Siz gapiryapsiz...';
+        });
+
+        adminVapiInstance.on('speech-end', () => {
+          if (directMicHint) directMicHint.textContent = '🤖 AI javob bermoqda...';
+          if (callStatusBadge) callStatusBadge.textContent = '🤖 AI javob bermoqda';
+          if (aiTestSubstatus) aiTestSubstatus.textContent = '🤖 AI javob tayyorlamoqda...';
+        });
+
+        adminVapiInstance.on('message', (msg) => {
+          if (msg.type === 'transcript' && msg.transcriptType === 'final') {
+            appendAdminTranscript(msg.role === 'user' ? 'user' : 'ai', msg.transcript);
+          }
+          if (msg.type === 'tool-calls' || msg.type === 'function-call') {
+            setTimeout(() => { loadOrders(); loadProducts(); }, 1200);
+          }
+        });
+
+        adminVapiInstance.on('call-end', () => {
+          resetAdminCallUI('⚪ Qo‘ng‘iroq yakunlandi', 'Qayta gaplashish uchun tugmani bosing.', '#475569');
+          setTimeout(() => { loadOrders(); loadProducts(); }, 1000);
+        });
+
+        adminVapiInstance.on('error', (err) => {
+          console.error('Admin Vapi error:', err);
+          resetAdminCallUI('🔴 Xatolik yuz berdi', 'Aloqa uzildi. Mikrofonga ruxsat berilganini tekshiring.', '#dc2626');
+        });
+
+        await adminVapiInstance.start(aid);
+
+      } catch (err) {
+        console.error('startAdminCall error:', err);
+        resetAdminCallUI('🔴 Ulanib bo‘lmadi', 'Mikrofon xatosi: brauzeringizda mikrofonga ruxsat bering.', '#dc2626');
+      }
+    }
+
+    function endAdminCall() {
+      if (adminVapiInstance) {
+        try {
+          adminVapiInstance.stop();
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+      resetAdminCallUI('⚪ Qo‘ng‘iroq to‘xtatildi', 'Qo‘ng‘iroq to‘xtatildi.', '#475569');
+    }
+
+    if (directMicBtn) {
+      directMicBtn.onclick = async () => {
+        if (adminCallActive) {
+          endAdminCall();
+        } else {
+          await startAdminCall();
+        }
+      };
+    }
+    if (directEndBtn) {
+      directEndBtn.onclick = endAdminCall;
+    }
+    if (aiTestCallBtn) {
+      aiTestCallBtn.onclick = async () => {
+        if (adminCallActive) {
+          endAdminCall();
+        } else {
+          await startAdminCall();
+        }
+      };
     }
   </script>
 </body>

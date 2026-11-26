@@ -5,7 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google" content="notranslate" />
-  <title>AI Savdo Operatori — Demo</title>
+  <title>AI Savdo Operatori — O‘zbek tilidagi ovozli yordamchi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -14,51 +18,117 @@
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #090d16 0%, #111827 50%, #090d16 100%);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       color: #f8fafc;
-      padding: 24px;
+      padding: 20px;
+    }
+
+    .top-nav {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0 24px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #f1f5f9;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
     }
 
     .hero {
       text-align: center;
-      max-width: 560px;
+      max-width: 620px;
       width: 100%;
+      margin: auto 0;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.4);
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.35);
       color: #a5b4fc;
       font-size: 13px;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
-      margin-bottom: 28px;
-      letter-spacing: 0.5px;
+      margin-bottom: 24px;
+      letter-spacing: 0.3px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 10px #10b981;
     }
 
     h1 {
-      font-size: clamp(28px, 6vw, 48px);
+      font-size: clamp(32px, 6vw, 52px);
       font-weight: 800;
       line-height: 1.15;
       margin-bottom: 16px;
-      background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     h1 span {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      background: linear-gradient(135deg, #818cf8, #c084fc);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -67,11 +137,18 @@
     .subtitle {
       font-size: 17px;
       color: #94a3b8;
-      margin-bottom: 48px;
+      margin-bottom: 36px;
       line-height: 1.6;
     }
 
-    /* ---- Call button ---- */
+    /* ---- Call visualizer & button ---- */
+    .call-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
     #call-btn {
       display: inline-flex;
       align-items: center;
@@ -83,18 +160,17 @@
       font-weight: 700;
       border: none;
       border-radius: 16px;
-      padding: 20px 48px;
+      padding: 18px 42px;
       cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.45);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.45);
       position: relative;
-      overflow: hidden;
-      min-width: 240px;
+      min-width: 260px;
     }
 
     #call-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.6);
+      box-shadow: 0 14px 38px rgba(99, 102, 241, 0.6);
     }
 
     #call-btn:active {
@@ -107,13 +183,17 @@
       transform: none;
     }
 
-    /* Pulse ring when active */
+    #call-btn.ringing {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.45);
+    }
+
     #call-btn.ringing::before {
       content: '';
       position: absolute;
-      inset: -4px;
-      border-radius: 20px;
-      border: 3px solid rgba(99, 102, 241, 0.6);
+      inset: -6px;
+      border-radius: 22px;
+      border: 3px solid rgba(239, 68, 68, 0.6);
       animation: pulse-ring 1.5s linear infinite;
     }
 
@@ -124,138 +204,132 @@
       }
 
       100% {
-        transform: scale(1.3);
+        transform: scale(1.2);
         opacity: 0;
       }
     }
 
     .phone-icon {
       font-size: 22px;
-      transition: transform 0.3s;
-    }
-
-    #call-btn.ringing .phone-icon {
-      animation: ring-shake 0.6s infinite;
-    }
-
-    @keyframes ring-shake {
-
-      0%,
-      100% {
-        transform: rotate(0);
-      }
-
-      25% {
-        transform: rotate(-15deg);
-      }
-
-      75% {
-        transform: rotate(15deg);
-      }
-    }
-
-    /* End call button */
-    #end-btn {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: #fff;
-      font-size: 17px;
-      font-weight: 700;
-      border: none;
-      border-radius: 16px;
-      padding: 18px 44px;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
-      margin-top: 16px;
-      min-width: 240px;
-    }
-
-    #end-btn.visible {
-      display: inline-flex;
-    }
-
-    #end-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(239, 68, 68, 0.55);
     }
 
     .status-bar {
-      margin-top: 24px;
+      margin-top: 10px;
       font-size: 14px;
-      color: #64748b;
-      min-height: 20px;
-      transition: color 0.3s;
+      color: #94a3b8;
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
     }
 
     .status-bar.active {
-      color: #6ee7b7;
+      color: #34d399;
+    }
+
+    .status-bar.speaking {
+      color: #38bdf8;
     }
 
     .status-bar.error {
-      color: #fca5a5;
+      color: #f87171;
+    }
+
+    /* Hints */
+    .hints-panel {
+      margin-top: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .hints-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .hint-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hint-chip {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: #cbd5e1;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
     }
 
     /* Transcript box */
     #transcript-box {
       display: none;
-      margin-top: 32px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      margin-top: 24px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(99, 102, 241, 0.25);
       border-radius: 14px;
-      padding: 20px;
-      max-height: 240px;
+      padding: 16px;
+      max-height: 260px;
       overflow-y: auto;
       text-align: left;
       font-size: 14px;
       line-height: 1.6;
-      color: #cbd5e1;
       width: 100%;
-      max-width: 560px;
     }
 
     #transcript-box.visible {
       display: block;
     }
 
-    #transcript-box p {
-      margin-bottom: 6px;
+    .msg-line {
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
     }
 
-    #transcript-box .user {
-      color: #a5b4fc;
+    .msg-user {
+      background: rgba(99, 102, 241, 0.12);
+      color: #c7d2fe;
     }
 
-    #transcript-box .ai {
-      color: #6ee7b7;
+    .msg-ai {
+      background: rgba(16, 185, 129, 0.12);
+      color: #a7f3d0;
     }
 
     /* Features */
     .features {
       display: flex;
-      gap: 20px;
-      margin-top: 56px;
+      gap: 16px;
+      margin-top: 40px;
       flex-wrap: wrap;
       justify-content: center;
-      max-width: 560px;
+      max-width: 620px;
       width: 100%;
     }
 
     .feat {
-      flex: 1 1 150px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      flex: 1 1 160px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 14px;
-      padding: 20px 16px;
+      padding: 16px 14px;
       text-align: center;
     }
 
     .feat .icon {
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: 24px;
+      margin-bottom: 8px;
     }
 
     .feat .label {
@@ -264,96 +338,216 @@
       font-weight: 500;
     }
 
-    footer {
-      margin-top: 48px;
+    /* Config collapse */
+    .config-trigger {
+      margin-top: 18px;
+      background: none;
+      border: none;
+      color: #64748b;
       font-size: 12px;
-      color: #334155;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .config-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .config-box.open {
+      display: block;
+    }
+
+    .config-box label {
+      display: block;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .config-box input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #0f172a;
+      color: #fff;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #475569;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="hero">
-    <div class="badge">🤖 Vapi · GPT-4o · Deepgram</div>
-    <h1>AI Savdo<br /><span>Operatori</span></h1>
+  <nav class="top-nav">
+    <div class="brand">
+      <div class="brand-icon">AI</div>
+      <div>Call Operator Demo</div>
+    </div>
+    <div class="nav-links">
+      <a href="/admin" class="nav-btn">
+        <span>⚙️</span> CRM Admin Panel
+      </a>
+    </div>
+  </nav>
+
+  <main class="hero">
+    <div class="badge">
+      <span class="pulse-dot"></span> Vapi · GPT-4o · Cartesia O‘zbek Ovozi
+    </div>
+    <h1>AI Ovozli Savdo<br /><span>Operatori</span></h1>
     <p class="subtitle">
-      O'zbek tilida gapiradigan sun'iy intellekt operatori.<br />
-      Brauzeringizdan hoziroq gaplab ko'ring — hech qanday telefon kerak emas.
+      O‘zbek tilida tabiiy so‘zlashuvchi sun’iy intellekt operatori.<br />
+      Mahsulotlar haqida so‘rang, buyurtma bering yoki holatini tekshiring.
     </p>
 
-    <div style="display:flex; flex-direction:column; align-items:center;">
-      <button id="call-btn" onclick="startCall()">
-        <span class="phone-icon">📞</span>
-        AI bilan gapla
+    <div class="call-controls">
+      <button id="call-btn" type="button" onclick="toggleCall()">
+        <span class="phone-icon" id="call-icon">📞</span>
+        <span id="call-text">AI bilan gaplashish</span>
       </button>
-      <button id="end-btn" onclick="endCall()">
-        <span>📵</span>
-        Qo'ng'iroqni tugatish
-      </button>
-      <div id="status" class="status-bar">Tugmani bosib AI operator bilan bog'laning</div>
+
+      <div id="status" class="status-bar">Mikrofon orqali bog‘lanish uchun tugmani bosing</div>
     </div>
 
     <div id="transcript-box"></div>
-  </div>
+
+    <div class="hints-panel">
+      <div class="hints-title">💡 Nimalar haqida so‘rashingiz mumkin?</div>
+      <div class="hint-chips">
+        <span class="hint-chip">«Sizda qanday tovarlar bor?»</span>
+        <span class="hint-chip">«Simsiz quloqchin narxi qancha?»</span>
+        <span class="hint-chip">«1 dona quloqchin buyurtma qilmoqchiman»</span>
+        <span class="hint-chip">«Buyurtmam holati nima bo‘ldi?»</span>
+      </div>
+    </div>
+
+    <button type="button" class="config-trigger" onclick="toggleConfig()">⚙️ Vapi Sozlamalarini ko‘rish /
+      o‘zgartirish</button>
+    <div id="config-box" class="config-box">
+      <label>Vapi Public Key</label>
+      <input id="cfg-public-key" type="text" placeholder="Vapi Public Key" />
+      <label>Vapi Assistant ID</label>
+      <input id="cfg-assistant-id" type="text" placeholder="Vapi Assistant ID" />
+      <button type="button" class="nav-btn" style="width:100%;justify-content:center;background:#2563eb;"
+        onclick="saveConfig()">Sozlamalarni saqlash</button>
+    </div>
+  </main>
 
   <div class="features">
     <div class="feat">
       <div class="icon">🗣️</div>
-      <div class="label">O'zbek tilida jonli muloqot</div>
+      <div class="label">O‘zbek tilida jonli nutq</div>
     </div>
     <div class="feat">
       <div class="icon">📦</div>
-      <div class="label">Buyurtma qabul qilish</div>
+      <div class="label">Avtomatik buyurtma olish</div>
     </div>
     <div class="feat">
       <div class="icon">⚡</div>
-      <div class="label">24/7 avtomatik ishlov</div>
+      <div class="label">24/7 doimiy aloqa</div>
     </div>
   </div>
 
-  <footer>Demo versiya — Call Operator N1</footer>
+  <footer>Demo versiya — AI Call Operator CRM tizimi</footer>
 
-  <!-- Vapi Web SDK -->
-  <script>
-    const VAPI_PUBLIC_KEY = 'e4f4cfa0-7e3c-4313-98e9-6845476551c3';
-    const ASSISTANT_ID = 'd6d32a81-201c-4337-aea1-047af49bbf8b';
+  <script type="module">
+    const DEFAULT_PUBLIC_KEY = 'e4f4cfa0-7e3c-4313-98e9-6845476551c3';
+    const DEFAULT_ASSISTANT_ID = 'd6d32a81-201c-4337-aea1-047af49bbf8b';
 
     let vapi = null;
     let callActive = false;
+    let VapiConstructor = null;
 
-    async function loadVapi() {
-      if (window.Vapi) return;
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.js';
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
+    // Load configs from localStorage
+    function getPublicKey() {
+      return localStorage.getItem('vapi_public_key') || DEFAULT_PUBLIC_KEY;
     }
+    function getAssistantId() {
+      return localStorage.getItem('vapi_assistant_id') || DEFAULT_ASSISTANT_ID;
+    }
+
+    document.getElementById('cfg-public-key').value = getPublicKey();
+    document.getElementById('cfg-assistant-id').value = getAssistantId();
+
+    window.toggleConfig = function () {
+      const box = document.getElementById('config-box');
+      box.classList.toggle('open');
+    };
+
+    window.saveConfig = function () {
+      const pk = document.getElementById('cfg-public-key').value.trim();
+      const aid = document.getElementById('cfg-assistant-id').value.trim();
+      if (pk) localStorage.setItem('vapi_public_key', pk);
+      if (aid) localStorage.setItem('vapi_assistant_id', aid);
+      alert('Sozlamalar saqlandi!');
+      if (callActive) window.toggleCall();
+    };
+
+    async function getVapiSDK() {
+      if (VapiConstructor) return VapiConstructor;
+      try {
+        const mod = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@3/+esm');
+        VapiConstructor = mod.default?.default || mod.default || mod.Vapi || mod;
+        return VapiConstructor;
+      } catch (err1) {
+        console.warn('CDN 1 failed, trying fallback esm.sh...', err1);
+        const mod2 = await import('https://esm.sh/@vapi-ai/web@3.1.1');
+        VapiConstructor = mod2.default?.default || mod2.default || mod2.Vapi || mod2;
+        return VapiConstructor;
+      }
+    }
+
+    window.toggleCall = async function () {
+      if (callActive) {
+        endCall();
+      } else {
+        await startCall();
+      }
+    };
 
     async function startCall() {
       const btn = document.getElementById('call-btn');
-      const endBtn = document.getElementById('end-btn');
-      const status = document.getElementById('status');
+      const icon = document.getElementById('call-icon');
+      const text = document.getElementById('call-text');
 
-      setStatus('Yuklanmoqda...', '');
+      setStatus('⏳ Ulanmoqda... Mikrofon ruxsatini tasdiqlang', '');
       btn.disabled = true;
 
       try {
-        await loadVapi();
-        vapi = new window.Vapi(VAPI_PUBLIC_KEY);
+        const SDK = await getVapiSDK();
+        const publicKey = getPublicKey();
+        const assistantId = getAssistantId();
+
+        vapi = new SDK(publicKey);
 
         vapi.on('call-start', () => {
+          callActive = true;
+          btn.disabled = false;
           btn.classList.add('ringing');
-          endBtn.classList.add('visible');
-          setStatus('🟢 Qo\'ng\'iroq boshlandi — gapirishingiz mumkin', 'active');
+          icon.textContent = '📵';
+          text.textContent = 'Qo‘ng‘iroqni tugatish';
+          setStatus('🟢 Qo‘ng‘iroq boshlandi — AI sizni tinglamoqda', 'active');
           document.getElementById('transcript-box').classList.add('visible');
         });
 
-        vapi.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'active'));
-        vapi.on('speech-end', () => setStatus('🤖 AI javob tayyorlamoqda...', 'active'));
+        vapi.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'speaking'));
+        vapi.on('speech-end', () => setStatus('🤖 AI javob bermoqda...', 'active'));
 
         vapi.on('message', (msg) => {
           if (msg.type === 'transcript' && msg.transcriptType === 'final') {
@@ -362,35 +556,45 @@
         });
 
         vapi.on('call-end', () => {
-          callActive = false;
-          btn.disabled = false;
-          btn.classList.remove('ringing');
-          endBtn.classList.remove('visible');
-          setStatus('Qo\'ng\'iroq yakunlandi. Yana urinib ko\'rish uchun tugmani bosing.', '');
+          resetCallUI('Qo‘ng‘iroq yakunlandi. Yana gaplashish uchun tugmani bosing.', '');
         });
 
         vapi.on('error', (err) => {
           console.error('Vapi error:', err);
-          btn.disabled = false;
-          btn.classList.remove('ringing');
-          endBtn.classList.remove('visible');
-          setStatus('Xatolik yuz berdi. Qaytadan urinib ko\'ring.', 'error');
+          resetCallUI('Xatolik yuz berdi yoki qo‘ng‘iroq uzildi. Qaytadan urinib ko‘ring.', 'error');
         });
 
-        await vapi.start(ASSISTANT_ID);
-        callActive = true;
+        await vapi.start(assistantId);
 
       } catch (err) {
         console.error('Start error:', err);
         btn.disabled = false;
-        setStatus('Ulanib bo\'lmadi. Mikrofonizga ruxsat berilganini tekshiring.', 'error');
+        resetCallUI('Ulanib bo‘lmadi: mikrofonga ruxsat berilganini tekshiring.', 'error');
       }
     }
 
     function endCall() {
-      if (vapi && callActive) {
-        vapi.stop();
+      if (vapi) {
+        try {
+          vapi.stop();
+        } catch (e) {
+          console.warn(e);
+        }
       }
+      resetCallUI('Qo‘ng‘iroq to‘xtatildi.', '');
+    }
+
+    function resetCallUI(statusText, cls) {
+      callActive = false;
+      const btn = document.getElementById('call-btn');
+      const icon = document.getElementById('call-icon');
+      const text = document.getElementById('call-text');
+
+      btn.disabled = false;
+      btn.classList.remove('ringing');
+      icon.textContent = '📞';
+      text.textContent = 'AI bilan gaplashish';
+      setStatus(statusText, cls);
     }
 
     function setStatus(text, cls) {
@@ -401,10 +605,10 @@
 
     function appendTranscript(role, text) {
       const box = document.getElementById('transcript-box');
-      const p = document.createElement('p');
-      p.className = role;
-      p.textContent = (role === 'user' ? '👤 ' : '🤖 ') + text;
-      box.appendChild(p);
+      const div = document.createElement('div');
+      div.className = 'msg-line ' + (role === 'user' ? 'msg-user' : 'msg-ai');
+      div.textContent = (role === 'user' ? '👤 Siz: ' : '🤖 AI: ') + text;
+      box.appendChild(div);
       box.scrollTop = box.scrollHeight;
     }
   </script>
