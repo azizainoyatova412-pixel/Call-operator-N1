@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="uz" translate="no">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>AI Savdo Operatori — Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #f8fafc;
+      padding: 24px;
+    }
+
+    .hero {
+      text-align: center;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 17px;
+      color: #94a3b8;
+      margin-bottom: 48px;
+      line-height: 1.6;
+    }
+
+    /* ---- Call button ---- */
+    #call-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      padding: 20px 48px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.45);
+      position: relative;
+      overflow: hidden;
+      min-width: 240px;
+    }
+
+    #call-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.6);
+    }
+
+    #call-btn:active {
+      transform: translateY(0);
+    }
+
+    #call-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Pulse ring when active */
+    #call-btn.ringing::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 20px;
+      border: 3px solid rgba(99, 102, 241, 0.6);
+      animation: pulse-ring 1.5s linear infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.3);
+        opacity: 0;
+      }
+    }
+
+    .phone-icon {
+      font-size: 22px;
+      transition: transform 0.3s;
+    }
+
+    #call-btn.ringing .phone-icon {
+      animation: ring-shake 0.6s infinite;
+    }
+
+    @keyframes ring-shake {
+
+      0%,
+      100% {
+        transform: rotate(0);
+      }
+
+      25% {
+        transform: rotate(-15deg);
+      }
+
+      75% {
+        transform: rotate(15deg);
+      }
+    }
+
+    /* End call button */
+    #end-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      padding: 18px 44px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+      margin-top: 16px;
+      min-width: 240px;
+    }
+
+    #end-btn.visible {
+      display: inline-flex;
+    }
+
+    #end-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(239, 68, 68, 0.55);
+    }
+
+    .status-bar {
+      margin-top: 24px;
+      font-size: 14px;
+      color: #64748b;
+      min-height: 20px;
+      transition: color 0.3s;
+    }
+
+    .status-bar.active {
+      color: #6ee7b7;
+    }
+
+    .status-bar.error {
+      color: #fca5a5;
+    }
+
+    /* Transcript box */
+    #transcript-box {
+      display: none;
+      margin-top: 32px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 14px;
+      padding: 20px;
+      max-height: 240px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #cbd5e1;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    #transcript-box.visible {
+      display: block;
+    }
+
+    #transcript-box p {
+      margin-bottom: 6px;
+    }
+
+    #transcript-box .user {
+      color: #a5b4fc;
+    }
+
+    #transcript-box .ai {
+      color: #6ee7b7;
+    }
+
+    /* Features */
+    .features {
+      display: flex;
+      gap: 20px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .feat {
+      flex: 1 1 150px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .feat .icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .feat .label {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    footer {
+      margin-top: 48px;
+      font-size: 12px;
+      color: #334155;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hero">
+    <div class="badge">🤖 Vapi · GPT-4o · Deepgram</div>
+    <h1>AI Savdo<br /><span>Operatori</span></h1>
+    <p class="subtitle">
+      O'zbek tilida gapiradigan sun'iy intellekt operatori.<br />
+      Brauzeringizdan hoziroq gaplab ko'ring — hech qanday telefon kerak emas.
+    </p>
+
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <button id="call-btn" onclick="startCall()">
+        <span class="phone-icon">📞</span>
+        AI bilan gapla
+      </button>
+      <button id="end-btn" onclick="endCall()">
+        <span>📵</span>
+        Qo'ng'iroqni tugatish
+      </button>
+      <div id="status" class="status-bar">Tugmani bosib AI operator bilan bog'laning</div>
+    </div>
+
+    <div id="transcript-box"></div>
+  </div>
+
+  <div class="features">
+    <div class="feat">
+      <div class="icon">🗣️</div>
+      <div class="label">O'zbek tilida jonli muloqot</div>
+    </div>
+    <div class="feat">
+      <div class="icon">📦</div>
+      <div class="label">Buyurtma qabul qilish</div>
+    </div>
+    <div class="feat">
+      <div class="icon">⚡</div>
+      <div class="label">24/7 avtomatik ishlov</div>
+    </div>
+  </div>
+
+  <footer>Demo versiya — Call Operator N1</footer>
+
+  <!-- Vapi Web SDK -->
+  <script>
+    const VAPI_PUBLIC_KEY = 'e4f4cfa0-7e3c-4313-98e9-6845476551c3';
+    const ASSISTANT_ID = 'd6d32a81-201c-4337-aea1-047af49bbf8b';
+
+    let vapi = null;
+    let callActive = false;
+
+    async function loadVapi() {
+      if (window.Vapi) return;
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    async function startCall() {
+      const btn = document.getElementById('call-btn');
+      const endBtn = document.getElementById('end-btn');
+      const status = document.getElementById('status');
+
+      setStatus('Yuklanmoqda...', '');
+      btn.disabled = true;
+
+      try {
+        await loadVapi();
+        vapi = new window.Vapi(VAPI_PUBLIC_KEY);
+
+        vapi.on('call-start', () => {
+          btn.classList.add('ringing');
+          endBtn.classList.add('visible');
+          setStatus('🟢 Qo\'ng\'iroq boshlandi — gapirishingiz mumkin', 'active');
+          document.getElementById('transcript-box').classList.add('visible');
+        });
+
+        vapi.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'active'));
+        vapi.on('speech-end', () => setStatus('🤖 AI javob tayyorlamoqda...', 'active'));
+
+        vapi.on('message', (msg) => {
+          if (msg.type === 'transcript' && msg.transcriptType === 'final') {
+            appendTranscript(msg.role === 'user' ? 'user' : 'ai', msg.transcript);
+          }
+        });
+
+        vapi.on('call-end', () => {
+          callActive = false;
+          btn.disabled = false;
+          btn.classList.remove('ringing');
+          endBtn.classList.remove('visible');
+          setStatus('Qo\'ng\'iroq yakunlandi. Yana urinib ko\'rish uchun tugmani bosing.', '');
+        });
+
+        vapi.on('error', (err) => {
+          console.error('Vapi error:', err);
+          btn.disabled = false;
+          btn.classList.remove('ringing');
+          endBtn.classList.remove('visible');
+          setStatus('Xatolik yuz berdi. Qaytadan urinib ko\'ring.', 'error');
+        });
+
+        await vapi.start(ASSISTANT_ID);
+        callActive = true;
+
+      } catch (err) {
+        console.error('Start error:', err);
+        btn.disabled = false;
+        setStatus('Ulanib bo\'lmadi. Mikrofonizga ruxsat berilganini tekshiring.', 'error');
+      }
+    }
+
+    function endCall() {
+      if (vapi && callActive) {
+        vapi.stop();
+      }
+    }
+
+    function setStatus(text, cls) {
+      const el = document.getElementById('status');
+      el.textContent = text;
+      el.className = 'status-bar' + (cls ? ' ' + cls : '');
+    }
+
+    function appendTranscript(role, text) {
+      const box = document.getElementById('transcript-box');
+      const p = document.createElement('p');
+      p.className = role;
+      p.textContent = (role === 'user' ? '👤 ' : '🤖 ') + text;
+      box.appendChild(p);
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
+
+</body>
+
+</html>

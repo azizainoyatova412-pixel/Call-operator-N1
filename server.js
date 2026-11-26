@@ -348,6 +348,10 @@ app.get('/health', (_req, res) => {
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'not_ready' });
 });
 
+app.get('/', (_req, res) => {
+  res.sendFile(fileURLToPath(new URL('./public/index.html', import.meta.url)));
+});
+
 app.get('/admin', (_req, res) => {
   res.sendFile(fileURLToPath(new URL('./public/admin.html', import.meta.url)));
 });

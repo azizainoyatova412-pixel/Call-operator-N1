@@ -18,5 +18,5 @@ services:
       - key: ALLOW_ANY_WEBHOOK
         value: "true"
       - key: PORT
-        value: "3000"
+        value: "3000" 
 
