@@ -348,7 +348,7 @@ app.get('/health', (_req, res) => {
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'not_ready' });
 });
 
-app.get('/', (_req, res) => {
+app.get(['/', '/demo', '/operator-test'], (_req, res) => {
   res.sendFile(fileURLToPath(new URL('./public/index.html', import.meta.url)));
 });
 

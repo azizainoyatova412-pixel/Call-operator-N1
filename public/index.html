@@ -338,51 +338,6 @@
       font-weight: 500;
     }
 
-    /* Config collapse */
-    .config-trigger {
-      margin-top: 18px;
-      background: none;
-      border: none;
-      color: #64748b;
-      font-size: 12px;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .config-box {
-      display: none;
-      margin-top: 12px;
-      padding: 14px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      width: 100%;
-      text-align: left;
-    }
-
-    .config-box.open {
-      display: block;
-    }
-
-    .config-box label {
-      display: block;
-      font-size: 11px;
-      color: #94a3b8;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .config-box input {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: #0f172a;
-      color: #fff;
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
-
     footer {
       margin-top: 32px;
       font-size: 12px;
@@ -400,9 +355,9 @@
       <div>Call Operator Demo</div>
     </div>
     <div class="nav-links">
-      <a href="/admin" class="nav-btn">
-        <span>⚙️</span> CRM Admin Panel
-      </a>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;">
+        <span class="pulse-dot"></span> Sinov Rejimi (Maks. 3 daq)
+      </span>
     </div>
   </nav>
 
@@ -413,8 +368,13 @@
     <h1>AI Ovozli Savdo<br /><span>Operatori</span></h1>
     <p class="subtitle">
       O‘zbek tilida tabiiy so‘zlashuvchi sun’iy intellekt operatori.<br />
-      Mahsulotlar haqida so‘rang, buyurtma bering yoki holatini tekshiring.
+      Mahsulotlar haqida so‘rang, e’tiroz bildiring yoki buyurtma berib ko‘ring.
     </p>
+
+    <!-- Mobil / Telegram brauzer maslahati -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;margin-bottom:24px;font-size:12px;color:#cbd5e1;line-height:1.5;text-align:left;">
+      📱 <strong>Telefon foydalanuvchilari diqqatiga:</strong> Telegram yoki WhatsApp ichida ochgan bo‘lsangiz, mikrofonga to‘liq ruxsat berish uchun yuqoridagi <strong>uch nuqtani (⋮)</strong> bosib <em>«Chrome yoki Safari orqali ochish»</em>ni tanlang.
+    </div>
 
     <div class="call-controls">
       <button id="call-btn" type="button" onclick="toggleCall()">
@@ -423,6 +383,7 @@
       </button>
 
       <div id="status" class="status-bar">Mikrofon orqali bog‘lanish uchun tugmani bosing</div>
+      <div id="timer-display" style="display:none;font-size:12px;color:#a5b4fc;font-weight:600;">⏱️ Qolgan sinov vaqti: <span id="timer-val">03:00</span></div>
     </div>
 
     <div id="transcript-box"></div>
@@ -437,15 +398,16 @@
       </div>
     </div>
 
-    <button type="button" class="config-trigger" onclick="toggleConfig()">⚙️ Vapi Sozlamalarini ko‘rish /
-      o‘zgartirish</button>
-    <div id="config-box" class="config-box">
-      <label>Vapi Public Key</label>
-      <input id="cfg-public-key" type="text" placeholder="Vapi Public Key" />
-      <label>Vapi Assistant ID</label>
-      <input id="cfg-assistant-id" type="text" placeholder="Vapi Assistant ID" />
-      <button type="button" class="nav-btn" style="width:100%;justify-content:center;background:#2563eb;"
-        onclick="saveConfig()">Sozlamalarni saqlash</button>
+    <!-- Sinov Vazifalari (Checklist) -->
+    <div style="margin-top:20px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;text-align:left;width:100%;">
+      <div style="font-size:13px;font-weight:700;color:#c7d2fe;margin-bottom:10px;">🎯 Sinov paytida aytib ko‘ring (Tekshirish uchun):</div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;color:#cbd5e1;">
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>1. Assortiment:</strong> «Sizda nimalar bor?» deb so‘rang.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>2. E’tiroz:</strong> «AirPods qimmat ekan» deb ko‘ring — AI e’tirozni tushuntiradi.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>3. O‘zgartirish:</strong> 1 dona buyurtma berib, oxirida «2 dona qiling» deng.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>4. Holat:</strong> «Avvalgi buyurtmam nima bo‘ldi?» deb so‘rang.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>5. Jonli operator:</strong> «Tirik odam bilan gaplashmoqchiman» deb talab qiling.</span></li>
+      </ul>
     </div>
   </main>
 
@@ -473,6 +435,36 @@
     let vapi = null;
     let callActive = false;
     let VapiConstructor = null;
+    let countdownInterval = null;
+    let secondsLeft = 180;
+
+    function startTimer() {
+      secondsLeft = 180;
+      const display = document.getElementById('timer-display');
+      const val = document.getElementById('timer-val');
+      if (display && val) {
+        display.style.display = 'block';
+        val.textContent = '03:00';
+      }
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        secondsLeft--;
+        const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+        const s = String(secondsLeft % 60).padStart(2, '0');
+        if (val) val.textContent = `${m}:${s}`;
+        if (secondsLeft <= 0) {
+          clearInterval(countdownInterval);
+          endCall();
+          resetCallUI('⏱️ Sinov vaqti (3 daqiqa) yakunlandi. Haqiqiy ish rejimida cheklov bo‘lmaydi!', 'active');
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(countdownInterval);
+      const display = document.getElementById('timer-display');
+      if (display) display.style.display = 'none';
+    }
 
     // Load configs from localStorage
     function getPublicKey() {
@@ -481,23 +473,6 @@
     function getAssistantId() {
       return localStorage.getItem('vapi_assistant_id') || DEFAULT_ASSISTANT_ID;
     }
-
-    document.getElementById('cfg-public-key').value = getPublicKey();
-    document.getElementById('cfg-assistant-id').value = getAssistantId();
-
-    window.toggleConfig = function () {
-      const box = document.getElementById('config-box');
-      box.classList.toggle('open');
-    };
-
-    window.saveConfig = function () {
-      const pk = document.getElementById('cfg-public-key').value.trim();
-      const aid = document.getElementById('cfg-assistant-id').value.trim();
-      if (pk) localStorage.setItem('vapi_public_key', pk);
-      if (aid) localStorage.setItem('vapi_assistant_id', aid);
-      alert('Sozlamalar saqlandi!');
-      if (callActive) window.toggleCall();
-    };
 
     async function getVapiSDK() {
       if (VapiConstructor) return VapiConstructor;
@@ -538,6 +513,7 @@
 
         vapi.on('call-start', () => {
           callActive = true;
+          startTimer();
           btn.disabled = false;
           btn.classList.add('ringing');
           icon.textContent = '📵';
@@ -586,6 +562,7 @@
 
     function resetCallUI(statusText, cls) {
       callActive = false;
+      stopTimer();
       const btn = document.getElementById('call-btn');
       const icon = document.getElementById('call-icon');
       const text = document.getElementById('call-text');
