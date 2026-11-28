@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google" content="notranslate" />
-  <title>AI Savdo Operatori — O‘zbek tilidagi ovozli yordamchi</title>
+  <title>AI Ovozli Operator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -21,744 +21,395 @@
 
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #090d16 0%, #111827 50%, #090d16 100%);
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       color: #f8fafc;
-      padding: 20px;
+      padding: 24px;
+      overflow-x: hidden;
     }
 
-    .top-nav {
+    /* Vapi qo'shimcha floating tugmasini yashirish — faqat bitta asosiy tugma qoladi */
+    .vapi-btn,
+    [class*="vapi-btn"],
+    iframe[title*="vapi"] {
+      display: none !important;
+    }
+
+    .container {
       width: 100%;
-      max-width: 900px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0 24px 0;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 16px;
-      color: #f1f5f9;
-    }
-
-    .brand-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #cbd5e1;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff;
-    }
-
-    .hero {
-      text-align: center;
-      max-width: 620px;
-      width: 100%;
-      margin: auto 0;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(99, 102, 241, 0.12);
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      color: #a5b4fc;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 999px;
-      margin-bottom: 24px;
-      letter-spacing: 0.3px;
-    }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 10px #10b981;
-    }
-
-    h1 {
-      font-size: clamp(32px, 6vw, 52px);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    h1 span {
-      background: linear-gradient(135deg, #818cf8, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .subtitle {
-      font-size: 17px;
-      color: #94a3b8;
-      margin-bottom: 36px;
-      line-height: 1.6;
-    }
-
-    /* ---- Call visualizer & button ---- */
-    .call-controls {
+      max-width: 520px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      text-align: center;
     }
 
-    #call-btn {
-      display: inline-flex;
+    .title-box {
+      margin-bottom: 40px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+
+    .title span {
+      background: linear-gradient(135deg, #a5b4fc, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #94a3b8;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    /* Asosiy yagona gaplashish tugmasi */
+    .mic-container {
+      position: relative;
+      margin: 20px 0 30px;
+    }
+
+    .main-call-btn {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      gap: 8px;
       color: #fff;
-      font-size: 18px;
-      font-weight: 700;
-      border: none;
-      border-radius: 16px;
-      padding: 18px 42px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.45);
+      font-family: inherit;
       position: relative;
-      min-width: 260px;
+      z-index: 2;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    #call-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 38px rgba(99, 102, 241, 0.6);
+    .main-call-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 15px 50px -10px rgba(99, 102, 241, 0.7);
     }
 
-    #call-btn:active {
-      transform: translateY(0);
+    .main-call-btn:active {
+      transform: scale(0.96);
     }
 
-    #call-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    #call-btn.ringing {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.45);
-    }
-
-    #call-btn.ringing::before {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 22px;
-      border: 3px solid rgba(239, 68, 68, 0.6);
-      animation: pulse-ring 1.5s linear infinite;
+    .main-call-btn.active {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      box-shadow: 0 10px 40px -10px rgba(239, 68, 68, 0.6) !important;
+      animation: pulse-ring 2s infinite;
     }
 
     @keyframes pulse-ring {
       0% {
-        transform: scale(1);
-        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6), 0 10px 40px -10px rgba(239, 68, 68, 0.6);
       }
-
+      70% {
+        box-shadow: 0 0 0 24px rgba(239, 68, 68, 0), 0 10px 40px -10px rgba(239, 68, 68, 0.6);
+      }
       100% {
-        transform: scale(1.2);
-        opacity: 0;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 10px 40px -10px rgba(239, 68, 68, 0.6);
       }
     }
 
-    .phone-icon {
-      font-size: 22px;
+    .btn-icon {
+      font-size: 42px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
 
-    .status-bar {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #94a3b8;
+    .btn-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* Holat paneli */
+    .status-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #cbd5e1;
       min-height: 24px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
+      margin-bottom: 8px;
+      transition: color 0.2s;
     }
 
-    .status-bar.active {
+    .status-text.active {
       color: #34d399;
     }
 
-    .status-bar.speaking {
-      color: #38bdf8;
+    .status-text.speaking {
+      color: #60a5fa;
     }
 
-    .status-bar.error {
+    .status-text.error {
       color: #f87171;
     }
 
-    /* Hints */
-    .hints-panel {
-      margin-top: 24px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 12px;
-      padding: 14px 18px;
-      text-align: left;
-      width: 100%;
-    }
-
-    .hints-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .hint-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .hint-chip {
-      background: rgba(99, 102, 241, 0.12);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      color: #cbd5e1;
-      font-size: 12px;
-      padding: 5px 10px;
-      border-radius: 6px;
-    }
-
-    /* Transcript box */
-    #transcript-box {
+    .timer-badge {
       display: none;
-      margin-top: 24px;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: 14px;
-      padding: 16px;
-      max-height: 260px;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #a5b4fc;
+      margin-bottom: 20px;
+    }
+
+    /* Transkript qutisi */
+    .transcript-box {
+      display: none;
+      width: 100%;
+      max-height: 240px;
       overflow-y: auto;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 10px;
       text-align: left;
       font-size: 14px;
-      line-height: 1.6;
-      width: 100%;
+      line-height: 1.5;
     }
 
-    #transcript-box.visible {
-      display: block;
+    .transcript-box.visible {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .msg-line {
-      margin-bottom: 8px;
-      padding: 6px 10px;
-      border-radius: 8px;
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 90%;
+      word-wrap: break-word;
     }
 
     .msg-user {
-      background: rgba(99, 102, 241, 0.12);
-      color: #c7d2fe;
+      align-self: flex-end;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #e0e7ff;
     }
 
     .msg-ai {
-      background: rgba(16, 185, 129, 0.12);
-      color: #a7f3d0;
-    }
-
-    /* Features */
-    .features {
-      display: flex;
-      gap: 16px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 620px;
-      width: 100%;
-    }
-
-    .feat {
-      flex: 1 1 160px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 14px;
-      padding: 16px 14px;
-      text-align: center;
-    }
-
-    .feat .icon {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .feat .label {
-      font-size: 13px;
-      color: #94a3b8;
-      font-weight: 500;
-    }
-
-    footer {
-      margin-top: 32px;
-      font-size: 12px;
-      color: #475569;
-      text-align: center;
+      align-self: flex-start;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #d1fae5;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ═══════════ ASOSIY KONTENT ═══════════ -->
-
-  <nav class="top-nav">
-    <div class="brand">
-      <div class="brand-icon">AI</div>
-      <div>Call Operator Demo</div>
-    </div>
-    <div class="nav-links">
-      <span
-        style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;">
-        <span class="pulse-dot"></span> Sinov Rejimi (Maks. 3 daq)
-      </span>
-    </div>
-  </nav>
-
-  <main class="hero">
-    <div class="badge">
-      <span class="pulse-dot"></span> Vapi · GPT-4o · Cartesia O‘zbek Ovozi
-    </div>
-    <h1>AI Ovozli Savdo<br /><span>Operatori</span></h1>
-    <p class="subtitle">
-      O‘zbek tilida tabiiy so‘zlashuvchi sun’iy intellekt operatori.<br />
-      Mahsulotlar haqida so‘rang, e’tiroz bildiring yoki buyurtma berib ko‘ring.
-    </p>
-
-    <!-- Mobil / Telegram brauzer maslahati -->
-    <div
-      style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;margin-bottom:24px;font-size:12px;color:#cbd5e1;line-height:1.5;text-align:left;">
-      📱 <strong>Telefon foydalanuvchilari diqqatiga:</strong> Telegram yoki WhatsApp ichida ochgan bo‘lsangiz,
-      mikrofonga to‘liq ruxsat berish uchun yuqoridagi <strong>uch nuqtani (⋮)</strong> bosib <em>«Chrome yoki Safari
-        orqali ochish»</em>ni tanlang.
+  <div class="container">
+    <div class="title-box">
+      <h1 class="title">AI <span>Operator</span></h1>
+      <p class="subtitle">Ovozli yordamchi bilan jonli muloqot qiling</p>
     </div>
 
-    <div class="call-controls">
-      <button id="call-btn" type="button" onclick="toggleCall()">
-        <span class="phone-icon" id="call-icon">📞</span>
-        <span id="call-text">AI bilan gaplashish</span>
+    <!-- Asosiy bitta gaplashish tugmasi -->
+    <div class="mic-container">
+      <button id="call-btn" class="main-call-btn" type="button">
+        <span class="btn-icon" id="call-icon">🎙️</span>
+        <span class="btn-label" id="call-text">Boshlash</span>
       </button>
-
-      <div id="status" class="status-bar">Mikrofon orqali bog‘lanish uchun tugmani bosing</div>
-      <div id="timer-display" style="display:none;font-size:12px;color:#a5b4fc;font-weight:600;">⏱️ Qolgan sinov vaqti:
-        <span id="timer-val">03:00</span>
-      </div>
     </div>
 
-    <div id="transcript-box"></div>
+    <!-- Holat va vaqt -->
+    <div id="status-text" class="status-text">Tugmani bosing va mikrofonga ruxsat bering</div>
+    <div id="timer-badge" class="timer-badge">⏱️ <span id="timer-val">00:00</span></div>
 
-    <div class="hints-panel">
-      <div class="hints-title">💡 Nimalar haqida so‘rashingiz mumkin?</div>
-      <div class="hint-chips">
-        <span class="hint-chip">«Sizda qanday tovarlar bor?»</span>
-        <span class="hint-chip">«Simsiz quloqchin narxi qancha?»</span>
-        <span class="hint-chip">«1 dona quloqchin buyurtma qilmoqchiman»</span>
-        <span class="hint-chip">«Buyurtmam holati nima bo‘ldi?»</span>
-      </div>
-    </div>
-
-    <!-- Sinov Vazifalari (Checklist) -->
-    <div
-      style="margin-top:20px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;text-align:left;width:100%;">
-      <div style="font-size:13px;font-weight:700;color:#c7d2fe;margin-bottom:10px;">🎯 Sinov paytida aytib ko‘ring
-        (Tekshirish uchun):</div>
-      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;color:#cbd5e1;">
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>1. Assortiment:</strong>
-            «Sizda nimalar bor?» deb so‘rang.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>2. E’tiroz:</strong>
-            «AirPods qimmat ekan» deb ko‘ring — AI e’tirozni tushuntiradi.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>3. O‘zgartirish:</strong>
-            1 dona buyurtma berib, oxirida «2 dona qiling» deng.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>4. Holat:</strong>
-            «Avvalgi buyurtmam nima bo‘ldi?» deb so‘rang.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>5. Jonli
-              operator:</strong> «Tirik odam bilan gaplashmoqchiman» deb talab qiling.</span></li>
-      </ul>
-    </div>
-  </main>
-
-  <div class="features">
-    <div class="feat">
-      <div class="icon">🗣️</div>
-      <div class="label">O‘zbek tilida jonli nutq</div>
-    </div>
-    <div class="feat">
-      <div class="icon">📦</div>
-      <div class="label">Avtomatik buyurtma olish</div>
-    </div>
-    <div class="feat">
-      <div class="icon">⚡</div>
-      <div class="label">24/7 doimiy aloqa</div>
-    </div>
+    <!-- Jonli transkript -->
+    <div id="transcript-box" class="transcript-box"></div>
   </div>
 
-  <footer>Demo versiya — AI Call Operator CRM tizimi</footer>
-
   <script type="module">
-    const DEFAULT_PUBLIC_KEY = '2d396194-3f23-4744-b177-3725213479a8';
-    const DEFAULT_ASSISTANT_ID = '943f252e-d9d2-462f-85a3-127138be365f';
+    const PUBLIC_KEY = '2d396194-3f23-4744-b177-3725213479a8';
+    const ASSISTANT_ID = '943f252e-d9d2-462f-85a3-127138be365f';
 
     let vapi = null;
     let callActive = false;
-    let VapiConstructor = null;
-    let countdownInterval = null;
-    let secondsLeft = 180;
+    let callSeconds = 0;
+    let timerInterval = null;
 
+    const callBtn = document.getElementById('call-btn');
+    const callIcon = document.getElementById('call-icon');
+    const callText = document.getElementById('call-text');
+    const statusText = document.getElementById('status-text');
+    const timerBadge = document.getElementById('timer-badge');
+    const timerVal = document.getElementById('timer-val');
+    const transcriptBox = document.getElementById('transcript-box');
+
+    // Timer
     function startTimer() {
-      secondsLeft = 180;
-      const display = document.getElementById('timer-display');
-      const val = document.getElementById('timer-val');
-      if (display && val) {
-        display.style.display = 'block';
-        val.textContent = '03:00';
-      }
-      clearInterval(countdownInterval);
-      countdownInterval = setInterval(() => {
-        secondsLeft--;
-        const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
-        const s = String(secondsLeft % 60).padStart(2, '0');
-        if (val) val.textContent = `${m}:${s}`;
-        if (secondsLeft <= 0) {
-          clearInterval(countdownInterval);
-          endCall();
-          resetCallUI('⏱️ Sinov vaqti (3 daqiqa) yakunlandi. Haqiqiy ish rejimida cheklov bo‘lmaydi!', 'active');
-        }
+      callSeconds = 0;
+      timerBadge.style.display = 'inline-flex';
+      timerVal.textContent = '00:00';
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        callSeconds++;
+        const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+        const s = String(callSeconds % 60).padStart(2, '0');
+        timerVal.textContent = `${m}:${s}`;
       }, 1000);
     }
 
     function stopTimer() {
-      clearInterval(countdownInterval);
-      const display = document.getElementById('timer-display');
-      if (display) display.style.display = 'none';
+      clearInterval(timerInterval);
+      timerBadge.style.display = 'none';
     }
 
-    // Mijoz sahifasi uchun har doim eng so'nggi to'g'ri kalit va assistant ishlatiladi
-    try {
-      localStorage.removeItem('vapi_assistant_id');
-      localStorage.removeItem('vapi_public_key');
-    } catch (e) {}
-
-    function getPublicKey() {
-      return DEFAULT_PUBLIC_KEY;
-    }
-    function getAssistantId() {
-      return DEFAULT_ASSISTANT_ID;
+    function setStatus(msg, cls) {
+      statusText.textContent = msg;
+      statusText.className = 'status-text' + (cls ? ' ' + cls : '');
     }
 
-    function getInlineAssistant() {
-      const webhookUrl = window.location.origin.includes('localhost')
-        ? 'https://call-operator-n1.onrender.com/webhook/vapi'
-        : `${window.location.origin}/webhook/vapi`;
-
-      return {
-        name: "AI Savdo Operatori (O'zbek tili)",
-        firstMessage: "Assalomu alaykum! Do‘konimizga xush kelibsiz. Qaysi mahsulotimiz haqida ma’lumot beray yoki buyurtmangiz bormi?",
-        firstMessageMode: "assistant-speaks-first",
-        silenceTimeoutSeconds: 90,
-        maxDurationSeconds: 1800,
-        endCallFunctionEnabled: false,
-        serverUrl: webhookUrl,
-        server: {
-          url: webhookUrl,
-          secret: "THATMYFIRSTmoneymaker"
-        },
-        transcriber: {
-          provider: "deepgram",
-          model: "nova-2",
-          language: "multi",
-          smartFormat: true,
-          keywords: ["som:3", "dona:2", "buyurtma:2", "yetkazib:2", "Toshkent:2", "narxi:2", "quloqchin:2"]
-        },
-        model: {
-          provider: "openai",
-          model: "gpt-4o",
-          temperature: 0.3,
-          messages: [
-            {
-              role: "system",
-              content: "Siz o‘zbek tilida ravon, samimiy, sabrli va professional gapiradigan yuqori malakali telefon savdo operatorisiz.\n\nASOSIY MAQSADINGIZ:\nMijozga do‘kon mahsulotlarini tanlashda yordam berish, savollariga aniq va muloyim javob berish, e’tirozlarni xushmuomalalik bilan bartaraf etish va tasdiqlangan buyurtmani xatosiz bazaga kiritish.\n\nMULOQOT QOIDALARI:\n1. Bir javobda 1-2 ta qisqa va aniq gap ayting. Monolog qilmang, mijozning gapini bo‘lmang.\n2. So‘zlashuv ohangi do‘stona, hurmat bilan va ishonchli bo‘lsin. Raqamlar, ismlar va manzillarni aniq tinglang.\n3. Mijoz salomlashganda samimiy alik oling va nima bilan qiziqayotganini so‘rang.\n\nMAHSULOT VA NARXLAR BO‘YICHA ISHLASH:\n1. Agar mijoz umumiy holda «Sizda nimalar bor?» deb so‘rasa, zudlik bilan `list_products` vositasini chaqiring.\n2. Agar mijoz aniq bir mahsulotning narxi, tavsifi yoki omborda bor-yo‘qligini so‘rasa, darhol `get_product_details` vositasini chaqiring.\n3. Narx va ombordagi sonini faqat vosita ma’lumotiga qarab ayting.\n\nE’TIROZLAR BILAN ISHLASH:\n1. «Qimmat ekan»: Sifati, rasmiy kafolati va uzoq vaqt xizmat qilishini tushuntiring.\n2. «O‘ylab ko‘raman»: «Albatta, qaror qabul qilish uchun vaqt kerak. Mahsulot bo‘yicha qo‘shimcha savolingiz bo‘lsa, bajonidil javob beraman» deng.\n3. Yetkazib berish: Toshkent bo‘yicha 24 soat ichida, viloyatlarga 1-3 kunda yetkaziladi. To‘lov mahsulot yetib borganda naqd yoki karta orqali.\n\nBUYURTMA RASMIYLASHTIRISH:\n1. Ism-sharifi, telefon raqami, yetkazib berish manzili, mahsulot nomi va sonini yig‘ing.\n2. QAT’IY TASDIQ: «Demak, [Ism], siz [Mahsulot] dan [soni] dona buyurtma qilmoqchisiz. Manzil: [Manzil], telefon: [Raqam]. Barchasi to‘g‘rimi, buyurtmani tasdiqlaysizmi?» deb so‘rang.\n3. Mijoz aniq tasdiqlagach, `create_order` vositasini chaqiring.\n\nBUYURTMA HOLATI:\nMijoz avval bergan buyurtmasining holatini so‘rasa, telefon raqami orqali `check_order_status` vositasidan foydalaning.\n\nTIRIK OPERATORNI SO‘RASHSA:\n«Tushundim. Agar mutaxassisimiz bilan gaplashmoqchi bo‘lsangiz, raqamingiz va savolingizni qoldiring, tez orada operatorlarimiz siz bilan bog‘lanishadi» deb bildiring."
-            }
-          ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "get_product_details",
-                description: "Mijoz mahsulot narxi, xususiyatlari yoki omborda mavjudligini so‘raganda bazadan eng dolzarb ma’lumotni topadi.",
-                parameters: {
-                  type: "object",
-                  properties: { productName: { type: "string" } },
-                  required: ["productName"]
-                }
-              }
-            },
-            {
-              type: "function",
-              function: {
-                name: "list_products",
-                description: "Barcha mavjud tovarlar ro‘yxati va narxlarini qaytaradi.",
-                parameters: { type: "object", properties: {} }
-              }
-            },
-            {
-              type: "function",
-              function: {
-                name: "create_order",
-                description: "Buyurtmani bazaga yozadi va zaxiradan chegiradi.",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    customerName: { type: "string" },
-                    customerPhone: { type: "string" },
-                    deliveryAddress: { type: "string" },
-                    productName: { type: "string" },
-                    quantity: { type: "integer", minimum: 1, maximum: 50 }
-                  },
-                  required: ["customerName", "customerPhone", "deliveryAddress", "productName", "quantity"]
-                }
-              }
-            },
-            {
-              type: "function",
-              function: {
-                name: "check_order_status",
-                description: "Buyurtma holatini tekshiradi.",
-                parameters: {
-                  type: "object",
-                  properties: { customerPhone: { type: "string" } },
-                  required: ["customerPhone"]
-                }
-              }
-            }
-          ]
-        },
-        voice: {
-          provider: "cartesia",
-          voiceId: "a0e99841-438c-4a64-b679-ae501e7d6091",
-          model: "sonic-3.5"
-        }
-      };
+    function appendTranscript(role, text) {
+      transcriptBox.classList.add('visible');
+      const div = document.createElement('div');
+      div.className = 'msg-bubble ' + (role === 'user' ? 'msg-user' : 'msg-ai');
+      div.innerHTML = `<strong>${role === 'user' ? '👤 Siz:' : '🤖 AI:'}</strong> ${text}`;
+      transcriptBox.appendChild(div);
+      transcriptBox.scrollTop = transcriptBox.scrollHeight;
     }
 
-    async function getVapiSDK() {
-      if (VapiConstructor) return VapiConstructor;
-      if (window.vapiSDK && window.vapiSDK.vapi) {
-        return window.vapiSDK.vapi;
-      }
-      try {
-        const mod = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@3/+esm');
-        VapiConstructor = mod.default?.default || mod.default || mod.Vapi || mod;
-        return VapiConstructor;
-      } catch (err1) {
-        console.warn('CDN 1 failed, trying fallback esm.sh...', err1);
-        const mod2 = await import('https://esm.sh/@vapi-ai/web@3.1.1');
-        VapiConstructor = mod2.default?.default || mod2.default || mod2.Vapi || mod2;
-        return VapiConstructor;
-      }
+    function resetUI(statusMsg, statusCls) {
+      callActive = false;
+      stopTimer();
+      callBtn.disabled = false;
+      callBtn.classList.remove('active');
+      callIcon.textContent = '🎙️';
+      callText.textContent = 'Boshlash';
+      setStatus(statusMsg || 'Tugmani bosing va mikrofonga ruxsat bering', statusCls || '');
     }
 
-    // Official Vapi Widget avtomatik ishga tushadi
-    function initOfficialWidget() {
-      if (window.vapiSDK && typeof window.vapiSDK.run === 'function') {
-        try {
-          const instance = window.vapiSDK.run({
-            apiKey: DEFAULT_PUBLIC_KEY,
-            assistant: DEFAULT_ASSISTANT_ID
-          });
-          if (instance) {
-            vapi = instance;
-            bindVapiEvents(vapi);
-          }
-        } catch (e) {
-          console.warn('Official widget init error:', e);
-        }
-      }
-    }
-
-    function bindVapiEvents(vapiInstance) {
-      if (!vapiInstance) return;
-      vapiInstance.on('call-start', () => {
+    function setupVapiEvents(instance) {
+      instance.on('call-start', () => {
         callActive = true;
         startTimer();
-        const btn = document.getElementById('call-btn');
-        const icon = document.getElementById('call-icon');
-        const text = document.getElementById('call-text');
-        if (btn) {
-          btn.disabled = false;
-          btn.classList.add('ringing');
-        }
-        if (icon) icon.textContent = '📵';
-        if (text) text.textContent = 'Qo‘ng‘iroqni tugatish';
-        setStatus('🟢 Qo‘ng‘iroq boshlandi — AI sizni tinglamoqda', 'active');
-        const tBox = document.getElementById('transcript-box');
-        if (tBox) tBox.classList.add('visible');
+        callBtn.disabled = false;
+        callBtn.classList.add('active');
+        callIcon.textContent = '🔴';
+        callText.textContent = 'Tugatish';
+        setStatus('🟢 Jonli muloqot — AI sizni tinglamoqda', 'active');
       });
 
-      vapiInstance.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'speaking'));
-      vapiInstance.on('speech-end', () => setStatus('🤖 AI javob bermoqda...', 'active'));
+      instance.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'speaking'));
+      instance.on('speech-end', () => setStatus('🤖 AI javob bermoqda...', 'active'));
 
-      vapiInstance.on('message', (msg) => {
+      instance.on('message', (msg) => {
         if (msg.type === 'transcript' && msg.transcriptType === 'final') {
           appendTranscript(msg.role === 'user' ? 'user' : 'ai', msg.transcript);
         }
       });
 
-      vapiInstance.on('call-end', () => {
-        resetCallUI('Qo‘ng‘iroq yakunlandi. Yana gaplashish uchun tugmani bosing.', '');
+      instance.on('call-end', () => {
+        resetUI('⚪ Qo‘ng‘iroq yakunlandi. Yana gaplashish uchun bosing.', '');
       });
 
-      vapiInstance.on('error', (err) => {
+      instance.on('error', (err) => {
         console.error('Vapi error:', err);
-        const errDetail = err?.error?.message || err?.message || (typeof err === 'string' ? err : '');
-        resetCallUI(errDetail ? `Xatolik: ${errDetail}` : 'Xatolik yuz berdi. Qaytadan urinib ko‘ring.', 'error');
+        const detail = err?.error?.message || err?.message || (typeof err === 'string' ? err : '');
+        resetUI(detail ? `⚠️ ${detail}` : 'Xatolik yuz berdi. Qaytadan urinib ko‘ring.', 'error');
       });
     }
 
-    window.toggleCall = async function () {
-      if (callActive) {
-        endCall();
-      } else {
-        await startCall();
-      }
-    };
+    async function loadVapi() {
+      if (vapi) return vapi;
 
-    async function startCall() {
-      // 1. Agar Vapi widget tugmasi ekranda bo'lsa, uni bosamiz:
-      const floatingBtn = document.querySelector('.vapi-btn') || document.querySelector('[class*="vapi-btn"]');
-      if (floatingBtn && !callActive) {
-        floatingBtn.click();
+      // 1. html-script-tag orqali vapiSDK
+      if (window.vapiSDK && typeof window.vapiSDK.run === 'function') {
+        try {
+          const inst = window.vapiSDK.run({
+            apiKey: PUBLIC_KEY,
+            assistant: ASSISTANT_ID
+          });
+          if (inst) {
+            vapi = inst;
+            setupVapiEvents(vapi);
+            return vapi;
+          }
+        } catch (e) {
+          console.warn('vapiSDK run error:', e);
+        }
+      }
+
+      // 2. ESM import fallback
+      try {
+        const mod = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@3/+esm');
+        const VapiClass = mod.default?.default || mod.default || mod.Vapi || mod;
+        vapi = new VapiClass(PUBLIC_KEY);
+        setupVapiEvents(vapi);
+        return vapi;
+      } catch (e1) {
+        const mod2 = await import('https://esm.sh/@vapi-ai/web@3.1.1');
+        const VapiClass2 = mod2.default?.default || mod2.default || mod2.Vapi || mod2;
+        vapi = new VapiClass2(PUBLIC_KEY);
+        setupVapiEvents(vapi);
+        return vapi;
+      }
+    }
+
+    async function toggleCall() {
+      if (callActive) {
+        if (vapi) {
+          try { vapi.stop(); } catch (e) {}
+        }
+        resetUI('Qo‘ng‘iroq to‘xtatildi.', '');
         return;
       }
 
-      // 2. Aks holda SDK orqali bevosita ulanamiz:
-      const btn = document.getElementById('call-btn');
-      setStatus('⏳ Ulanmoqda... Mikrofon ruxsatini tasdiqlang', '');
-      if (btn) btn.disabled = true;
+      // Qo'ng'iroqni boshlash
+      setStatus('⏳ Ulanmoqda... Mikrofonga ruxsat bering', '');
+      callBtn.disabled = true;
 
       try {
-        if (!vapi) {
-          const SDK = await getVapiSDK();
-          vapi = (typeof SDK === 'function') ? new SDK(DEFAULT_PUBLIC_KEY) : SDK;
-          bindVapiEvents(vapi);
-        }
-
-        const target = DEFAULT_ASSISTANT_ID || getInlineAssistant();
-        await vapi.start(target);
-
+        const inst = await loadVapi();
+        await inst.start(ASSISTANT_ID);
       } catch (err) {
         console.error('Start error:', err);
-        if (btn) btn.disabled = false;
-        const errDetail = err?.error?.message || err?.message || '';
-        const isMic = errDetail.includes('Permission') || errDetail.includes('NotAllowed') || errDetail.includes('getUserMedia');
-        const msg = isMic
-          ? 'Mikrofonga ruxsat berilmadi. Iltimos brauzer sozlamalarida mikrofonga ruxsat bering.'
-          : (errDetail ? `Ulanib bo‘lmadi: ${errDetail}` : 'Ulanib bo‘lmadi: mikrofonga ruxsat berilganini tekshiring.');
-        resetCallUI(msg, 'error');
+        callBtn.disabled = false;
+        const msg = err?.message || '';
+        const isMic = msg.includes('Permission') || msg.includes('NotAllowed') || msg.includes('getUserMedia');
+        resetUI(
+          isMic
+            ? '⚠️ Mikrofonga ruxsat berilmadi. Brauzerda ruxsat bering.'
+            : (msg ? `⚠️ Ulanib bo‘lmadi: ${msg}` : 'Ulanib bo‘lmadi.'),
+          'error'
+        );
       }
     }
 
-    const mainCallBtn = document.getElementById('call-btn');
-    if (mainCallBtn) {
-      mainCallBtn.onclick = toggleCall;
-    }
+    callBtn.addEventListener('click', toggleCall);
 
-    // Sahifa yuklanganda widgetni tekshirish
-    if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', () => setTimeout(initOfficialWidget, 500));
-    } else {
-      setTimeout(initOfficialWidget, 500);
-    }
-
-    function endCall() {
-      if (vapi) {
-        try {
-          vapi.stop();
-        } catch (e) {
-          console.warn(e);
-        }
-      }
-      resetCallUI('Qo‘ng‘iroq to‘xtatildi.', '');
-    }
-
-    function resetCallUI(statusText, cls) {
-      callActive = false;
-      stopTimer();
-      const btn = document.getElementById('call-btn');
-      const icon = document.getElementById('call-icon');
-      const text = document.getElementById('call-text');
-
-      btn.disabled = false;
-      btn.classList.remove('ringing');
-      icon.textContent = '📞';
-      text.textContent = 'AI bilan gaplashish';
-      setStatus(statusText, cls);
-    }
-
-    function setStatus(text, cls) {
-      const el = document.getElementById('status');
-      el.textContent = text;
-      el.className = 'status-bar' + (cls ? ' ' + cls : '');
-    }
-
-    function appendTranscript(role, text) {
-      const box = document.getElementById('transcript-box');
-      const div = document.createElement('div');
-      div.className = 'msg-line ' + (role === 'user' ? 'msg-user' : 'msg-ai');
-      div.textContent = (role === 'user' ? '👤 Siz: ' : '🤖 AI: ') + text;
-      box.appendChild(div);
-      box.scrollTop = box.scrollHeight;
-    }
+    // Kesh qoldiqlarini tozalash
+    try {
+      localStorage.removeItem('vapi_assistant_id');
+      localStorage.removeItem('vapi_public_key');
+    } catch (e) {}
   </script>
 
 </body>
