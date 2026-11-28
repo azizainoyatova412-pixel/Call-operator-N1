@@ -320,6 +320,18 @@
       instance.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'speaking'));
       instance.on('speech-end', () => setStatus('🤖 AI javob bermoqda...', 'active'));
 
+      instance.on('volume-level', (volume) => {
+        if (callActive) {
+          if (volume > 0.04) {
+            callBtn.style.transform = `scale(${1 + Math.min(volume * 0.35, 0.2)})`;
+            callBtn.style.boxShadow = `0 0 35px rgba(52, 211, 153, 0.8)`;
+          } else {
+            callBtn.style.transform = '';
+            callBtn.style.boxShadow = '';
+          }
+        }
+      });
+
       instance.on('message', (msg) => {
         if (msg.type === 'transcript' && msg.transcriptType === 'final') {
           appendTranscript(msg.role === 'user' ? 'user' : 'ai', msg.transcript);
