@@ -534,22 +534,17 @@
       if (display) display.style.display = 'none';
     }
 
-    // Load configs from localStorage (clear old expired keys)
+    // Mijoz sahifasi uchun har doim eng so'nggi to'g'ri kalit va assistant ishlatiladi
+    try {
+      localStorage.removeItem('vapi_assistant_id');
+      localStorage.removeItem('vapi_public_key');
+    } catch (e) {}
+
     function getPublicKey() {
-      const k = localStorage.getItem('vapi_public_key');
-      if (!k || k === 'e4f4cfa0-7e3c-4313-98e9-6845476551c3') {
-        localStorage.setItem('vapi_public_key', DEFAULT_PUBLIC_KEY);
-        return DEFAULT_PUBLIC_KEY;
-      }
-      return k;
+      return DEFAULT_PUBLIC_KEY;
     }
     function getAssistantId() {
-      const aid = localStorage.getItem('vapi_assistant_id');
-      if (!aid || aid === 'd6d32a81-201c-4337-aea1-047af49bbf8b') {
-        localStorage.setItem('vapi_assistant_id', DEFAULT_ASSISTANT_ID);
-        return DEFAULT_ASSISTANT_ID;
-      }
-      return aid;
+      return DEFAULT_ASSISTANT_ID;
     }
 
     function getInlineAssistant() {
@@ -710,20 +705,27 @@
 
         vapi.on('error', (err) => {
           console.error('Vapi error:', err);
-          resetCallUI('Xatolik yuz berdi yoki qo‘ng‘iroq uzildi. Qaytadan urinib ko‘ring.', 'error');
+          const errDetail = err?.error?.message || err?.message || (typeof err === 'string' ? err : '');
+          const msg = errDetail ? `Xatolik: ${errDetail}` : 'Xatolik yuz berdi yoki qo‘ng‘iroq uzildi. Qaytadan urinib ko‘ring.';
+          resetCallUI(msg, 'error');
         });
 
-        const target = (assistantId && assistantId !== 'd6d32a81-201c-4337-aea1-047af49bbf8b')
-          ? assistantId
-          : getInlineAssistant();
+        const target = assistantId || getInlineAssistant();
 
         await vapi.start(target);
 
       } catch (err) {
         console.error('Start error:', err);
         btn.disabled = false;
-        resetCallUI('Ulanib bo‘lmadi: mikrofonga ruxsat berilganini tekshiring.', 'error');
+        const errDetail = err?.error?.message || err?.message || '';
+        const msg = errDetail ? `Ulanib bo‘lmadi: ${errDetail}` : 'Ulanib bo‘lmadi: mikrofonga ruxsat berilganini tekshiring.';
+        resetCallUI(msg, 'error');
       }
+    }
+
+    const mainCallBtn = document.getElementById('call-btn');
+    if (mainCallBtn) {
+      mainCallBtn.onclick = toggleCall;
     }
 
     function endCall() {

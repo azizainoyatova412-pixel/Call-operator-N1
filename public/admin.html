@@ -2044,7 +2044,12 @@
     }
     function getAdminVapiAid() {
       const stored = localStorage.getItem('vapi_assistant_id');
-      if (!stored || stored === 'd6d32a81-201c-4337-aea1-047af49bbf8b') {
+      const staleIds = [
+        'd6d32a81-201c-4337-aea1-047af49bbf8b',
+        '0557ac53-0d45-4695-96cf-bac96f43a9fc',
+        '1375d664-1da2-4c51-8e8e-d15bea74792a'
+      ];
+      if (!stored || staleIds.includes(stored)) {
         localStorage.setItem('vapi_assistant_id', DEFAULT_VAPI_AID);
         return DEFAULT_VAPI_AID;
       }
