@@ -28,6 +28,12 @@ after(async () => {
   });
 });
 
+test('ping endpoint returns lightweight OK for cron jobs', async () => {
+  const response = await fetch(`${baseUrl}/ping`);
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'OK');
+});
+
 test('health endpoint reports database readiness', async () => {
   const response = await fetch(`${baseUrl}/health`);
   assert.equal(response.status, 503);

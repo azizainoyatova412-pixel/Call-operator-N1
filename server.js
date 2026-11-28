@@ -439,6 +439,10 @@ async function checkOrderStatus(args) {
   return `Buyurtmangiz topildi: ${order.product_name}, ${order.quantity} dona. Holati: ${order.status}. Qayd etilgan sana: ${date}. Savollaringiz bo‘lsa, bemalol so‘rashingiz mumkin.`;
 }
 
+app.get(['/ping', '/healthz', '/keep-alive'], (_req, res) => {
+  res.status(200).type('text/plain').send('OK');
+});
+
 app.get('/health', (_req, res) => {
   const ready = mongoose.connection.readyState === 1;
   res.status(ready ? 200 : 503).json({ status: ready ? 'ok' : 'not_ready' });
