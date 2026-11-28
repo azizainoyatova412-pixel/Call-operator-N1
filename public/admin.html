@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="uz" translate="no" class="notranslate">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +8,8 @@
   <title>AI Call Operator — Sotuv va Buyurtmalar CRM</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --bg: #f8fafc;
@@ -29,7 +31,12 @@
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       background: var(--bg);
@@ -52,7 +59,13 @@
       top: 0;
       z-index: 20;
     }
-    .logo-block { display: flex; align-items: center; gap: 12px; }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .badge-live {
       display: inline-flex;
       align-items: center;
@@ -65,6 +78,7 @@
       border-radius: 999px;
       border: 1px solid #a7f3d0;
     }
+
     .pulse-dot {
       width: 8px;
       height: 8px;
@@ -72,18 +86,44 @@
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
     }
 
-    .header-actions { display: flex; align-items: center; gap: 12px; }
-    .key-input-wrapper { display: flex; align-items: center; gap: 8px; }
-    input, select, textarea, button {
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .key-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
       font-family: inherit;
       font-size: 14px;
     }
+
     .input-field {
       padding: 8px 12px;
       border: 1px solid var(--border);
@@ -93,7 +133,11 @@
       outline: none;
       transition: all .2s;
     }
-    .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+    .input-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
 
     .btn {
       display: inline-flex;
@@ -107,12 +151,35 @@
       cursor: pointer;
       transition: all .2s;
     }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: var(--surface); border-color: var(--border); color: var(--text-main); }
-    .btn-secondary:hover { background: #f1f5f9; }
-    .btn-danger { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
-    .btn-danger:hover { background: #fee2e2; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
 
     /* Login Screen */
     #login-view {
@@ -123,6 +190,7 @@
       padding: 24px;
       background: radial-gradient(circle at 50% 20%, #f1f5f9 0%, #e2e8f0 100%);
     }
+
     .login-card {
       width: 100%;
       max-width: 400px;
@@ -133,6 +201,7 @@
       box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       text-align: center;
     }
+
     .login-icon {
       width: 52px;
       height: 52px;
@@ -146,24 +215,28 @@
       margin: 0 auto 16px;
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
     }
+
     .login-title {
       font-size: 20px;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 6px;
     }
+
     .login-desc {
       font-size: 13px;
       color: var(--text-muted);
       margin-bottom: 24px;
       line-height: 1.5;
     }
+
     .login-form {
       display: flex;
       flex-direction: column;
       gap: 16px;
       text-align: left;
     }
+
     .login-error {
       display: none;
       background: var(--danger-light);
@@ -195,6 +268,7 @@
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 16px;
     }
+
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -202,8 +276,20 @@
       padding: 18px 20px;
       box-shadow: var(--shadow-sm);
     }
-    .stat-title { font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
-    .stat-value { font-size: 24px; font-weight: 700; color: var(--text-main); }
+
+    .stat-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
     .stat-badge {
       display: inline-block;
       margin-top: 8px;
@@ -220,8 +306,11 @@
       gap: 20px;
       align-items: start;
     }
+
     @media (max-width: 1150px) {
-      .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+      .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .card {
@@ -231,6 +320,7 @@
       box-shadow: var(--shadow-sm);
       overflow: hidden;
     }
+
     .card-header {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
@@ -240,8 +330,15 @@
       gap: 12px;
       background: #fafafa;
     }
-    .card-header h2 { font-size: 16px; font-weight: 700; }
-    .card-body { padding: 20px; }
+
+    .card-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
 
     /* Filters Bar */
     .orders-toolbar {
@@ -252,16 +349,35 @@
       justify-content: space-between;
       margin-bottom: 16px;
     }
-    .search-box { flex: 1; min-width: 200px; max-width: 380px; }
-    .date-filters, .pagination {
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      max-width: 380px;
+    }
+
+    .date-filters,
+    .pagination {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
     }
-    .date-filters .input-field { min-height: 38px; }
-    .pagination { justify-content: space-between; padding-top: 16px; }
-    .pagination-info { color: var(--text-muted); font-size: 13px; }
+
+    .date-filters .input-field {
+      min-height: 38px;
+    }
+
+    .pagination {
+      justify-content: space-between;
+      padding-top: 16px;
+    }
+
+    .pagination-info {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
     .modal {
       width: min(520px, calc(100% - 32px));
       max-height: calc(100% - 32px);
@@ -271,15 +387,44 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow-md);
     }
-    .modal::backdrop { background: rgb(15 23 42 / 0.45); }
-    .modal-header, .modal-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; }
-    .modal-header { border-bottom: 1px solid var(--border); }
-    .modal-body { padding: 20px; }
-    .modal-footer { justify-content: flex-end; border-top: 1px solid var(--border); }
+
+    .modal::backdrop {
+      background: rgb(15 23 42 / 0.45);
+    }
+
+    .modal-header,
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-footer {
+      justify-content: flex-end;
+      border-top: 1px solid var(--border);
+    }
 
     /* Tables */
-    .table-container { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
     th {
       background: #f8fafc;
       padding: 12px 14px;
@@ -290,16 +435,29 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+
     td {
       padding: 14px;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
       font-size: 14px;
     }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #fbfcfe; }
 
-    .customer-cell strong { display: block; font-size: 14px; margin-bottom: 3px; color: var(--text-main); }
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fbfcfe;
+    }
+
+    .customer-cell strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 3px;
+      color: var(--text-main);
+    }
+
     .customer-cell a {
       color: var(--primary);
       text-decoration: none;
@@ -309,8 +467,18 @@
       align-items: center;
       gap: 4px;
     }
-    .customer-cell a:hover { text-decoration: underline; }
-    .address-text { display: block; font-size: 12px; color: var(--text-muted); margin-top: 3px; max-width: 250px; }
+
+    .customer-cell a:hover {
+      text-decoration: underline;
+    }
+
+    .address-text {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      max-width: 250px;
+    }
 
     /* Status Select */
     .status-select {
@@ -322,10 +490,30 @@
       cursor: pointer;
       outline: none;
     }
-    .status-Yangi { background: var(--warning-light); color: var(--warning); border-color: #fde68a; }
-    .status-Yetkazilmoqda { background: var(--primary-light); color: var(--primary); border-color: #bfdbfe; }
-    .status-Yakunlandi { background: var(--success-light); color: var(--success); border-color: #bbf7d0; }
-    .status-Bekor-qilindi { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
+
+    .status-Yangi {
+      background: var(--warning-light);
+      color: var(--warning);
+      border-color: #fde68a;
+    }
+
+    .status-Yetkazilmoqda {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+
+    .status-Yakunlandi {
+      background: var(--success-light);
+      color: var(--success);
+      border-color: #bbf7d0;
+    }
+
+    .status-Bekor-qilindi {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: #fecaca;
+    }
 
     .notice {
       padding: 12px 16px;
@@ -335,14 +523,39 @@
       display: none;
       margin-bottom: 16px;
     }
-    .notice.show { display: block; }
-    .notice.error { background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; }
-    .notice.success { background: var(--success-light); color: var(--success); border: 1px solid #bbf7d0; }
+
+    .notice.show {
+      display: block;
+    }
+
+    .notice.error {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .notice.success {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
 
     /* Forms */
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-    .form-group input, .form-group textarea { width: 100%; }
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+    }
 
     .sound-toggle {
       display: flex;
@@ -356,22 +569,44 @@
     .mic-pulse-idle {
       animation: micPulseIdle 2.5s infinite;
     }
+
     @keyframes micPulseIdle {
-      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); }
-      70% { box-shadow: 0 0 0 16px rgba(99, 102, 241, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6);
+      }
+
+      70% {
+        box-shadow: 0 0 0 16px rgba(99, 102, 241, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+      }
     }
+
     .mic-pulse-active {
       background: linear-gradient(135deg, #ef4444, #dc2626) !important;
       animation: micPulseActive 1.2s infinite !important;
     }
+
     @keyframes micPulseActive {
-      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
     }
+
     @media (max-width: 860px) {
-      .ai-operator-grid { grid-template-columns: 1fr !important; }
+      .ai-operator-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
 
     @media (max-width: 700px) {
@@ -382,62 +617,222 @@
         gap: 14px;
         padding: 14px 16px;
       }
+
       .logo-block {
         display: grid;
         grid-template-columns: 36px minmax(0, 1fr);
         gap: 8px 10px;
         align-items: center;
       }
-      .logo-block > div:nth-child(2) { min-width: 0; }
-      .logo-block h1 { font-size: 15px !important; line-height: 1.35; }
-      .logo-block p { margin-top: 3px; line-height: 1.4; overflow-wrap: anywhere; }
-      .badge-live { grid-column: 2; justify-self: start; }
-      .header-actions { align-items: center; flex-wrap: wrap; justify-content: space-between; }
-      .key-input-wrapper { flex: 1; min-width: 220px; }
-      .key-input-wrapper .input-field { width: auto !important; flex: 1; min-width: 0; }
-      .key-input-wrapper .btn { min-height: 40px; }
 
-      main { padding: 16px; gap: 16px; }
-      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-      .stat-card { min-width: 0; padding: 13px; }
-      .stat-title, .stat-badge { line-height: 1.4; }
-      .stat-value { font-size: 20px; overflow-wrap: anywhere; }
-      .stat-badge { max-width: 100%; }
+      .logo-block>div:nth-child(2) {
+        min-width: 0;
+      }
+
+      .logo-block h1 {
+        font-size: 15px !important;
+        line-height: 1.35;
+      }
+
+      .logo-block p {
+        margin-top: 3px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+      }
+
+      .badge-live {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .header-actions {
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .key-input-wrapper {
+        flex: 1;
+        min-width: 220px;
+      }
+
+      .key-input-wrapper .input-field {
+        width: auto !important;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .key-input-wrapper .btn {
+        min-height: 40px;
+      }
+
+      main {
+        padding: 16px;
+        gap: 16px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat-card {
+        min-width: 0;
+        padding: 13px;
+      }
+
+      .stat-title,
+      .stat-badge {
+        line-height: 1.4;
+      }
+
+      .stat-value {
+        font-size: 20px;
+        overflow-wrap: anywhere;
+      }
+
+      .stat-badge {
+        max-width: 100%;
+      }
 
       .dashboard-grid {
         display: flex;
         flex-direction: column;
         gap: 16px;
       }
-      .dashboard-grid > section:first-child { order: 2; }
-      .dashboard-grid > section:last-child { order: 1; }
-      .card { min-width: 0; }
-      .card-header { align-items: flex-start; flex-wrap: wrap; padding: 14px 16px; }
-      .card-header h2 { min-width: 0; line-height: 1.4; }
-      .card-header > div { flex-wrap: wrap; width: 100%; }
-      .card-header > div .btn { flex: 1 1 140px; min-height: 40px; padding: 8px 10px; }
-      .card-body { min-width: 0; padding: 14px; }
-      .form-group input, .form-group textarea { min-height: 42px; }
-      #products-mini-list > div { gap: 8px; flex-wrap: wrap; }
-      #products-mini-list > div > div { min-width: 0; overflow-wrap: anywhere; }
-      #products-mini-list > div > button { flex-shrink: 0; }
 
-      .orders-toolbar { align-items: stretch; }
-      .search-box { max-width: none; min-width: 0; width: 100%; min-height: 42px; }
-      .orders-toolbar > div { justify-content: space-between; min-width: 0; }
-      .date-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .date-filters select { grid-column: 1 / -1; }
-      .date-filters input { width: 100%; min-width: 0; }
-      #filter-status { max-width: 70%; min-height: 40px; }
-      .pagination { align-items: stretch; flex-direction: column; }
-      .pagination > div { display: flex; justify-content: space-between; gap: 8px; }
-      .pagination .btn { flex: 1; }
-      .modal-header, .modal-footer { padding: 14px 16px; }
-      .modal-body { padding: 16px; }
+      .dashboard-grid>section:first-child {
+        order: 2;
+      }
 
-      .table-container { max-width: 100%; overflow: visible; }
-      table, tbody { display: block; width: 100%; }
-      thead { display: none; }
+      .dashboard-grid>section:last-child {
+        order: 1;
+      }
+
+      .card {
+        min-width: 0;
+      }
+
+      .card-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 14px 16px;
+      }
+
+      .card-header h2 {
+        min-width: 0;
+        line-height: 1.4;
+      }
+
+      .card-header>div {
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .card-header>div .btn {
+        flex: 1 1 140px;
+        min-height: 40px;
+        padding: 8px 10px;
+      }
+
+      .card-body {
+        min-width: 0;
+        padding: 14px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        min-height: 42px;
+      }
+
+      #products-mini-list>div {
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      #products-mini-list>div>div {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      #products-mini-list>div>button {
+        flex-shrink: 0;
+      }
+
+      .orders-toolbar {
+        align-items: stretch;
+      }
+
+      .search-box {
+        max-width: none;
+        min-width: 0;
+        width: 100%;
+        min-height: 42px;
+      }
+
+      .orders-toolbar>div {
+        justify-content: space-between;
+        min-width: 0;
+      }
+
+      .date-filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .date-filters select {
+        grid-column: 1 / -1;
+      }
+
+      .date-filters input {
+        width: 100%;
+        min-width: 0;
+      }
+
+      #filter-status {
+        max-width: 70%;
+        min-height: 40px;
+      }
+
+      .pagination {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .pagination>div {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .pagination .btn {
+        flex: 1;
+      }
+
+      .modal-header,
+      .modal-footer {
+        padding: 14px 16px;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .table-container {
+        max-width: 100%;
+        overflow: visible;
+      }
+
+      table,
+      tbody {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
       tbody tr {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -448,12 +843,14 @@
         border-radius: 10px;
         background: var(--surface);
       }
+
       tbody td {
         min-width: 0;
         padding: 9px 0;
         border: 0;
         overflow-wrap: anywhere;
       }
+
       tbody td::before {
         display: block;
         margin-bottom: 4px;
@@ -463,40 +860,100 @@
         letter-spacing: .04em;
         text-transform: uppercase;
       }
+
       tbody td:first-child {
         grid-column: 1 / -1;
         padding-top: 4px;
         padding-bottom: 10px;
         border-bottom: 1px solid var(--border);
       }
-      tbody td:first-child::before { content: none; }
-      tbody td:nth-child(2)::before { content: 'Mahsulot'; }
-      tbody td:nth-child(3)::before { content: 'Jami summa'; }
-      tbody td:nth-child(4)::before { content: 'Holati'; }
-      tbody td:nth-child(5)::before { content: 'Vaqti'; }
+
+      tbody td:first-child::before {
+        content: none;
+      }
+
+      tbody td:nth-child(2)::before {
+        content: 'Mahsulot';
+      }
+
+      tbody td:nth-child(3)::before {
+        content: 'Jami summa';
+      }
+
+      tbody td:nth-child(4)::before {
+        content: 'Holati';
+      }
+
+      tbody td:nth-child(5)::before {
+        content: 'Vaqti';
+      }
+
       tbody td:nth-child(6) {
         grid-column: 1 / -1;
         border-top: 1px solid var(--border);
       }
-      tbody td:nth-child(6)::before { content: 'Audio'; }
-      tbody td[colspan] { grid-column: 1 / -1; text-align: center; }
-      tbody td[colspan]::before { content: none; }
-      .status-select { width: 100%; max-width: 100%; }
+
+      tbody td:nth-child(6)::before {
+        content: 'Audio';
+      }
+
+      tbody td[colspan] {
+        grid-column: 1 / -1;
+        text-align: center;
+      }
+
+      tbody td[colspan]::before {
+        content: none;
+      }
+
+      .status-select {
+        width: 100%;
+        max-width: 100%;
+      }
     }
 
     @media (max-width: 380px) {
-      header { padding: 12px; }
-      main { padding: 12px; }
-      .header-actions { align-items: stretch; flex-direction: column; }
-      .key-input-wrapper { width: 100%; min-width: 0; }
-      .stat-card { padding: 11px; }
-      .stat-title { font-size: 12px; }
-      .stat-value { font-size: 18px; }
-      .stat-badge { font-size: 10px; }
-      .card-header > div .btn { font-size: 12px; }
+      header {
+        padding: 12px;
+      }
+
+      main {
+        padding: 12px;
+      }
+
+      .header-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .key-input-wrapper {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .stat-card {
+        padding: 11px;
+      }
+
+      .stat-title {
+        font-size: 12px;
+      }
+
+      .stat-value {
+        font-size: 18px;
+      }
+
+      .stat-badge {
+        font-size: 10px;
+      }
+
+      .card-header>div .btn {
+        font-size: 12px;
+      }
     }
   </style>
 </head>
+
 <body class="notranslate">
 
   <!-- Maxfiy Tizimga Kirish (Login) oynasi -->
@@ -505,18 +962,22 @@
       <div class="login-icon">AI</div>
       <h1 class="login-title">Boshqaruv Tizimi (CRM)</h1>
       <p class="login-desc">Tizim himoyalangan. Ishni boshlash uchun maxfiy admin kalitini kiriting.</p>
-      
+
       <div id="login-error" class="login-error"></div>
 
       <form id="login-form" class="login-form">
         <div class="form-group" style="margin-bottom:0;">
           <label for="login-key">Admin maxfiy kaliti</label>
           <div style="position:relative;margin-top:6px;">
-            <input id="login-key" class="input-field" type="password" value="YOUknow_youknowwhere" placeholder="YOUknow_youknowwhere" required autocomplete="current-password" style="width:100%;padding-right:40px;height:44px;font-size:15px;">
-            <button id="toggle-key-visibility" type="button" aria-label="Kalitni ko‘rsatish" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:4px;">👁️</button>
+            <input id="login-key" class="input-field" type="password" value="YOUknow_youknowwhere"
+              placeholder="YOUknow_youknowwhere" required autocomplete="current-password"
+              style="width:100%;padding-right:40px;height:44px;font-size:15px;">
+            <button id="toggle-key-visibility" type="button" aria-label="Kalitni ko‘rsatish"
+              style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:4px;">👁️</button>
           </div>
         </div>
-        <button id="login-submit-btn" class="btn btn-primary" type="submit" style="width:100%;height:44px;font-size:15px;margin-top:8px;">
+        <button id="login-submit-btn" class="btn btn-primary" type="submit"
+          style="width:100%;height:44px;font-size:15px;margin-top:8px;">
           Tizimga kirish ➔
         </button>
       </form>
@@ -526,345 +987,412 @@
   <!-- Asosiy CRM Ilovasi (Faqat kalit to‘g‘ri kiritilganda ochiladi) -->
   <div id="crm-app" style="display:none;">
 
-  <header>
-    <div class="logo-block">
-      <div style="width:36px;height:36px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;">AI</div>
-      <div>
-        <h1 style="font-size:16px;font-weight:700;">Ovozli operator boshqaruv paneli (CRM)</h1>
-        <p style="font-size:12px;color:var(--text-muted);">Sotuv va buyurtmalar avtomatizatsiyasi · ADMIN_API_KEY bilan himoyalangan</p>
-      </div>
-      <span class="badge-live"><span class="pulse-dot"></span> Jonli tizim</span>
-    </div>
-
-    <div class="header-actions">
-      <a href="/" target="_blank" class="btn btn-secondary" style="padding:7px 12px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" title="Do‘kon saytini yangi oynada ochish">
-        🌐 Do‘kon sayti
-      </a>
-      <button id="open-ai-test-btn" class="btn btn-primary" type="button" style="padding:7px 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(99,102,241,0.35);">
-        🎙️ AI bilan gaplashib ko‘rish
-      </button>
-      <label class="sound-toggle">
-        <input type="checkbox" id="sound-alert" checked>
-        <span>Ovozli signal</span>
-      </label>
-      <div class="header-user-actions" style="display:flex;align-items:center;gap:8px;">
-        <span style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;color:#334155;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1px solid var(--border);">
-          🛡️ Administrator
-        </span>
-        <button id="logout-btn" class="btn btn-secondary" type="button" style="padding:6px 12px;font-size:12px;" title="Tizimdan chiqish">
-          🚪 Chiqish
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div id="notice-box" class="notice"></div>
-
-    <!-- AI Operator Mikrofon Sinov Paneli -->
-    <section class="card" id="ai-operator-panel" style="border: 2px solid #6366f1; background: #ffffff; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); border-radius: var(--radius); overflow: hidden;">
-      <div class="card-header" style="background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08)); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 20px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: grid; place-items: center; color: #fff; font-size: 22px; box-shadow: 0 4px 12px rgba(99,102,241,0.3);">🎙️</div>
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">AI Operator Jonli Sinov Mikrofoni</h2>
-            <p style="font-size: 12px; color: #6366f1; font-weight: 600;">Admin panel ichidan bevosita AI bilan gaplashing — buyurtma bersangiz, pastdagi jadval avtomatik yangilanadi!</p>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span id="call-timer-badge" style="display: none; font-size: 13px; font-weight: 700; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 4px 12px; border-radius: 999px;">
-            ⏱️ <span id="call-timer-num">00:00</span>
-          </span>
-          <span id="call-status-badge" style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 999px; background: #f1f5f9; color: #475569; border: 1px solid var(--border);">
-            ⚪ Mikrofon kutilmoqda
-          </span>
-        </div>
-      </div>
-      
-      <div class="card-body" style="padding: 20px;">
-        <div class="ai-operator-grid" style="display: grid; grid-template-columns: minmax(260px, 320px) 1fr; gap: 20px; align-items: stretch;">
-          
-          <!-- Chap blok: Katta mikrofon tugmasi va boshqaruv -->
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 14px; padding: 24px 20px; text-align: center; color: #fff; box-shadow: 0 4px 14px rgba(15,23,42,0.15);">
-            
-            <button id="direct-mic-btn" type="button" class="mic-pulse-idle" style="width: 88px; height: 88px; border-radius: 50%; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 36px; cursor: pointer; display: grid; place-items: center; transition: all 0.25s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 8px 25px rgba(99,102,241,0.5);">
-              <span id="direct-mic-icon">🎙️</span>
-            </button>
-
-            <div id="direct-mic-title" style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #f8fafc;">Gaplashishni boshlash</div>
-            <div id="direct-mic-hint" style="font-size: 12px; color: #94a3b8; margin-top: 4px; line-height: 1.4;">
-              Tugmani bosing va mikrofonga ruxsat bering
-            </div>
-
-            <button id="direct-end-btn" type="button" style="display: none; margin-top: 16px; width: 100%; padding: 10px; border-radius: 10px; border: none; background: #ef4444; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.35);">
-              📵 Qo‘ng‘iroqni tugatish
-            </button>
-          </div>
-
-          <!-- O'ng blok: Real-vaqt transkript va maslahatlar -->
-          <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
-            
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="font-size: 13px; font-weight: 700; color: #1e293b;">💬 Jonli so‘zlashuv matni (Transkript):</label>
-                <button type="button" id="clear-direct-transcript" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;">Tozalash</button>
-              </div>
-              <div id="direct-transcript-box" style="height: 140px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
-                <div id="direct-transcript-empty" style="color: #94a3b8; font-style: italic;">
-                  Yuqoridagi mikrofon tugmasini bosing va gapiring. Masalan: «Assalomu alaykum, sizda qanday mahsulotlar bor?»
-                </div>
-              </div>
-            </div>
-
-            <!-- Tayyor ssenariylar -->
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 14px;">
-              <div style="font-size: 11px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; margin-bottom: 4px;">💡 Sinash uchun ssenariylar (Aytib ko‘ring):</div>
-              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                <span style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«Sizda nimalar bor?»</span>
-                <span style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«Simsiz quloqchin narxi qancha?»</span>
-                <span style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«1 dona buyurtma bermoqchiman...»</span>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- KPI ko'rsatkichlar paneli -->
-    <section class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-title">Tanlangan davrdagi buyurtmalar</div>
-        <div id="stat-total" class="stat-value">0 ta</div>
-        <span class="stat-badge" style="background:#eff6ff;color:#2563eb;">Tanlangan filtrga mos</span>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">Yangi (ishlanmagan) buyurtmalar</div>
-        <div id="stat-pending" class="stat-value" style="color:var(--warning);">0 ta</div>
-        <span class="stat-badge" style="background:#fef3c7;color:#b45309;">Zudlik bilan bog‘lanish kerak</span>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">Muvaffaqiyatli yakunlangan</div>
-        <div id="stat-completed" class="stat-value" style="color:var(--success);">0 ta</div>
-        <span class="stat-badge" style="background:#dcfce7;color:#15803d;">Yetkazildi</span>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">Bekor qilinmagan savdo</div>
-        <div id="stat-revenue" class="stat-value">0 so‘m</div>
-        <span class="stat-badge" style="background:#f1f5f9;color:#475569;">Bekor qilingan chiqarildi</span>
-      </div>
-    </section>
-
-    <!-- Asosiy ish stoli -->
-    <div class="dashboard-grid">
-      
-      <!-- Chap taraf: Mahsulotlar boshqaruvi -->
-      <section class="card">
-        <div class="card-header">
-          <h2>Mahsulot qo‘shish</h2>
-        </div>
-        <div class="card-body">
-          <form id="product-form">
-            <div class="form-group">
-              <label for="p-name">Mahsulot nomi</label>
-              <input id="p-name" class="input-field" name="name" required placeholder="Masalan: Simsiz quloqchin X-200">
-            </div>
-            <div class="form-group">
-              <label for="p-price">Narxi (so‘m)</label>
-              <input id="p-price" class="input-field" name="price" type="number" min="0" required placeholder="250000">
-            </div>
-            <div class="form-group">
-              <label for="p-stock">Ombordagi qoldiq</label>
-              <input id="p-stock" class="input-field" name="stock" type="number" min="0" value="10" required>
-            </div>
-            <div class="form-group">
-              <label for="p-desc">Tavsif (AI operator mijozga aytishi uchun)</label>
-              <textarea id="p-desc" class="input-field" name="description" rows="3" required placeholder="Xususiyatlari, afzalliklari..."></textarea>
-            </div>
-            <button class="btn btn-primary" type="submit" style="width:100%;">+ Mahsulotni saqlash</button>
-          </form>
-
-          <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
-
-          <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;">Ombordagi mahsulotlar</h3>
-          <div id="products-mini-list" style="display:flex;flex-direction:column;gap:10px;">
-            <p style="font-size:13px;color:var(--text-muted);">Yuklanmoqda...</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- O'ng taraf: Buyurtmalar jadvali (CRM) -->
-      <section class="card">
-        <div class="card-header">
-          <h2>Kelib tushgan buyurtmalar (CRM)</h2>
-          <div style="display:flex;gap:8px;">
-            <button id="export-csv-btn" class="btn btn-secondary" type="button">📥 CSV / Excel yuklab olish</button>
-            <button id="refresh-btn" class="btn btn-secondary" type="button">🔄 Yangilash</button>
-          </div>
-        </div>
-        <div class="card-body">
-          
-          <div class="orders-toolbar">
-            <input id="search-orders" class="input-field search-box" type="search" placeholder="Ism, telefon, mahsulot yoki manzil...">
-            <div class="date-filters">
-              <select id="date-preset" class="input-field" aria-label="Sana oralig‘i">
-                <option value="all">Barcha vaqt</option>
-                <option value="today">Bugun</option>
-                <option value="yesterday">Kecha</option>
-                <option value="7days">Oxirgi 7 kun</option>
-                <option value="month">Shu oy</option>
-                <option value="custom">Sana oralig‘i</option>
-              </select>
-              <input id="date-from" class="input-field" type="date" aria-label="Boshlanish sanasi">
-              <input id="date-to" class="input-field" type="date" aria-label="Tugash sanasi">
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-size:13px;color:var(--text-muted);">Holat:</span>
-              <select id="filter-status" class="input-field">
-                <option value="ALL">Barchasi</option>
-                <option value="Yangi">Faqat Yangi</option>
-                <option value="Yetkazilmoqda">Yetkazilmoqda</option>
-                <option value="Yakunlandi">Yakunlandi</option>
-                <option value="Bekor qilindi">Bekor qilingan</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Mijoz</th>
-                  <th>Mahsulot va Miqdor</th>
-                  <th>Jami summa</th>
-                  <th>Holati (O‘zgartirish)</th>
-                  <th>Vaqti</th>
-                  <th>🎙 Audio isbot</th>
-                </tr>
-              </thead>
-              <tbody id="orders-tbody">
-                <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar yuklanmoqda...</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div id="pagination" class="pagination"></div>
-
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <dialog id="product-dialog" class="modal">
-    <form id="edit-product-form">
-      <div class="modal-header">
-        <h2>Mahsulotni tahrirlash</h2>
-        <button id="close-product-dialog" class="btn btn-secondary" type="button" aria-label="Yopish">✕</button>
-      </div>
-      <div class="modal-body">
-        <input id="edit-product-id" type="hidden">
-        <div class="form-group">
-          <label for="edit-product-name">Mahsulot nomi</label>
-          <input id="edit-product-name" class="input-field" required maxlength="160">
-        </div>
-        <div class="form-group">
-          <label for="edit-product-price">Narxi (so‘m)</label>
-          <input id="edit-product-price" class="input-field" type="number" min="0" required>
-        </div>
-        <div class="form-group">
-          <label for="edit-product-stock">Ombordagi qoldiq</label>
-          <input id="edit-product-stock" class="input-field" type="number" min="0" step="1" required>
-        </div>
-        <div class="form-group">
-          <label for="edit-product-description">Tavsif</label>
-          <textarea id="edit-product-description" class="input-field" rows="3" required maxlength="2000"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button id="cancel-product-edit" class="btn btn-secondary" type="button">Bekor qilish</button>
-        <button class="btn btn-primary" type="submit">Saqlash</button>
-      </div>
-    </form>
-  </dialog>
-
-  <!-- AI Operator Ovozli Test Modali -->
-  <dialog id="ai-test-dialog" class="modal" style="width:min(660px, calc(100% - 24px));max-height:calc(100% - 24px);overflow-y:auto;">
-    <div class="modal-header" style="background:#f8fafc;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:grid;place-items:center;color:#fff;font-size:18px;">🎙️</div>
+    <header>
+      <div class="logo-block">
+        <div
+          style="width:36px;height:36px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;">
+          AI</div>
         <div>
-          <h3 style="font-size:15px;font-weight:700;">AI Operator Ovozli Test Paneli</h3>
-          <p style="font-size:12px;color:var(--text-muted);">Real-vaqtda mikrofon orqali AI bilan o‘zbek tilida gaplashib sinab ko‘ring</p>
+          <h1 style="font-size:16px;font-weight:700;">Ovozli operator boshqaruv paneli (CRM)</h1>
+          <p style="font-size:12px;color:var(--text-muted);">Sotuv va buyurtmalar avtomatizatsiyasi · ADMIN_API_KEY
+            bilan himoyalangan</p>
         </div>
+        <span class="badge-live"><span class="pulse-dot"></span> Jonli tizim</span>
       </div>
-      <button id="close-ai-test-dialog" class="btn btn-secondary" type="button" aria-label="Yopish" style="padding:6px 10px;">✕</button>
-    </div>
-    
-    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
-      <!-- Call controller -->
-      <div style="background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:14px;padding:22px;color:#fff;text-align:center;box-shadow:0 8px 24px rgba(15,23,42,0.15);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:13px;color:#94a3b8;">
-          <span id="ai-test-timer">⏱️ 00:00</span>
-          <span id="ai-test-status" style="font-weight:600;color:#cbd5e1;">⚪ Kutilmoqda</span>
-        </div>
 
-        <div style="margin:16px 0;">
-          <button id="ai-test-call-btn" type="button" class="btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:16px;font-weight:700;padding:16px 36px;border-radius:14px;box-shadow:0 8px 25px rgba(99,102,241,0.5);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:all 0.2s;">
-            <span id="ai-test-btn-icon" style="font-size:20px;">📞</span>
-            <span id="ai-test-btn-text">Qo‘ng‘iroqni boshlash</span>
+      <div class="header-actions">
+        <a href="/" target="_blank" class="btn btn-secondary"
+          style="padding:7px 12px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;"
+          title="Do‘kon saytini yangi oynada ochish">
+          🌐 Do‘kon sayti
+        </a>
+        <button id="open-ai-test-btn" class="btn btn-primary" type="button"
+          style="padding:7px 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(99,102,241,0.35);">
+          🎙️ AI bilan gaplashib ko‘rish
+        </button>
+        <label class="sound-toggle">
+          <input type="checkbox" id="sound-alert" checked>
+          <span>Ovozli signal</span>
+        </label>
+        <div class="header-user-actions" style="display:flex;align-items:center;gap:8px;">
+          <span
+            style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;color:#334155;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1px solid var(--border);">
+            🛡️ Administrator
+          </span>
+          <button id="logout-btn" class="btn btn-secondary" type="button" style="padding:6px 12px;font-size:12px;"
+            title="Tizimdan chiqish">
+            🚪 Chiqish
           </button>
         </div>
-
-        <div id="ai-test-substatus" style="font-size:12px;color:#94a3b8;min-height:18px;">
-          Tugmani bosing va mikrofonga ruxsat bering
-        </div>
       </div>
+    </header>
 
-      <!-- Live transcript -->
-      <div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <label style="font-size:13px;font-weight:600;color:var(--text-main);">💬 Jonli suhbat yozuvi (Transkript):</label>
-          <button id="clear-ai-transcript" type="button" class="btn btn-secondary" style="padding:2px 8px;font-size:11px;">Tozalash</button>
-        </div>
-        <div id="ai-test-transcript" style="min-height:130px;max-height:220px;overflow-y:auto;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;line-height:1.5;display:flex;flex-direction:column;gap:8px;">
-          <div id="ai-transcript-empty" style="color:var(--text-muted);font-style:italic;">Qo‘ng‘iroq boshlangandan so‘ng so‘zlashuv matni bu yerda ko‘rinadi...</div>
-        </div>
-      </div>
+    <main>
+      <div id="notice-box" class="notice"></div>
 
-      <!-- Testing cheat-sheet -->
-      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;">
-        <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px;">💡 Operatorni sinash uchun tayyor savollar:</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«Sizda qanday tovarlar bor?»</span>
-          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«Simsiz quloqchin narxi qancha?»</span>
-          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«1 dona buyurtma qilmoqchiman...»</span>
-          <span style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;" title="Bosing">«Buyurtmam holatini tekshirib bering»</span>
-        </div>
-      </div>
-
-      <!-- Config toggle -->
-      <details style="background:#f1f5f9;border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
-        <summary style="font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;">⚙️ Vapi Kalit va Assistent sozlamalari</summary>
-        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:2px;">VAPI PUBLIC KEY:</label>
-            <input id="admin-vapi-pk" class="input-field" style="width:100%;font-size:12px;" />
+      <!-- AI Operator Mikrofon Sinov Paneli -->
+      <section class="card" id="ai-operator-panel"
+        style="border: 2px solid #6366f1; background: #ffffff; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); border-radius: var(--radius); overflow: hidden;">
+        <div class="card-header"
+          style="background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08)); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 20px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div
+              style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: grid; place-items: center; color: #fff; font-size: 22px; box-shadow: 0 4px 12px rgba(99,102,241,0.3);">
+              🎙️</div>
+            <div>
+              <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">AI Operator Jonli Sinov Mikrofoni</h2>
+              <p style="font-size: 12px; color: #6366f1; font-weight: 600;">Admin panel ichidan bevosita AI bilan
+                gaplashing — buyurtma bersangiz, pastdagi jadval avtomatik yangilanadi!</p>
+            </div>
           </div>
-          <div>
-            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:2px;">VAPI ASSISTANT ID:</label>
-            <input id="admin-vapi-aid" class="input-field" style="width:100%;font-size:12px;" />
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span id="call-timer-badge"
+              style="display: none; font-size: 13px; font-weight: 700; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 4px 12px; border-radius: 999px;">
+              ⏱️ <span id="call-timer-num">00:00</span>
+            </span>
+            <span id="call-status-badge"
+              style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 999px; background: #f1f5f9; color: #475569; border: 1px solid var(--border);">
+              ⚪ Mikrofon kutilmoqda
+            </span>
           </div>
-          <button id="save-admin-vapi-cfg" type="button" class="btn btn-secondary" style="font-size:12px;align-self:flex-start;">Kalitlarni saqlash</button>
         </div>
-      </details>
-    </div>
 
-    <div class="modal-footer" style="background:#f8fafc;">
-      <a href="/" target="_blank" class="btn btn-secondary" style="font-size:13px;text-decoration:none;">🌐 Sayt interfeysida ko‘rish</a>
-      <button id="close-ai-test-btn" class="btn btn-primary" type="button">Yopish</button>
-    </div>
-  </dialog>
+        <div class="card-body" style="padding: 20px;">
+          <div class="ai-operator-grid"
+            style="display: grid; grid-template-columns: minmax(260px, 320px) 1fr; gap: 20px; align-items: stretch;">
+
+            <!-- Chap blok: Katta mikrofon tugmasi va boshqaruv -->
+            <div
+              style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 14px; padding: 24px 20px; text-align: center; color: #fff; box-shadow: 0 4px 14px rgba(15,23,42,0.15);">
+
+              <button id="direct-mic-btn" type="button" class="mic-pulse-idle"
+                style="width: 88px; height: 88px; border-radius: 50%; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 36px; cursor: pointer; display: grid; place-items: center; transition: all 0.25s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 8px 25px rgba(99,102,241,0.5);">
+                <span id="direct-mic-icon">🎙️</span>
+              </button>
+
+              <div id="direct-mic-title" style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #f8fafc;">
+                Gaplashishni boshlash</div>
+              <div id="direct-mic-hint" style="font-size: 12px; color: #94a3b8; margin-top: 4px; line-height: 1.4;">
+                Tugmani bosing va mikrofonga ruxsat bering
+              </div>
+
+              <button id="direct-end-btn" type="button"
+                style="display: none; margin-top: 16px; width: 100%; padding: 10px; border-radius: 10px; border: none; background: #ef4444; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.35);">
+                📵 Qo‘ng‘iroqni tugatish
+              </button>
+            </div>
+
+            <!-- O'ng blok: Real-vaqt transkript va maslahatlar -->
+            <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label style="font-size: 13px; font-weight: 700; color: #1e293b;">💬 Jonli so‘zlashuv matni
+                    (Transkript):</label>
+                  <button type="button" id="clear-direct-transcript" class="btn btn-secondary"
+                    style="padding: 2px 8px; font-size: 11px;">Tozalash</button>
+                </div>
+                <div id="direct-transcript-box"
+                  style="height: 140px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
+                  <div id="direct-transcript-empty" style="color: #94a3b8; font-style: italic;">
+                    Yuqoridagi mikrofon tugmasini bosing va gapiring. Masalan: «Assalomu alaykum, sizda qanday
+                    mahsulotlar bor?»
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tayyor ssenariylar -->
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 14px;">
+                <div
+                  style="font-size: 11px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; margin-bottom: 4px;">
+                  💡 Sinash uchun ssenariylar (Aytib ko‘ring):</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                  <span
+                    style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«Sizda
+                    nimalar bor?»</span>
+                  <span
+                    style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«Simsiz
+                    quloqchin narxi qancha?»</span>
+                  <span
+                    style="background: #fff; border: 1px solid #dbeafe; color: #1e40af; font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 500;">«1
+                    dona buyurtma bermoqchiman...»</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- KPI ko'rsatkichlar paneli -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">Tanlangan davrdagi buyurtmalar</div>
+          <div id="stat-total" class="stat-value">0 ta</div>
+          <span class="stat-badge" style="background:#eff6ff;color:#2563eb;">Tanlangan filtrga mos</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Yangi (ishlanmagan) buyurtmalar</div>
+          <div id="stat-pending" class="stat-value" style="color:var(--warning);">0 ta</div>
+          <span class="stat-badge" style="background:#fef3c7;color:#b45309;">Zudlik bilan bog‘lanish kerak</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Muvaffaqiyatli yakunlangan</div>
+          <div id="stat-completed" class="stat-value" style="color:var(--success);">0 ta</div>
+          <span class="stat-badge" style="background:#dcfce7;color:#15803d;">Yetkazildi</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Bekor qilinmagan savdo</div>
+          <div id="stat-revenue" class="stat-value">0 so‘m</div>
+          <span class="stat-badge" style="background:#f1f5f9;color:#475569;">Bekor qilingan chiqarildi</span>
+        </div>
+      </section>
+
+      <!-- Asosiy ish stoli -->
+      <div class="dashboard-grid">
+
+        <!-- Chap taraf: Mahsulotlar boshqaruvi -->
+        <section class="card">
+          <div class="card-header">
+            <h2>Mahsulot qo‘shish</h2>
+          </div>
+          <div class="card-body">
+            <form id="product-form">
+              <div class="form-group">
+                <label for="p-name">Mahsulot nomi</label>
+                <input id="p-name" class="input-field" name="name" required
+                  placeholder="Masalan: Simsiz quloqchin X-200">
+              </div>
+              <div class="form-group">
+                <label for="p-price">Narxi (so‘m)</label>
+                <input id="p-price" class="input-field" name="price" type="number" min="0" required
+                  placeholder="250000">
+              </div>
+              <div class="form-group">
+                <label for="p-stock">Ombordagi qoldiq</label>
+                <input id="p-stock" class="input-field" name="stock" type="number" min="0" value="10" required>
+              </div>
+              <div class="form-group">
+                <label for="p-desc">Tavsif (AI operator mijozga aytishi uchun)</label>
+                <textarea id="p-desc" class="input-field" name="description" rows="3" required
+                  placeholder="Xususiyatlari, afzalliklari..."></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%;">+ Mahsulotni saqlash</button>
+            </form>
+
+            <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
+
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;">Ombordagi mahsulotlar</h3>
+            <div id="products-mini-list" style="display:flex;flex-direction:column;gap:10px;">
+              <p style="font-size:13px;color:var(--text-muted);">Yuklanmoqda...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- O'ng taraf: Buyurtmalar jadvali (CRM) -->
+        <section class="card">
+          <div class="card-header">
+            <h2>Kelib tushgan buyurtmalar (CRM)</h2>
+            <div style="display:flex;gap:8px;">
+              <button id="export-csv-btn" class="btn btn-secondary" type="button">📥 CSV / Excel yuklab olish</button>
+              <button id="refresh-btn" class="btn btn-secondary" type="button">🔄 Yangilash</button>
+            </div>
+          </div>
+          <div class="card-body">
+
+            <div class="orders-toolbar">
+              <input id="search-orders" class="input-field search-box" type="search"
+                placeholder="Ism, telefon, mahsulot yoki manzil...">
+              <div class="date-filters">
+                <select id="date-preset" class="input-field" aria-label="Sana oralig‘i">
+                  <option value="all">Barcha vaqt</option>
+                  <option value="today">Bugun</option>
+                  <option value="yesterday">Kecha</option>
+                  <option value="7days">Oxirgi 7 kun</option>
+                  <option value="month">Shu oy</option>
+                  <option value="custom">Sana oralig‘i</option>
+                </select>
+                <input id="date-from" class="input-field" type="date" aria-label="Boshlanish sanasi">
+                <input id="date-to" class="input-field" type="date" aria-label="Tugash sanasi">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:13px;color:var(--text-muted);">Holat:</span>
+                <select id="filter-status" class="input-field">
+                  <option value="ALL">Barchasi</option>
+                  <option value="Yangi">Faqat Yangi</option>
+                  <option value="Yetkazilmoqda">Yetkazilmoqda</option>
+                  <option value="Yakunlandi">Yakunlandi</option>
+                  <option value="Bekor qilindi">Bekor qilingan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mijoz</th>
+                    <th>Mahsulot va Miqdor</th>
+                    <th>Jami summa</th>
+                    <th>Holati (O‘zgartirish)</th>
+                    <th>Vaqti</th>
+                    <th>🎙 Audio isbot</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Buyurtmalar
+                      yuklanmoqda...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="pagination" class="pagination"></div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <dialog id="product-dialog" class="modal">
+      <form id="edit-product-form">
+        <div class="modal-header">
+          <h2>Mahsulotni tahrirlash</h2>
+          <button id="close-product-dialog" class="btn btn-secondary" type="button" aria-label="Yopish">✕</button>
+        </div>
+        <div class="modal-body">
+          <input id="edit-product-id" type="hidden">
+          <div class="form-group">
+            <label for="edit-product-name">Mahsulot nomi</label>
+            <input id="edit-product-name" class="input-field" required maxlength="160">
+          </div>
+          <div class="form-group">
+            <label for="edit-product-price">Narxi (so‘m)</label>
+            <input id="edit-product-price" class="input-field" type="number" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-product-stock">Ombordagi qoldiq</label>
+            <input id="edit-product-stock" class="input-field" type="number" min="0" step="1" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-product-description">Tavsif</label>
+            <textarea id="edit-product-description" class="input-field" rows="3" required maxlength="2000"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-product-edit" class="btn btn-secondary" type="button">Bekor qilish</button>
+          <button class="btn btn-primary" type="submit">Saqlash</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- AI Operator Ovozli Test Modali -->
+    <dialog id="ai-test-dialog" class="modal"
+      style="width:min(660px, calc(100% - 24px));max-height:calc(100% - 24px);overflow-y:auto;">
+      <div class="modal-header" style="background:#f8fafc;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div
+            style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:grid;place-items:center;color:#fff;font-size:18px;">
+            🎙️</div>
+          <div>
+            <h3 style="font-size:15px;font-weight:700;">AI Operator Ovozli Test Paneli</h3>
+            <p style="font-size:12px;color:var(--text-muted);">Real-vaqtda mikrofon orqali AI bilan o‘zbek tilida
+              gaplashib sinab ko‘ring</p>
+          </div>
+        </div>
+        <button id="close-ai-test-dialog" class="btn btn-secondary" type="button" aria-label="Yopish"
+          style="padding:6px 10px;">✕</button>
+      </div>
+
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
+        <!-- Call controller -->
+        <div
+          style="background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:14px;padding:22px;color:#fff;text-align:center;box-shadow:0 8px 24px rgba(15,23,42,0.15);">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:13px;color:#94a3b8;">
+            <span id="ai-test-timer">⏱️ 00:00</span>
+            <span id="ai-test-status" style="font-weight:600;color:#cbd5e1;">⚪ Kutilmoqda</span>
+          </div>
+
+          <div style="margin:16px 0;">
+            <button id="ai-test-call-btn" type="button" class="btn"
+              style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:16px;font-weight:700;padding:16px 36px;border-radius:14px;box-shadow:0 8px 25px rgba(99,102,241,0.5);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:all 0.2s;">
+              <span id="ai-test-btn-icon" style="font-size:20px;">📞</span>
+              <span id="ai-test-btn-text">Qo‘ng‘iroqni boshlash</span>
+            </button>
+          </div>
+
+          <div id="ai-test-substatus" style="font-size:12px;color:#94a3b8;min-height:18px;">
+            Tugmani bosing va mikrofonga ruxsat bering
+          </div>
+        </div>
+
+        <!-- Live transcript -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <label style="font-size:13px;font-weight:600;color:var(--text-main);">💬 Jonli suhbat yozuvi
+              (Transkript):</label>
+            <button id="clear-ai-transcript" type="button" class="btn btn-secondary"
+              style="padding:2px 8px;font-size:11px;">Tozalash</button>
+          </div>
+          <div id="ai-test-transcript"
+            style="min-height:130px;max-height:220px;overflow-y:auto;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;line-height:1.5;display:flex;flex-direction:column;gap:8px;">
+            <div id="ai-transcript-empty" style="color:var(--text-muted);font-style:italic;">Qo‘ng‘iroq boshlangandan
+              so‘ng so‘zlashuv matni bu yerda ko‘rinadi...</div>
+          </div>
+        </div>
+
+        <!-- Testing cheat-sheet -->
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;">
+          <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px;">💡 Operatorni sinash uchun tayyor
+            savollar:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span
+              style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;"
+              title="Bosing">«Sizda qanday tovarlar bor?»</span>
+            <span
+              style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;"
+              title="Bosing">«Simsiz quloqchin narxi qancha?»</span>
+            <span
+              style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;"
+              title="Bosing">«1 dona buyurtma qilmoqchiman...»</span>
+            <span
+              style="background:#fff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;padding:4px 8px;border-radius:6px;cursor:pointer;"
+              title="Bosing">«Buyurtmam holatini tekshirib bering»</span>
+          </div>
+        </div>
+
+        <!-- Config toggle -->
+        <details style="background:#f1f5f9;border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+          <summary style="font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;">⚙️ Vapi Kalit va
+            Assistent sozlamalari</summary>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+            <div>
+              <label
+                style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:2px;">VAPI
+                PUBLIC KEY:</label>
+              <input id="admin-vapi-pk" class="input-field" style="width:100%;font-size:12px;" />
+            </div>
+            <div>
+              <label
+                style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:2px;">VAPI
+                ASSISTANT ID:</label>
+              <input id="admin-vapi-aid" class="input-field" style="width:100%;font-size:12px;" />
+            </div>
+            <button id="save-admin-vapi-cfg" type="button" class="btn btn-secondary"
+              style="font-size:12px;align-self:flex-start;">Kalitlarni saqlash</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="modal-footer" style="background:#f8fafc;">
+        <a href="/" target="_blank" class="btn btn-secondary" style="font-size:13px;text-decoration:none;">🌐 Sayt
+          interfeysida ko‘rish</a>
+        <button id="close-ai-test-btn" class="btn btn-primary" type="button">Yopish</button>
+      </div>
+    </dialog>
 
   </div> <!-- /#crm-app -->
 
@@ -1179,7 +1707,7 @@
                 <a href="${escapeHTML(audioUrl)}" download="isbot_${cleanPhone}.wav" style="color:#059669;text-decoration:none;font-weight:600;">⬇️ Yuklab olish</a>
               </div>
             </div>
-          ` 
+          `
           : `<span style="font-size:12px;color:var(--text-muted);font-style:italic;">Yozuv yuklanmoqda...</span>`;
 
         const safeStatus = statuses.includes(o.status) ? o.status : 'Yangi';
@@ -1532,6 +2060,9 @@
         name: "AI Savdo Operatori (O'zbek tili)",
         firstMessage: "Assalomu alaykum! Do‘konimizga xush kelibsiz. Qaysi mahsulotimiz haqida ma’lumot beray yoki buyurtmangiz bormi?",
         firstMessageMode: "assistant-speaks-first",
+        silenceTimeoutSeconds: 90,
+        maxDurationSeconds: 1800,
+        endCallFunctionEnabled: false,
         serverUrl: webhookUrl,
         server: {
           url: webhookUrl,
@@ -1905,4 +2436,5 @@
     }
   </script>
 </body>
+
 </html>
