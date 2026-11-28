@@ -10,6 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
+  <!-- Vapi Official Web SDK -->
+  <script src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js" defer></script>
   <style>
     * {
       box-sizing: border-box;
@@ -349,59 +351,6 @@
 
 <body>
 
-  <!-- ═══════════ PAROL EKRANI ═══════════ -->
-  <div id="passcode-screen" style="
-    position:fixed;inset:0;z-index:9999;
-    background:linear-gradient(135deg,#090d16 0%,#111827 100%);
-    display:flex;align-items:center;justify-content:center;padding:20px;
-  ">
-    <div style="
-      background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
-      border-radius:20px;padding:40px 32px;max-width:380px;width:100%;text-align:center;
-    ">
-      <div style="font-size:40px;margin-bottom:16px;">🔐</div>
-      <h2 style="font-size:20px;font-weight:700;color:#f1f5f9;margin-bottom:8px;">Kirish kodi</h2>
-      <p style="font-size:14px;color:#94a3b8;margin-bottom:24px;">
-        Test versiyaga kirish uchun sizga berilgan maxsus kodni kiriting.
-      </p>
-      <input id="passcode-input" type="password" inputmode="numeric" maxlength="8" placeholder="Kodni kiriting..."
-        style="
-          width:100%;padding:14px 18px;border-radius:12px;
-          background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
-          color:#f1f5f9;font-size:18px;text-align:center;letter-spacing:4px;
-          outline:none;margin-bottom:12px;font-family:inherit;
-        " onkeydown="if(event.key==='Enter')checkPasscode()" />
-      <div id="passcode-error" style="color:#f87171;font-size:13px;margin-bottom:12px;min-height:20px;"></div>
-      <button onclick="checkPasscode()" style="
-        width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
-        background:linear-gradient(135deg,#6366f1,#8b5cf6);
-        color:#fff;font-size:15px;font-weight:700;font-family:inherit;
-      ">Kirish →</button>
-    </div>
-  </div>
-
-  <script>
-    // Parol — mijozlarga yuborasiz, o'zgartirishingiz mumkin
-    const ACCESS_CODE = 'adminr';
-    function checkPasscode() {
-      const val = document.getElementById('passcode-input').value.trim().toLowerCase();
-      if (val === 'adminr' || val === 'test2024') {
-        document.getElementById('passcode-screen').style.display = 'none';
-        sessionStorage.setItem('demo_access', '1');
-      } else {
-        const err = document.getElementById('passcode-error');
-        err.textContent = '❌ Kod noto\'g\'ri. Qaytadan urinib ko\'ring.';
-        document.getElementById('passcode-input').value = '';
-        document.getElementById('passcode-input').focus();
-        setTimeout(() => { err.textContent = ''; }, 3000);
-      }
-    }
-    // Agar session davomida allaqachon kirgan bo'lsa
-    if (sessionStorage.getItem('demo_access') === '1') {
-      document.getElementById('passcode-screen').style.display = 'none';
-    }
-  </script>
-
   <!-- ═══════════ ASOSIY KONTENT ═══════════ -->
 
   <nav class="top-nav">
@@ -644,6 +593,9 @@
 
     async function getVapiSDK() {
       if (VapiConstructor) return VapiConstructor;
+      if (window.vapiSDK && window.vapiSDK.vapi) {
+        return window.vapiSDK.vapi;
+      }
       try {
         const mod = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@3/+esm');
         VapiConstructor = mod.default?.default || mod.default || mod.Vapi || mod;
@@ -656,6 +608,63 @@
       }
     }
 
+    // Official Vapi Widget avtomatik ishga tushadi
+    function initOfficialWidget() {
+      if (window.vapiSDK && typeof window.vapiSDK.run === 'function') {
+        try {
+          const instance = window.vapiSDK.run({
+            apiKey: DEFAULT_PUBLIC_KEY,
+            assistant: DEFAULT_ASSISTANT_ID
+          });
+          if (instance) {
+            vapi = instance;
+            bindVapiEvents(vapi);
+          }
+        } catch (e) {
+          console.warn('Official widget init error:', e);
+        }
+      }
+    }
+
+    function bindVapiEvents(vapiInstance) {
+      if (!vapiInstance) return;
+      vapiInstance.on('call-start', () => {
+        callActive = true;
+        startTimer();
+        const btn = document.getElementById('call-btn');
+        const icon = document.getElementById('call-icon');
+        const text = document.getElementById('call-text');
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.add('ringing');
+        }
+        if (icon) icon.textContent = '📵';
+        if (text) text.textContent = 'Qo‘ng‘iroqni tugatish';
+        setStatus('🟢 Qo‘ng‘iroq boshlandi — AI sizni tinglamoqda', 'active');
+        const tBox = document.getElementById('transcript-box');
+        if (tBox) tBox.classList.add('visible');
+      });
+
+      vapiInstance.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'speaking'));
+      vapiInstance.on('speech-end', () => setStatus('🤖 AI javob bermoqda...', 'active'));
+
+      vapiInstance.on('message', (msg) => {
+        if (msg.type === 'transcript' && msg.transcriptType === 'final') {
+          appendTranscript(msg.role === 'user' ? 'user' : 'ai', msg.transcript);
+        }
+      });
+
+      vapiInstance.on('call-end', () => {
+        resetCallUI('Qo‘ng‘iroq yakunlandi. Yana gaplashish uchun tugmani bosing.', '');
+      });
+
+      vapiInstance.on('error', (err) => {
+        console.error('Vapi error:', err);
+        const errDetail = err?.error?.message || err?.message || (typeof err === 'string' ? err : '');
+        resetCallUI(errDetail ? `Xatolik: ${errDetail}` : 'Xatolik yuz berdi. Qaytadan urinib ko‘ring.', 'error');
+      });
+    }
+
     window.toggleCall = async function () {
       if (callActive) {
         endCall();
@@ -665,60 +674,36 @@
     };
 
     async function startCall() {
-      const btn = document.getElementById('call-btn');
-      const icon = document.getElementById('call-icon');
-      const text = document.getElementById('call-text');
+      // 1. Agar Vapi widget tugmasi ekranda bo'lsa, uni bosamiz:
+      const floatingBtn = document.querySelector('.vapi-btn') || document.querySelector('[class*="vapi-btn"]');
+      if (floatingBtn && !callActive) {
+        floatingBtn.click();
+        return;
+      }
 
+      // 2. Aks holda SDK orqali bevosita ulanamiz:
+      const btn = document.getElementById('call-btn');
       setStatus('⏳ Ulanmoqda... Mikrofon ruxsatini tasdiqlang', '');
-      btn.disabled = true;
+      if (btn) btn.disabled = true;
 
       try {
-        const SDK = await getVapiSDK();
-        const publicKey = getPublicKey();
-        const assistantId = getAssistantId();
+        if (!vapi) {
+          const SDK = await getVapiSDK();
+          vapi = (typeof SDK === 'function') ? new SDK(DEFAULT_PUBLIC_KEY) : SDK;
+          bindVapiEvents(vapi);
+        }
 
-        vapi = new SDK(publicKey);
-
-        vapi.on('call-start', () => {
-          callActive = true;
-          startTimer();
-          btn.disabled = false;
-          btn.classList.add('ringing');
-          icon.textContent = '📵';
-          text.textContent = 'Qo‘ng‘iroqni tugatish';
-          setStatus('🟢 Qo‘ng‘iroq boshlandi — AI sizni tinglamoqda', 'active');
-          document.getElementById('transcript-box').classList.add('visible');
-        });
-
-        vapi.on('speech-start', () => setStatus('🎤 Siz gapiryapsiz...', 'speaking'));
-        vapi.on('speech-end', () => setStatus('🤖 AI javob bermoqda...', 'active'));
-
-        vapi.on('message', (msg) => {
-          if (msg.type === 'transcript' && msg.transcriptType === 'final') {
-            appendTranscript(msg.role === 'user' ? 'user' : 'ai', msg.transcript);
-          }
-        });
-
-        vapi.on('call-end', () => {
-          resetCallUI('Qo‘ng‘iroq yakunlandi. Yana gaplashish uchun tugmani bosing.', '');
-        });
-
-        vapi.on('error', (err) => {
-          console.error('Vapi error:', err);
-          const errDetail = err?.error?.message || err?.message || (typeof err === 'string' ? err : '');
-          const msg = errDetail ? `Xatolik: ${errDetail}` : 'Xatolik yuz berdi yoki qo‘ng‘iroq uzildi. Qaytadan urinib ko‘ring.';
-          resetCallUI(msg, 'error');
-        });
-
-        const target = assistantId || getInlineAssistant();
-
+        const target = DEFAULT_ASSISTANT_ID || getInlineAssistant();
         await vapi.start(target);
 
       } catch (err) {
         console.error('Start error:', err);
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
         const errDetail = err?.error?.message || err?.message || '';
-        const msg = errDetail ? `Ulanib bo‘lmadi: ${errDetail}` : 'Ulanib bo‘lmadi: mikrofonga ruxsat berilganini tekshiring.';
+        const isMic = errDetail.includes('Permission') || errDetail.includes('NotAllowed') || errDetail.includes('getUserMedia');
+        const msg = isMic
+          ? 'Mikrofonga ruxsat berilmadi. Iltimos brauzer sozlamalarida mikrofonga ruxsat bering.'
+          : (errDetail ? `Ulanib bo‘lmadi: ${errDetail}` : 'Ulanib bo‘lmadi: mikrofonga ruxsat berilganini tekshiring.');
         resetCallUI(msg, 'error');
       }
     }
@@ -726,6 +711,13 @@
     const mainCallBtn = document.getElementById('call-btn');
     if (mainCallBtn) {
       mainCallBtn.onclick = toggleCall;
+    }
+
+    // Sahifa yuklanganda widgetni tekshirish
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => setTimeout(initOfficialWidget, 500));
+    } else {
+      setTimeout(initOfficialWidget, 500);
     }
 
     function endCall() {
