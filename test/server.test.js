@@ -6,10 +6,11 @@ process.env.WEBHOOK_SECRET ??= 'test-webhook-secret';
 process.env.ADMIN_API_KEY ??= 'test-admin-key';
 mongoose.set('bufferTimeoutMS', 100);
 
-const [{ app }, { Product }, { Order }] = await Promise.all([
+const [{ app }, { Product }, { Order }, { Call }] = await Promise.all([
   import('../server.js'),
   import('../models/Product.js'),
-  import('../models/Order.js')
+  import('../models/Order.js'),
+  import('../models/Call.js')
 ]);
 
 let server;
@@ -281,4 +282,104 @@ test('product and order schemas reject invalid values', async () => {
     unit_price: 1
   });
   await assert.rejects(order.validate());
+});
+
+test('end-of-call-report stores call in Call collection and links with order', async (context) => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalCallFindOneAndUpdate = Call.findOneAndUpdate;
+  const originalOrderFindOne = Order.findOne;
+
+  mongoose.connection.readyState = 1;
+  let savedCallFilter = null;
+  let savedCallUpdate = null;
+
+  Call.findOneAndUpdate = async (filter, update) => {
+    savedCallFilter = filter;
+    savedCallUpdate = update;
+    return { ...update.$set, _id: new mongoose.Types.ObjectId() };
+  };
+
+  const mockOrder = {
+    _id: new mongoose.Types.ObjectId(),
+    call_id: 'call_test_123',
+    save: async () => mockOrder
+  };
+  Order.findOne = async () => mockOrder;
+
+  context.after(() => {
+    mongoose.connection.readyState = originalReadyState;
+    Call.findOneAndUpdate = originalCallFindOneAndUpdate;
+    Order.findOne = originalOrderFindOne;
+  });
+
+  const response = await fetch(`${baseUrl}/webhook/vapi`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-vapi-secret': process.env.WEBHOOK_SECRET
+    },
+    body: JSON.stringify({
+      message: {
+        type: 'end-of-call-report',
+        call: { id: 'call_test_123', cost: 0.025 },
+        customer: { number: '+998901234567', name: 'Nodir' },
+        durationSeconds: 75,
+        endedReason: 'customer-ended-call',
+        transcript: 'Salom, quloqchin olmoqchiman',
+        summary: 'Mijoz quloqchin so‘radi va buyurtma berdi.'
+      }
+    })
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(savedCallFilter.call_id, 'call_test_123');
+  assert.equal(savedCallUpdate.$set.duration_seconds, 75);
+  assert.equal(savedCallUpdate.$set.ended_reason, 'customer-ended-call');
+  assert.equal(savedCallUpdate.$set.summary, 'Mijoz quloqchin so‘radi va buyurtma berdi.');
+  assert.equal(savedCallUpdate.$set.order_id, mockOrder._id);
+});
+
+test('calls API returns paginated calls and storage endpoints work', async (context) => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalCallFind = Call.find;
+  const originalCallCount = Call.countDocuments;
+
+  mongoose.connection.readyState = 1;
+
+  Call.find = () => ({
+    sort() { return this; },
+    skip() { return this; },
+    limit() { return this; },
+    populate() { return this; },
+    lean: async () => [{ call_id: 'call_test_123', summary: 'Mijoz buyurtma berdi' }]
+  });
+  Call.countDocuments = async () => 1;
+
+  context.after(() => {
+    mongoose.connection.readyState = originalReadyState;
+    Call.find = originalCallFind;
+    Call.countDocuments = originalCallCount;
+  });
+
+  const headers = { 'x-admin-key': process.env.ADMIN_API_KEY };
+  const callsRes = await fetch(`${baseUrl}/api/calls?page=1&limit=10`, { headers });
+  assert.equal(callsRes.status, 200);
+  const callsBody = await callsRes.json();
+  assert.equal(callsBody.total, 1);
+  assert.equal(callsBody.calls[0].call_id, 'call_test_123');
+
+  const storageRes = await fetch(`${baseUrl}/api/recordings/storage`, { headers });
+  assert.equal(storageRes.status, 200);
+  const storageBody = await storageRes.json();
+  assert.equal(typeof storageBody.count, 'number');
+  assert.equal(storageBody.retentionDays, 60);
+
+  const cleanupRes = await fetch(`${baseUrl}/api/recordings/cleanup`, {
+    method: 'POST',
+    headers: { ...headers, 'content-type': 'application/json' },
+    body: JSON.stringify({ retentionDays: 60 })
+  });
+  assert.equal(cleanupRes.status, 200);
+  const cleanupBody = await cleanupRes.json();
+  assert.equal(typeof cleanupBody.deletedCount, 'number');
 });

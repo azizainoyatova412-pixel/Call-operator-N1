@@ -1,14 +1,22 @@
 import { timingSafeEqual } from 'node:crypto';
 import { setServers } from 'node:dns';
+import fs from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import { Call } from './models/Call.js';
 import { Order } from './models/Order.js';
 import { Product } from './models/Product.js';
 
 dotenv.config();
+
+export const RECORDINGS_DIR = fileURLToPath(new URL('./public/recordings', import.meta.url));
+if (!fs.existsSync(RECORDINGS_DIR)) {
+  fs.mkdirSync(RECORDINGS_DIR, { recursive: true });
+}
 
 function formatUzPhone(phone) {
   if (typeof phone !== 'string') return phone;
@@ -113,6 +121,94 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: '1mb' }));
+app.use('/recordings', express.static(RECORDINGS_DIR));
+
+export async function downloadRecording(url, callId) {
+  if (!url || typeof url !== 'string' || !callId) return null;
+  const fileName = `${callId}.wav`;
+  const filePath = path.join(RECORDINGS_DIR, fileName);
+  if (fs.existsSync(filePath)) {
+    return `/recordings/${fileName}`;
+  }
+
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(30000) });
+    if (!res.ok) {
+      console.warn(`Audio yuklab olishda xatolik (${res.status}): ${url}`);
+      return null;
+    }
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await fs.promises.writeFile(filePath, buffer);
+    console.log(`Audio saqlandi: ${filePath} (${(buffer.length / 1024).toFixed(1)} KB)`);
+    return `/recordings/${fileName}`;
+  } catch (err) {
+    console.error('Audio faylni yuklab olishda xatolik:', err.message);
+    return null;
+  }
+}
+
+export function getStorageStats() {
+  try {
+    if (!fs.existsSync(RECORDINGS_DIR)) {
+      return { count: 0, sizeBytes: 0, sizeMB: '0.00', retentionDays: 60 };
+    }
+    const files = fs.readdirSync(RECORDINGS_DIR);
+    let totalBytes = 0;
+    let count = 0;
+    for (const file of files) {
+      if (file.endsWith('.wav') || file.endsWith('.mp3')) {
+        const stat = fs.statSync(path.join(RECORDINGS_DIR, file));
+        totalBytes += stat.size;
+        count++;
+      }
+    }
+    return {
+      count,
+      sizeBytes: totalBytes,
+      sizeMB: (totalBytes / (1024 * 1024)).toFixed(2),
+      retentionDays: 60
+    };
+  } catch (e) {
+    console.error('Storage stats xatosi:', e);
+    return { count: 0, sizeBytes: 0, sizeMB: '0.00', retentionDays: 60 };
+  }
+}
+
+export function cleanupOldRecordings(retentionDays = 60) {
+  try {
+    if (!fs.existsSync(RECORDINGS_DIR)) return { deletedCount: 0, freedBytes: 0 };
+    const maxAgeMs = retentionDays * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const files = fs.readdirSync(RECORDINGS_DIR);
+    let deletedCount = 0;
+    let freedBytes = 0;
+
+    for (const file of files) {
+      if (file.endsWith('.wav') || file.endsWith('.mp3')) {
+        const filePath = path.join(RECORDINGS_DIR, file);
+        const stat = fs.statSync(filePath);
+        if (now - stat.mtimeMs > maxAgeMs) {
+          freedBytes += stat.size;
+          fs.unlinkSync(filePath);
+          deletedCount++;
+        }
+      }
+    }
+    if (deletedCount > 0) {
+      console.log(`Tozalash: ${deletedCount} ta eski audio fayl o'chirildi (${(freedBytes / (1024 * 1024)).toFixed(2)} MB bo'shatildi).`);
+    }
+    return { deletedCount, freedBytes };
+  } catch (err) {
+    console.error('Eski audiolarni tozalashda xatolik:', err);
+    return { deletedCount: 0, freedBytes: 0 };
+  }
+}
+
+// Har 24 soatda avtomatik 60 kundan oshgan eski audiolarni tozalash
+setInterval(() => {
+  cleanupOldRecordings(60);
+}, 24 * 60 * 60 * 1000).unref();
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -610,6 +706,85 @@ app.patch('/api/orders/:id/status', requireAdmin, requireDatabase, async (req, r
   }
 });
 
+// Qo'ng'iroqlar ro'yxati (Admin)
+app.get('/api/calls', requireAdmin, requireDatabase, async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit ?? 20), 1), 100);
+  const page = Math.max(Number(req.query.page ?? 1), 1);
+  const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+
+  const query = {};
+  if (search) {
+    const pattern = new RegExp(escapeRegex(search), 'i');
+    query.$or = [
+      { customer_phone: pattern },
+      { customer_name: pattern },
+      { summary: pattern },
+      { transcript: pattern },
+      { call_id: pattern }
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  try {
+    const [calls, total] = await Promise.all([
+      Call.find(query)
+        .sort({ created_at: -1, _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('order_id', 'product_name quantity unit_price status created_at')
+        .lean(),
+      Call.countDocuments(query)
+    ]);
+
+    return res.json({
+      calls,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit)
+    });
+  } catch (error) {
+    console.error('Qo‘ng‘iroqlarni olishda xatolik:', error);
+    return res.status(500).json({ error: 'Qo‘ng‘iroqlarni olishda xatolik yuz berdi.' });
+  }
+});
+
+// Yagona qo'ng'iroq ma'lumoti
+app.get('/api/calls/:id', requireAdmin, requireDatabase, async (req, res) => {
+  try {
+    const call = await Call.findOne({
+      $or: [
+        { call_id: req.params.id },
+        ...(mongoose.isValidObjectId(req.params.id) ? [{ _id: req.params.id }] : [])
+      ]
+    }).populate('order_id').lean();
+
+    if (!call) return res.status(404).json({ error: 'Qo‘ng‘iroq topilmadi.' });
+    return res.json({ call });
+  } catch (error) {
+    console.error('Qo‘ng‘iroqni olishda xatolik:', error);
+    return res.status(500).json({ error: 'Qo‘ng‘iroqni olishda xatolik yuz berdi.' });
+  }
+});
+
+// Audio xotira statistikasi
+app.get('/api/recordings/storage', requireAdmin, (_req, res) => {
+  return res.json(getStorageStats());
+});
+
+// Eski audiolarni tozalash (qo'lda yoki cron)
+app.post('/api/recordings/cleanup', requireAdmin, (req, res) => {
+  const retentionDays = Math.max(Number(req.body?.retentionDays ?? 60), 1);
+  const result = cleanupOldRecordings(retentionDays);
+  const stats = getStorageStats();
+  return res.json({
+    message: `${result.deletedCount} ta eski audio tozalandi.`,
+    ...result,
+    stats
+  });
+});
+
 app.use('/webhook', (req, res, next) => {
   const secret = process.env.WEBHOOK_SECRET || 'THATMYFIRSTmoneymaker';
   const provided = req.get('x-vapi-secret');
@@ -630,37 +805,89 @@ app.use('/webhook', (req, res, next) => {
 app.post('/webhook/vapi', async (req, res) => {
   const { message } = req.body ?? {};
 
-  // Vapi qo'ng'iroq yakunlanganda hisobot (summary, audio recording, duration) yuboradi
+  // Vapi qo'ng'iroq yakunlanganda hisobot (summary, audio recording, duration, messages, transcript) yuboradi
   if (message?.type === 'end-of-call-report') {
     sendTelegramCallReport(message).catch((err) => {
       console.error('Call report yuborishda xatolik:', err);
     });
 
     try {
-      const callId = message.call?.id || message.callId || message.id;
-      const recordingUrl = message.recordingUrl || message.stereoRecordingUrl || message.artifact?.recordingUrl;
-      const summary = message.summary || message.analysis?.summary;
-      const duration = message.durationSeconds || message.duration;
+      const callId = message.call?.id || message.callId || message.id || `call_${Date.now()}`;
+      const recordingUrl = message.recordingUrl || message.stereoRecordingUrl || message.artifact?.recordingUrl || '';
+      const summary = message.summary || message.analysis?.summary || '';
+      const duration = Number(message.durationSeconds || message.duration || 0);
+      const endedReason = message.endedReason || message.call?.endedReason || '';
+      const transcript = message.transcript || message.artifact?.transcript || '';
+      const messages = Array.isArray(message.messages)
+        ? message.messages
+        : (Array.isArray(message.artifact?.messages) ? message.artifact.messages : []);
+      const cost = Number(message.cost || message.call?.cost || 0);
+      const customerPhone = message.customer?.number || message.call?.customer?.number || '';
+      const customerName = message.customer?.name || message.call?.customer?.name || '';
+      const startedAt = message.startedAt || message.call?.startedAt;
+      const endedAt = message.endedAt || message.call?.endedAt;
 
-      if (recordingUrl) {
-        // Avval call_id bo'yicha qidiramiz, topilmasa oxirgi 1 soat ichidagi eng so'nggi yangi buyurtmaga bog'laymiz
-        const query = callId ? { call_id: callId } : {};
-        let updated = await Order.findOneAndUpdate(
-          query,
-          { $set: { recording_url: recordingUrl, summary, duration_seconds: duration } },
-          { sort: { created_at: -1 }, new: true }
-        );
-        if (!updated) {
-          await Order.findOneAndUpdate(
-            { recording_url: { $exists: false } },
-            { $set: { recording_url: recordingUrl, summary, duration_seconds: duration } },
-            { sort: { created_at: -1 } }
-          );
-        }
-        console.log(`Qo‘ng‘iroq audiosi buyurtmaga biriktirildi (${callId}): ${recordingUrl}`);
+      // 1. Audio faylni o'z serverimizga yuklab olamiz (Vapi 14 kunda o'chirib yuboradi)
+      let localRecordingFile = '';
+      if (recordingUrl && callId) {
+        localRecordingFile = await downloadRecording(recordingUrl, callId);
       }
-    } catch (saveAudioErr) {
-      console.error('Audio havolasini saqlashda xatolik:', saveAudioErr);
+
+      // 2. Buyurtmani qidiramiz va bog'laymiz
+      let linkedOrderId = null;
+      if (callId) {
+        let order = await Order.findOne({ call_id: callId });
+        if (!order && customerPhone) {
+          const digits = customerPhone.replace(/\D/g, '');
+          if (digits.length >= 7) {
+            const lastSeven = digits.slice(-7);
+            const regex = new RegExp(escapeRegex(lastSeven) + '$');
+            const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+            order = await Order.findOne({
+              customer_phone: { $regex: regex },
+              created_at: { $gte: fifteenMinutesAgo }
+            }).sort({ created_at: -1 });
+          }
+        }
+
+        if (order) {
+          linkedOrderId = order._id;
+          order.call_id = callId;
+          order.recording_url = localRecordingFile || recordingUrl || order.recording_url;
+          order.summary = summary || order.summary;
+          order.duration_seconds = duration || order.duration_seconds;
+          await order.save();
+          console.log(`Qo‘ng‘iroq (${callId}) buyurtmaga bog‘landi (${order._id})`);
+        }
+      }
+
+      // 3. Call kolleksiyasiga saqlash (idempotent upsert - callId unique index)
+      await Call.findOneAndUpdate(
+        { call_id: callId },
+        {
+          $set: {
+            call_id: callId,
+            customer_phone: customerPhone ? formatUzPhone(customerPhone) : '',
+            customer_name: customerName,
+            started_at: startedAt ? new Date(startedAt) : undefined,
+            ended_at: endedAt ? new Date(endedAt) : new Date(),
+            duration_seconds: duration,
+            ended_reason: endedReason,
+            transcript,
+            messages,
+            summary,
+            cost,
+            recording_url: recordingUrl,
+            recording_file: localRecordingFile || '',
+            ...(linkedOrderId ? { order_id: linkedOrderId } : {})
+          }
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+
+      console.log(`Qo‘ng‘iroq MongoDB'ga saqlandi: ${callId}`);
+    } catch (saveCallErr) {
+      console.error('Call hisobotini saqlashda xatolik:', saveCallErr);
     }
 
     return res.sendStatus(200);

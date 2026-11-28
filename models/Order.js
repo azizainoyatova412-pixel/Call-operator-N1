@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema({
   },
   unit_price: { type: Number, required: true, min: 0 },
   tool_call_id: { type: String, unique: true, sparse: true },
-  call_id: { type: String, sparse: true },
+  call_id: { type: String, sparse: true, index: true },
   recording_url: { type: String, trim: true },
   summary: { type: String, trim: true },
   duration_seconds: { type: Number },
