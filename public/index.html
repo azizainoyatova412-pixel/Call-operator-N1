@@ -349,6 +349,64 @@
 
 <body>
 
+  <!-- ═══════════ PAROL EKRANI ═══════════ -->
+  <div id="passcode-screen" style="
+    position:fixed;inset:0;z-index:9999;
+    background:linear-gradient(135deg,#090d16 0%,#111827 100%);
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  ">
+    <div style="
+      background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+      border-radius:20px;padding:40px 32px;max-width:380px;width:100%;text-align:center;
+    ">
+      <div style="font-size:40px;margin-bottom:16px;">🔐</div>
+      <h2 style="font-size:20px;font-weight:700;color:#f1f5f9;margin-bottom:8px;">Kirish kodi</h2>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:24px;">
+        Test versiyaga kirish uchun sizga berilgan maxsus kodni kiriting.
+      </p>
+      <input id="passcode-input" type="password" inputmode="numeric" maxlength="8"
+        placeholder="Kodni kiriting..."
+        style="
+          width:100%;padding:14px 18px;border-radius:12px;
+          background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+          color:#f1f5f9;font-size:18px;text-align:center;letter-spacing:4px;
+          outline:none;margin-bottom:12px;font-family:inherit;
+        "
+        onkeydown="if(event.key==='Enter')checkPasscode()"
+      />
+      <div id="passcode-error" style="color:#f87171;font-size:13px;margin-bottom:12px;min-height:20px;"></div>
+      <button onclick="checkPasscode()" style="
+        width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
+        background:linear-gradient(135deg,#6366f1,#8b5cf6);
+        color:#fff;font-size:15px;font-weight:700;font-family:inherit;
+      ">Kirish →</button>
+    </div>
+  </div>
+
+  <script>
+    // Parol — mijozlarga yuborasiz, o'zgartirishingiz mumkin
+    const ACCESS_CODE = 'test2024';
+    function checkPasscode() {
+      const val = document.getElementById('passcode-input').value.trim();
+      if (val === ACCESS_CODE) {
+        document.getElementById('passcode-screen').style.display = 'none';
+        sessionStorage.setItem('demo_access', '1');
+      } else {
+        const err = document.getElementById('passcode-error');
+        err.textContent = '❌ Kod noto\'g\'ri. Qaytadan urinib ko\'ring.';
+        document.getElementById('passcode-input').value = '';
+        document.getElementById('passcode-input').focus();
+        setTimeout(() => { err.textContent = ''; }, 3000);
+      }
+    }
+    // Agar session davomida allaqachon kirgan bo'lsa
+    if (sessionStorage.getItem('demo_access') === '1') {
+      document.getElementById('passcode-screen').style.display = 'none';
+    }
+  </script>
+
+  <!-- ═══════════ ASOSIY KONTENT ═══════════ -->
+
   <nav class="top-nav">
     <div class="brand">
       <div class="brand-icon">AI</div>
