@@ -47,6 +47,10 @@ const TOOLS = [
         required: ['productName']
       }
     },
+    messages: [
+      { type: 'request-start',            content: "Mahsulot ma'lumotlarini tekshirib ko'raman, bir soniya..." },
+      { type: 'request-response-delayed', content: "Hozir, baza bilan bog'lanmoqdaman...", timingMilliseconds: 4000 }
+    ],
     server: { url: WEBHOOK, secret: SECRET }
   },
   {
@@ -56,6 +60,10 @@ const TOOLS = [
       description: "Mijoz umumiy qilib sotuvda qanday mahsulotlar borligini so'raganda barcha mavjud tovarlar ro'yxati va narxlarini qaytaradi.",
       parameters: { type: 'object', properties: {} }
     },
+    messages: [
+      { type: 'request-start',            content: "Tovarlar ro'yxatini olmoqdaman, bir oz kuting..." },
+      { type: 'request-response-delayed', content: "Hozir, ro'yxatni yuklamoqdaman...", timingMilliseconds: 4000 }
+    ],
     server: { url: WEBHOOK, secret: SECRET }
   },
   {
@@ -75,6 +83,10 @@ const TOOLS = [
         required: ['customerName','customerPhone','deliveryAddress','productName','quantity']
       }
     },
+    messages: [
+      { type: 'request-start',            content: "Buyurtmangizni bazaga kiritmoqdaman..." },
+      { type: 'request-response-delayed', content: "Hozir, buyurtmangiz saqlanmoqda...", timingMilliseconds: 4000 }
+    ],
     server: { url: WEBHOOK, secret: SECRET }
   },
   {
@@ -90,6 +102,10 @@ const TOOLS = [
         required: ['customerPhone']
       }
     },
+    messages: [
+      { type: 'request-start',            content: "Buyurtma holatini tekshirmoqdaman..." },
+      { type: 'request-response-delayed', content: "Hozir, ma'lumot qidirilmoqda...", timingMilliseconds: 4000 }
+    ],
     server: { url: WEBHOOK, secret: SECRET }
   }
 ];
@@ -158,7 +174,7 @@ async function main() {
     firstMessage: "Assalomu alaykum! Do'konimizga xush kelibsiz. Qaysi mahsulotimiz haqida ma'lumot beray yoki buyurtmangiz bormi?",
     firstMessageMode: 'assistant-speaks-first',
     hipaaEnabled: false,
-    silenceTimeoutSeconds: 25,
+    silenceTimeoutSeconds: 40,
     maxDurationSeconds: 600,
     backchannelingEnabled: true,
     backgroundSound: 'off',

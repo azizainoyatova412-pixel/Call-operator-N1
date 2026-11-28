@@ -3,7 +3,7 @@
   "firstMessage": "Assalomu alaykum! Do‘konimizga xush kelibsiz. Qaysi mahsulotimiz haqida ma’lumot beray yoki buyurtmangiz bormi?",
   "firstMessageMode": "assistant-speaks-first",
   "hipaaEnabled": false,
-  "silenceTimeoutSeconds": 90,
+  "silenceTimeoutSeconds": 40,
   "maxDurationSeconds": 1800,
   "backchannelingEnabled": true,
   "backgroundSound": "off",
