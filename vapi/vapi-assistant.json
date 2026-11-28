@@ -5,7 +5,6 @@
   "hipaaEnabled": false,
   "silenceTimeoutSeconds": 25,
   "maxDurationSeconds": 600,
-  "numWordsToInterrupt": 2,
   "backchannelingEnabled": true,
   "backgroundSound": "off",
   "endCallFunctionEnabled": true,
@@ -13,13 +12,13 @@
   "transcriber": {
     "provider": "deepgram",
     "model": "nova-2",
-    "language": "uz",
+    "language": "multi",
     "smartFormat": true,
     "keywords": [
-      "so'm:3",
+      "som:3",
       "dona:2",
       "buyurtma:2",
-      "yetkazib berish:2",
+      "yetkazib:2",
       "Toshkent:2",
       "narxi:2",
       "quloqchin:2"

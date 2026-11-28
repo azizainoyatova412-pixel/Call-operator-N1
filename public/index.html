@@ -429,8 +429,8 @@
   <footer>Demo versiya — AI Call Operator CRM tizimi</footer>
 
   <script type="module">
-    const DEFAULT_PUBLIC_KEY = 'e4f4cfa0-7e3c-4313-98e9-6845476551c3';
-    const DEFAULT_ASSISTANT_ID = 'd6d32a81-201c-4337-aea1-047af49bbf8b';
+    const DEFAULT_PUBLIC_KEY = '2d396194-3f23-4744-b177-3725213479a8';
+    const DEFAULT_ASSISTANT_ID = '0557ac53-0d45-4695-96cf-bac96f43a9fc';
 
     let vapi = null;
     let callActive = false;
@@ -466,12 +466,114 @@
       if (display) display.style.display = 'none';
     }
 
-    // Load configs from localStorage
+    // Load configs from localStorage (clear old expired keys)
     function getPublicKey() {
-      return localStorage.getItem('vapi_public_key') || DEFAULT_PUBLIC_KEY;
+      const k = localStorage.getItem('vapi_public_key');
+      if (!k || k === 'e4f4cfa0-7e3c-4313-98e9-6845476551c3') {
+        localStorage.setItem('vapi_public_key', DEFAULT_PUBLIC_KEY);
+        return DEFAULT_PUBLIC_KEY;
+      }
+      return k;
     }
     function getAssistantId() {
-      return localStorage.getItem('vapi_assistant_id') || DEFAULT_ASSISTANT_ID;
+      const aid = localStorage.getItem('vapi_assistant_id');
+      if (!aid || aid === 'd6d32a81-201c-4337-aea1-047af49bbf8b') {
+        localStorage.setItem('vapi_assistant_id', DEFAULT_ASSISTANT_ID);
+        return DEFAULT_ASSISTANT_ID;
+      }
+      return aid;
+    }
+
+    function getInlineAssistant() {
+      const webhookUrl = window.location.origin.includes('localhost')
+        ? 'https://call-operator-1.onrender.com/webhook/vapi'
+        : `${window.location.origin}/webhook/vapi`;
+
+      return {
+        name: "AI Savdo Operatori (O'zbek tili)",
+        firstMessage: "Assalomu alaykum! Do‘konimizga xush kelibsiz. Qaysi mahsulotimiz haqida ma’lumot beray yoki buyurtmangiz bormi?",
+        firstMessageMode: "assistant-speaks-first",
+        serverUrl: webhookUrl,
+        server: {
+          url: webhookUrl,
+          secret: "THATMYFIRSTmoneymaker"
+        },
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-2",
+          language: "multi",
+          smartFormat: true,
+          keywords: ["som:3", "dona:2", "buyurtma:2", "yetkazib:2", "Toshkent:2", "narxi:2", "quloqchin:2"]
+        },
+        model: {
+          provider: "openai",
+          model: "gpt-4o",
+          temperature: 0.3,
+          messages: [
+            {
+              role: "system",
+              content: "Siz o‘zbek tilida ravon, samimiy, sabrli va professional gapiradigan yuqori malakali telefon savdo operatorisiz.\n\nASOSIY MAQSADINGIZ:\nMijozga do‘kon mahsulotlarini tanlashda yordam berish, savollariga aniq va muloyim javob berish, e’tirozlarni xushmuomalalik bilan bartaraf etish va tasdiqlangan buyurtmani xatosiz bazaga kiritish.\n\nMULOQOT QOIDALARI:\n1. Bir javobda 1-2 ta qisqa va aniq gap ayting. Monolog qilmang, mijozning gapini bo‘lmang.\n2. So‘zlashuv ohangi do‘stona, hurmat bilan va ishonchli bo‘lsin. Raqamlar, ismlar va manzillarni aniq tinglang.\n3. Mijoz salomlashganda samimiy alik oling va nima bilan qiziqayotganini so‘rang.\n\nMAHSULOT VA NARXLAR BO‘YICHA ISHLASH:\n1. Agar mijoz umumiy holda «Sizda nimalar bor?» deb so‘rasa, zudlik bilan `list_products` vositasini chaqiring.\n2. Agar mijoz aniq bir mahsulotning narxi, tavsifi yoki omborda bor-yo‘qligini so‘rasa, darhol `get_product_details` vositasini chaqiring.\n3. Narx va ombordagi sonini faqat vosita ma’lumotiga qarab ayting.\n\nE’TIROZLAR BILAN ISHLASH:\n1. «Qimmat ekan»: Sifati, rasmiy kafolati va uzoq vaqt xizmat qilishini tushuntiring.\n2. «O‘ylab ko‘raman»: «Albatta, qaror qabul qilish uchun vaqt kerak. Mahsulot bo‘yicha qo‘shimcha savolingiz bo‘lsa, bajonidil javob beraman» deng.\n3. Yetkazib berish: Toshkent bo‘yicha 24 soat ichida, viloyatlarga 1-3 kunda yetkaziladi. To‘lov mahsulot yetib borganda naqd yoki karta orqali.\n\nBUYURTMA RASMIYLASHTIRISH:\n1. Ism-sharifi, telefon raqami, yetkazib berish manzili, mahsulot nomi va sonini yig‘ing.\n2. QAT’IY TASDIQ: «Demak, [Ism], siz [Mahsulot] dan [soni] dona buyurtma qilmoqchisiz. Manzil: [Manzil], telefon: [Raqam]. Barchasi to‘g‘rimi, buyurtmani tasdiqlaysizmi?» deb so‘rang.\n3. Mijoz aniq tasdiqlagach, `create_order` vositasini chaqiring.\n\nBUYURTMA HOLATI:\nMijoz avval bergan buyurtmasining holatini so‘rasa, telefon raqami orqali `check_order_status` vositasidan foydalaning.\n\nTIRIK OPERATORNI SO‘RASHSA:\n«Tushundim. Agar mutaxassisimiz bilan gaplashmoqchi bo‘lsangiz, raqamingiz va savolingizni qoldiring, tez orada operatorlarimiz siz bilan bog‘lanishadi» deb bildiring."
+            }
+          ],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "get_product_details",
+                description: "Mijoz mahsulot narxi, xususiyatlari yoki omborda mavjudligini so‘raganda bazadan eng dolzarb ma’lumotni topadi.",
+                parameters: {
+                  type: "object",
+                  properties: { productName: { type: "string" } },
+                  required: ["productName"]
+                }
+              }
+            },
+            {
+              type: "function",
+              function: {
+                name: "list_products",
+                description: "Barcha mavjud tovarlar ro‘yxati va narxlarini qaytaradi.",
+                parameters: { type: "object", properties: {} }
+              }
+            },
+            {
+              type: "function",
+              function: {
+                name: "create_order",
+                description: "Buyurtmani bazaga yozadi va zaxiradan chegiradi.",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    customerName: { type: "string" },
+                    customerPhone: { type: "string" },
+                    deliveryAddress: { type: "string" },
+                    productName: { type: "string" },
+                    quantity: { type: "integer", minimum: 1, maximum: 50 }
+                  },
+                  required: ["customerName", "customerPhone", "deliveryAddress", "productName", "quantity"]
+                }
+              }
+            },
+            {
+              type: "function",
+              function: {
+                name: "check_order_status",
+                description: "Buyurtma holatini tekshiradi.",
+                parameters: {
+                  type: "object",
+                  properties: { customerPhone: { type: "string" } },
+                  required: ["customerPhone"]
+                }
+              }
+            }
+          ]
+        },
+        voice: {
+          provider: "cartesia",
+          voiceId: "a0e99841-438c-4a64-b679-ae501e7d6091",
+          model: "sonic-3.5"
+        }
+      };
     }
 
     async function getVapiSDK() {
@@ -540,7 +642,11 @@
           resetCallUI('Xatolik yuz berdi yoki qo‘ng‘iroq uzildi. Qaytadan urinib ko‘ring.', 'error');
         });
 
-        await vapi.start(assistantId);
+        const target = (assistantId && assistantId !== 'd6d32a81-201c-4337-aea1-047af49bbf8b')
+          ? assistantId
+          : getInlineAssistant();
+
+        await vapi.start(target);
 
       } catch (err) {
         console.error('Start error:', err);
