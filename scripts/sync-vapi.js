@@ -8,7 +8,7 @@ const PK = process.argv[2] || process.env.VAPI_PRIVATE_KEY;
 if (!PK) { console.error('Private key kerak!'); process.exit(1); }
 
 const BASE = 'https://api.vapi.ai';
-const WEBHOOK = 'https://call-operator-1.onrender.com/webhook/vapi';
+const WEBHOOK = 'https://call-operator-n1.onrender.com/webhook/vapi';
 const SECRET  = 'THATMYFIRSTmoneymaker';
 const H = { 'Authorization': `Bearer ${PK.trim()}`, 'Content-Type': 'application/json' };
 

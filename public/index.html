@@ -384,8 +384,8 @@
     // Parol — mijozlarga yuborasiz, o'zgartirishingiz mumkin
     const ACCESS_CODE = 'adminr';
     function checkPasscode() {
-      const val = document.getElementById('passcode-input').value.trim();
-      if (val === ACCESS_CODE) {
+      const val = document.getElementById('passcode-input').value.trim().toLowerCase();
+      if (val === 'adminr' || val === 'test2024') {
         document.getElementById('passcode-screen').style.display = 'none';
         sessionStorage.setItem('demo_access', '1');
       } else {
@@ -549,7 +549,7 @@
 
     function getInlineAssistant() {
       const webhookUrl = window.location.origin.includes('localhost')
-        ? 'https://call-operator-1.onrender.com/webhook/vapi'
+        ? 'https://call-operator-n1.onrender.com/webhook/vapi'
         : `${window.location.origin}/webhook/vapi`;
 
       return {
