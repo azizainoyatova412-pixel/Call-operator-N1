@@ -776,17 +776,11 @@
       }
 
       .date-filters {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
       }
 
       .date-filters select {
-        grid-column: 1 / -1;
-      }
-
-      .date-filters input {
         width: 100%;
-        min-width: 0;
       }
 
       #filter-status {
@@ -1112,15 +1106,12 @@
                 placeholder="Ism, telefon, mahsulot yoki manzil...">
               <div class="date-filters">
                 <select id="date-preset" class="input-field" aria-label="Sana oralig‘i">
-                  <option value="all">Barcha vaqt</option>
+                  <option value="all">📅 Barcha vaqt</option>
                   <option value="today">Bugun</option>
                   <option value="yesterday">Kecha</option>
                   <option value="7days">Oxirgi 7 kun</option>
                   <option value="month">Shu oy</option>
-                  <option value="custom">Sana oralig‘i</option>
                 </select>
-                <input id="date-from" class="input-field" type="date" aria-label="Boshlanish sanasi">
-                <input id="date-to" class="input-field" type="date" aria-label="Tugash sanasi">
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:13px;color:var(--text-muted);">Holat:</span>
@@ -1299,8 +1290,6 @@
     const filterStatus = document.querySelector('#filter-status');
     const soundToggle = document.querySelector('#sound-alert');
     const datePreset = document.querySelector('#date-preset');
-    const dateFromInput = document.querySelector('#date-from');
-    const dateToInput = document.querySelector('#date-to');
     const pagination = document.querySelector('#pagination');
     const productDialog = document.querySelector('#product-dialog');
     const editProductForm = document.querySelector('#edit-product-form');
@@ -1362,14 +1351,10 @@
       return `${day}.${month}.${year}, ${hours}:${minutes}`;
     }
 
+    let selectedDateRange = { from: '', to: '' };
+
     function getDateRange() {
-      const from = dateFromInput.value
-        ? new Date(`${dateFromInput.value}T00:00:00`).toISOString()
-        : '';
-      const to = dateToInput.value
-        ? new Date(`${dateToInput.value}T23:59:59.999`).toISOString()
-        : '';
-      return { from, to };
+      return selectedDateRange;
     }
 
     function buildOrderParams(page = currentPage, limit = pageSize) {
@@ -1407,8 +1392,10 @@
         to = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       }
 
-      dateFromInput.value = from ? localDateInput(from) : '';
-      dateToInput.value = to ? localDateInput(to) : '';
+      selectedDateRange = {
+        from: from ? new Date(`${localDateInput(from)}T00:00:00`).toISOString() : '',
+        to: to ? new Date(`${localDateInput(to)}T23:59:59.999`).toISOString() : ''
+      };
       currentPage = 1;
       loadOrders();
     }
@@ -1779,15 +1766,8 @@
       loadOrders();
     };
     datePreset.onchange = () => {
-      if (datePreset.value !== 'custom') applyDatePreset(datePreset.value);
+      applyDatePreset(datePreset.value);
     };
-    for (const dateInput of [dateFromInput, dateToInput]) {
-      dateInput.onchange = () => {
-        datePreset.value = 'custom';
-        currentPage = 1;
-        loadOrders();
-      };
-    }
     pagination.onclick = (event) => {
       const button = event.target.closest('button[data-page]');
       if (!button || button.disabled) return;
