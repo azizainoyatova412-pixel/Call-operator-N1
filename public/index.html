@@ -364,16 +364,13 @@
       <p style="font-size:14px;color:#94a3b8;margin-bottom:24px;">
         Test versiyaga kirish uchun sizga berilgan maxsus kodni kiriting.
       </p>
-      <input id="passcode-input" type="password" inputmode="numeric" maxlength="8"
-        placeholder="Kodni kiriting..."
+      <input id="passcode-input" type="password" inputmode="numeric" maxlength="8" placeholder="Kodni kiriting..."
         style="
           width:100%;padding:14px 18px;border-radius:12px;
           background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
           color:#f1f5f9;font-size:18px;text-align:center;letter-spacing:4px;
           outline:none;margin-bottom:12px;font-family:inherit;
-        "
-        onkeydown="if(event.key==='Enter')checkPasscode()"
-      />
+        " onkeydown="if(event.key==='Enter')checkPasscode()" />
       <div id="passcode-error" style="color:#f87171;font-size:13px;margin-bottom:12px;min-height:20px;"></div>
       <button onclick="checkPasscode()" style="
         width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
@@ -385,7 +382,7 @@
 
   <script>
     // Parol — mijozlarga yuborasiz, o'zgartirishingiz mumkin
-    const ACCESS_CODE = 'test2024';
+    const ACCESS_CODE = 'adminr';
     function checkPasscode() {
       const val = document.getElementById('passcode-input').value.trim();
       if (val === ACCESS_CODE) {
@@ -413,7 +410,8 @@
       <div>Call Operator Demo</div>
     </div>
     <div class="nav-links">
-      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;">
+      <span
+        style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;">
         <span class="pulse-dot"></span> Sinov Rejimi (Maks. 3 daq)
       </span>
     </div>
@@ -430,8 +428,11 @@
     </p>
 
     <!-- Mobil / Telegram brauzer maslahati -->
-    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;margin-bottom:24px;font-size:12px;color:#cbd5e1;line-height:1.5;text-align:left;">
-      📱 <strong>Telefon foydalanuvchilari diqqatiga:</strong> Telegram yoki WhatsApp ichida ochgan bo‘lsangiz, mikrofonga to‘liq ruxsat berish uchun yuqoridagi <strong>uch nuqtani (⋮)</strong> bosib <em>«Chrome yoki Safari orqali ochish»</em>ni tanlang.
+    <div
+      style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;margin-bottom:24px;font-size:12px;color:#cbd5e1;line-height:1.5;text-align:left;">
+      📱 <strong>Telefon foydalanuvchilari diqqatiga:</strong> Telegram yoki WhatsApp ichida ochgan bo‘lsangiz,
+      mikrofonga to‘liq ruxsat berish uchun yuqoridagi <strong>uch nuqtani (⋮)</strong> bosib <em>«Chrome yoki Safari
+        orqali ochish»</em>ni tanlang.
     </div>
 
     <div class="call-controls">
@@ -441,7 +442,9 @@
       </button>
 
       <div id="status" class="status-bar">Mikrofon orqali bog‘lanish uchun tugmani bosing</div>
-      <div id="timer-display" style="display:none;font-size:12px;color:#a5b4fc;font-weight:600;">⏱️ Qolgan sinov vaqti: <span id="timer-val">03:00</span></div>
+      <div id="timer-display" style="display:none;font-size:12px;color:#a5b4fc;font-weight:600;">⏱️ Qolgan sinov vaqti:
+        <span id="timer-val">03:00</span>
+      </div>
     </div>
 
     <div id="transcript-box"></div>
@@ -457,14 +460,21 @@
     </div>
 
     <!-- Sinov Vazifalari (Checklist) -->
-    <div style="margin-top:20px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;text-align:left;width:100%;">
-      <div style="font-size:13px;font-weight:700;color:#c7d2fe;margin-bottom:10px;">🎯 Sinov paytida aytib ko‘ring (Tekshirish uchun):</div>
+    <div
+      style="margin-top:20px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;text-align:left;width:100%;">
+      <div style="font-size:13px;font-weight:700;color:#c7d2fe;margin-bottom:10px;">🎯 Sinov paytida aytib ko‘ring
+        (Tekshirish uchun):</div>
       <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;color:#cbd5e1;">
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>1. Assortiment:</strong> «Sizda nimalar bor?» deb so‘rang.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>2. E’tiroz:</strong> «AirPods qimmat ekan» deb ko‘ring — AI e’tirozni tushuntiradi.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>3. O‘zgartirish:</strong> 1 dona buyurtma berib, oxirida «2 dona qiling» deng.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>4. Holat:</strong> «Avvalgi buyurtmam nima bo‘ldi?» deb so‘rang.</span></li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>5. Jonli operator:</strong> «Tirik odam bilan gaplashmoqchiman» deb talab qiling.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>1. Assortiment:</strong>
+            «Sizda nimalar bor?» deb so‘rang.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>2. E’tiroz:</strong>
+            «AirPods qimmat ekan» deb ko‘ring — AI e’tirozni tushuntiradi.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>3. O‘zgartirish:</strong>
+            1 dona buyurtma berib, oxirida «2 dona qiling» deng.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>4. Holat:</strong>
+            «Avvalgi buyurtmam nima bo‘ldi?» deb so‘rang.</span></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span>🔹</span> <span><strong>5. Jonli
+              operator:</strong> «Tirik odam bilan gaplashmoqchiman» deb talab qiling.</span></li>
       </ul>
     </div>
   </main>
